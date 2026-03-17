@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AmusementRating — Log. Audit. Rank. Repeat.</title>
+<meta name="description" content="Log rides. Audit park operations. Earn XP. Unlock badges. Climb the leaderboard. The gamified platform for coaster enthusiasts who care about how parks run.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#08090D;--s1:#0D0F15;--s2:#12141C;--s3:#181B25;--border:#1E2236;--bh:#2D3350;--ac:#22D87C;--ac2:#1BB86A;--yellow:#FACC15;--red:#EF4444;--blue:#60A5FA;--purple:#C084FC;--cyan:#22D3EE;--orange:#FB923C;--pink:#F472B6;--text:#9CA3B8;--bright:#F0F2F7;--dim:#4E556A;--mute:#2A2F42;--d:'Sora',sans-serif;--m:'Space Mono',monospace;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--d);background:var(--bg);color:var(--bright);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+.page{max-width:640px;margin:0 auto;padding:0 24px;}
+
+/* NAV */
+.nav{padding:18px 24px;display:flex;align-items:center;justify-content:space-between;max-width:640px;margin:0 auto;}
+.nl{font-size:15px;font-weight:800;color:var(--bright);letter-spacing:-.3px;text-decoration:none;}.nl span{color:var(--ac);}
+.nav-r{display:flex;align-items:center;gap:10px;}
+.nav-tag{font-family:var(--m);font-size:8px;letter-spacing:1.5px;color:var(--ac);border:1px solid rgba(34,216,124,.2);padding:3px 9px;border-radius:3px;background:rgba(34,216,124,.04);}
+.nav-count{font-family:var(--m);font-size:9px;color:var(--dim);}
+
+/* HERO */
+.hero{padding:48px 0 40px;text-align:center;}
+.hero h1{font-size:clamp(34px,7vw,50px);font-weight:800;line-height:.92;letter-spacing:-1.5px;margin-bottom:16px;}
+.hero h1 em{font-style:normal;color:var(--ac);}
+.hero-sub{font-size:15px;color:var(--text);line-height:1.7;margin-bottom:12px;}
+.hero-sub strong{color:var(--yellow);font-weight:700;}
+
+/* XP BAR MOCKUP */
+.xp-demo{margin:24px 0 36px;padding:20px;background:var(--s2);border:1px solid var(--border);border-radius:12px;}
+.xp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.xp-user{display:flex;align-items:center;gap:10px;}
+.xp-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,rgba(34,216,124,.2),rgba(250,204,21,.2));display:flex;align-items:center;justify-content:center;font-size:18px;}
+.xp-name{font-size:14px;font-weight:700;}
+.xp-lvl{font-family:var(--m);font-size:10px;color:var(--yellow);background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.2);padding:3px 8px;border-radius:4px;}
+.xp-rank{text-align:right;}
+.xp-rank-n{font-family:var(--m);font-size:18px;font-weight:700;color:var(--ac);line-height:1;}
+.xp-rank-l{font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:1px;}
+.xp-bar-wrap{margin-bottom:10px;}
+.xp-bar-top{display:flex;justify-content:space-between;margin-bottom:4px;}
+.xp-bar-label{font-family:var(--m);font-size:9px;color:var(--dim);}
+.xp-bar-num{font-family:var(--m);font-size:9px;color:var(--yellow);}
+.xp-bar{height:8px;background:var(--mute);border-radius:4px;overflow:hidden;}
+.xp-fill{height:100%;width:68%;background:linear-gradient(90deg,var(--ac),var(--yellow));border-radius:4px;animation:xpGrow 1.5s .5s ease forwards;}
+@keyframes xpGrow{from{width:0;}to{width:68%;}}
+.xp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.xp-stat{text-align:center;padding:8px 4px;background:rgba(255,255,255,.015);border-radius:6px;border:1px solid rgba(255,255,255,.02);}
+.xp-stat-n{font-family:var(--m);font-size:16px;font-weight:700;line-height:1;}
+.xp-stat-l{font-family:var(--m);font-size:7px;color:var(--dim);letter-spacing:.5px;margin-top:2px;}
+.xp-stat:nth-child(1) .xp-stat-n{color:var(--yellow);}
+.xp-stat:nth-child(2) .xp-stat-n{color:var(--ac);}
+.xp-stat:nth-child(3) .xp-stat-n{color:var(--cyan);}
+.xp-stat:nth-child(4) .xp-stat-n{color:var(--purple);}
+
+/* HOW XP WORKS */
+.xp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:24px 0;}
+@media(max-width:500px){.xp-grid{grid-template-columns:1fr;}}
+.xp-item{padding:14px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;gap:12px;}
+.xp-item-icon{font-size:20px;flex-shrink:0;}
+.xp-item-info{flex:1;}
+.xp-item-action{font-size:12px;font-weight:600;}
+.xp-item-pts{font-family:var(--m);font-size:11px;font-weight:700;color:var(--yellow);}
+
+/* BADGES */
+.badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:20px 0 28px;}
+.badge{width:56px;height:56px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--border);background:var(--s2);transition:all .2s;cursor:default;position:relative;}
+.badge:hover{border-color:var(--bh);transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.4);}
+.badge-icon{font-size:20px;}
+.badge-name{font-family:var(--m);font-size:6px;color:var(--dim);letter-spacing:.5px;margin-top:2px;text-align:center;line-height:1.2;}
+.badge.earned{border-color:rgba(250,204,21,.3);background:rgba(250,204,21,.04);}
+.badge.earned .badge-name{color:var(--yellow);}
+.badge.locked{opacity:.35;}
+
+/* LIVE FEED */
+.feed{margin:20px 0 28px;}
+.feed-title{font-family:var(--m);font-size:9px;color:var(--dim);letter-spacing:2px;margin-bottom:10px;}
+.feed-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:12px;color:var(--text);}
+.feed-item:last-child{border-bottom:none;}
+.feed-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.feed-time{font-family:var(--m);font-size:9px;color:var(--mute);margin-left:auto;flex-shrink:0;}
+.fd-y{background:var(--yellow);}.fd-g{background:var(--ac);}.fd-c{background:var(--cyan);}.fd-p{background:var(--purple);}
+
+/* CHALLENGES */
+.challenge{padding:16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;display:flex;align-items:center;gap:14px;}
+.ch-icon{font-size:28px;flex-shrink:0;}
+.ch-info{flex:1;}
+.ch-name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.ch-desc{font-size:11px;color:var(--text);line-height:1.4;}
+.ch-reward{text-align:right;}
+.ch-xp{font-family:var(--m);font-size:14px;font-weight:700;color:var(--yellow);}
+.ch-label{font-family:var(--m);font-size:7px;color:var(--dim);letter-spacing:.5px;}
+.ch-progress{margin-top:6px;width:80px;height:4px;background:var(--mute);border-radius:2px;overflow:hidden;}
+.ch-fill{height:100%;background:var(--ac);border-radius:2px;}
+
+/* SIGNUP */
+.signup{background:var(--s2);border:2px solid rgba(34,216,124,.2);border-radius:14px;padding:28px;margin:32px 0;}
+.signup h2{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;}
+.signup h2 em{font-style:normal;color:var(--ac);}
+.signup>p{font-size:13px;color:var(--text);margin-bottom:20px;line-height:1.5;}
+.field{margin-bottom:12px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:500px){.field-row{grid-template-columns:1fr;}}
+.field label{display:block;font-family:var(--m);font-size:8px;font-weight:700;color:var(--dim);margin-bottom:4px;letter-spacing:1px;}
+.field input,.field select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--s1);color:var(--bright);font-family:var(--d);font-size:13px;outline:none;transition:border-color .15s;}
+.field input:focus,.field select:focus{border-color:var(--ac);}
+.field input::placeholder{color:var(--mute);}
+.field select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath fill='%234E556A' d='M5 7L1 3h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;}
+.sub{width:100%;padding:14px;background:var(--ac);color:#0A0C10;border:none;border-radius:8px;font-family:var(--d);font-weight:800;font-size:16px;cursor:pointer;transition:all .2s;letter-spacing:-.3px;}
+.sub:hover{background:var(--ac2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(34,216,124,.25);}
+.signup-note{font-family:var(--m);font-size:9px;color:var(--mute);text-align:center;margin-top:10px;}
+.signup-bonus{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding:10px;background:rgba(250,204,21,.05);border:1px solid rgba(250,204,21,.15);border-radius:8px;}
+.signup-bonus span{font-family:var(--m);font-size:10px;color:var(--yellow);}
+
+/* SECTION LABELS */
+.sec-label{font-family:var(--m);font-size:9px;letter-spacing:2px;color:var(--dim);margin-bottom:8px;margin-top:36px;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margin-top:20px;}
+.ft-b{font-size:14px;font-weight:800;margin-bottom:2px;}.ft-b em{font-style:normal;color:var(--ac);}
+.ft-s{font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:1.5px;margin-bottom:8px;}
+.ft-l{font-size:9px;color:var(--mute);line-height:1.6;margin-bottom:8px;}
+.ft-links{display:flex;gap:14px;justify-content:center;}
+.ft-links a{font-family:var(--m);font-size:9px;color:var(--dim);text-decoration:none;}.ft-links a:hover{color:var(--ac);}
+
+@keyframes up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.a1{opacity:0;animation:up .4s .1s ease forwards;}
+.a2{opacity:0;animation:up .4s .2s ease forwards;}
+.a3{opacity:0;animation:up .4s .35s ease forwards;}
+.a4{opacity:0;animation:up .4s .5s ease forwards;}
+.a5{opacity:0;animation:up .4s .65s ease forwards;}
+.a6{opacity:0;animation:up .4s .8s ease forwards;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nl">Amusement<span>Rating</span></a>
+  <div class="nav-r">
+    <div class="nav-count">189 riders online</div>
+    <div class="nav-tag">BETA</div>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero a1">
+  <h1>Log. Audit. Rank.<br><em>Repeat.</em></h1>
+  <p class="hero-sub">The gamified platform for coaster enthusiasts who care about how parks <em>actually run</em>. Log rides. Submit verified audits. Earn <strong>XP</strong>. Unlock badges. Climb the board.</p>
+</section>
+
+<!-- XP PROFILE MOCKUP -->
+<div class="xp-demo a2">
+  <div class="xp-top">
+    <div class="xp-user">
+      <div class="xp-avatar">🎢</div>
+      <div>
+        <div class="xp-name">CoasterDave_NJ</div>
+        <div class="xp-lvl">LVL 14</div>
+      </div>
+    </div>
+    <div class="xp-rank">
+      <div class="xp-rank-n">#2</div>
+      <div class="xp-rank-l">GLOBAL RANK</div>
+    </div>
+  </div>
+  <div class="xp-bar-wrap">
+    <div class="xp-bar-top">
+      <div class="xp-bar-label">LEVEL 14 → 15</div>
+      <div class="xp-bar-num">2,847 / 4,200 XP</div>
+    </div>
+    <div class="xp-bar"><div class="xp-fill"></div></div>
+  </div>
+  <div class="xp-stats">
+    <div class="xp-stat"><div class="xp-stat-n">347</div><div class="xp-stat-l">RIDES</div></div>
+    <div class="xp-stat"><div class="xp-stat-n">87</div><div class="xp-stat-l">AUDITS</div></div>
+    <div class="xp-stat"><div class="xp-stat-n">29</div><div class="xp-stat-l">PARKS</div></div>
+    <div class="xp-stat"><div class="xp-stat-n">12</div><div class="xp-stat-l">BADGES</div></div>
+  </div>
+</div>
+
+<!-- HOW YOU EARN XP -->
+<div class="sec-label a3">HOW YOU EARN XP</div>
+<div class="xp-grid a3">
+  <div class="xp-item"><div class="xp-item-icon">🎢</div><div class="xp-item-info"><div class="xp-item-action">Log a ride</div></div><div class="xp-item-pts">+5 XP</div></div>
+  <div class="xp-item"><div class="xp-item-icon">🆕</div><div class="xp-item-info"><div class="xp-item-action">First time on a ride</div></div><div class="xp-item-pts">+15 XP</div></div>
+  <div class="xp-item"><div class="xp-item-icon">📋</div><div class="xp-item-info"><div class="xp-item-action">Submit an audit</div></div><div class="xp-item-pts">+50 XP</div></div>
+  <div class="xp-item"><div class="xp-item-icon">🏟️</div><div class="xp-item-info"><div class="xp-item-action">New park visited</div></div><div class="xp-item-pts">+25 XP</div></div>
+  <div class="xp-item"><div class="xp-item-icon">📸</div><div class="xp-item-info"><div class="xp-item-action">Photo evidence</div></div><div class="xp-item-pts">+10 XP</div></div>
+  <div class="xp-item"><div class="xp-item-icon">🔥</div><div class="xp-item-info"><div class="xp-item-action">7-day visit streak</div></div><div class="xp-item-pts">+100 XP</div></div>
+  <div class="xp-item"><div class="xp-item-icon">🎯</div><div class="xp-item-info"><div class="xp-item-action">Complete a challenge</div></div><div class="xp-item-pts">+200 XP</div></div>
+  <div class="xp-item"><div class="xp-item-icon">⬆️</div><div class="xp-item-info"><div class="xp-item-action">Tier promotion</div></div><div class="xp-item-pts">+500 XP</div></div>
+</div>
+
+<!-- BADGES -->
+<div class="sec-label a4">BADGES</div>
+<div class="badges a4">
+  <div class="badge earned"><div class="badge-icon">🎢</div><div class="badge-name">FIRST LOG</div></div>
+  <div class="badge earned"><div class="badge-icon">📋</div><div class="badge-name">FIRST AUDIT</div></div>
+  <div class="badge earned"><div class="badge-icon">🔥</div><div class="badge-name">7-DAY STREAK</div></div>
+  <div class="badge earned"><div class="badge-icon">💯</div><div class="badge-name">100 RIDES</div></div>
+  <div class="badge earned"><div class="badge-icon">🏟️</div><div class="badge-name">10 PARKS</div></div>
+  <div class="badge earned"><div class="badge-icon">🔍</div><div class="badge-name">AUDITOR T2</div></div>
+  <div class="badge earned"><div class="badge-icon">🌟</div><div class="badge-name">AUDITOR T3</div></div>
+  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">500 RIDES</div></div>
+  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">50 PARKS</div></div>
+  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">AUDITOR T5</div></div>
+  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">30-DAY STREAK</div></div>
+  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">ALL 6 AUDITS</div></div>
+  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">NIGHT RIDER</div></div>
+  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">FOUNDING 100</div></div>
+</div>
+
+<!-- LIVE FEED -->
+<div class="sec-label a4">LIVE ACTIVITY</div>
+<div class="feed a4">
+  <div class="feed-item"><div class="feed-dot fd-y"></div><strong>ThrillCollector</strong>&nbsp;logged Millennium Force at Cedar Point<div class="feed-time">2m</div></div>
+  <div class="feed-item"><div class="feed-dot fd-g"></div><strong>CoasterDave_NJ</strong>&nbsp;submitted dispatch audit at Great Adventure<div class="feed-time">4m</div></div>
+  <div class="feed-item"><div class="feed-dot fd-y"></div><strong>RideOrDie908</strong>&nbsp;logged 3 rides at Hersheypark<div class="feed-time">8m</div></div>
+  <div class="feed-item"><div class="feed-dot fd-c"></div><strong>SplashAuditor</strong>&nbsp;unlocked 🏟️ 10 PARKS badge<div class="feed-time">12m</div></div>
+  <div class="feed-item"><div class="feed-dot fd-g"></div><strong>ParkSafety101</strong>&nbsp;submitted restraint check audit at Dorney Park<div class="feed-time">15m</div></div>
+  <div class="feed-item"><div class="feed-dot fd-p"></div><strong>JerseyThrills</strong>&nbsp;reached Level 11<div class="feed-time">22m</div></div>
+  <div class="feed-item"><div class="feed-dot fd-y"></div><strong>DataNerd_ACE</strong>&nbsp;logged El Toro for the 14th time<div class="feed-time">31m</div></div>
+</div>
+
+<!-- SEASONAL CHALLENGES -->
+<div class="sec-label a5">SEASON CHALLENGES · SPRING 2026</div>
+<div class="a5">
+  <div class="challenge">
+    <div class="ch-icon">🌊</div>
+    <div class="ch-info"><div class="ch-name">Opening Day Rush</div><div class="ch-desc">Log rides at 3 different parks during opening weekend</div></div>
+    <div class="ch-reward"><div class="ch-xp">+500</div><div class="ch-label">XP + BADGE</div><div class="ch-progress"><div class="ch-fill" style="width:33%"></div></div></div>
+  </div>
+  <div class="challenge">
+    <div class="ch-icon">📋</div>
+    <div class="ch-info"><div class="ch-name">Full Sweep</div><div class="ch-desc">Submit all 6 audit types at a single park in one visit</div></div>
+    <div class="ch-reward"><div class="ch-xp">+750</div><div class="ch-label">XP + BADGE</div><div class="ch-progress"><div class="ch-fill" style="width:0%"></div></div></div>
+  </div>
+  <div class="challenge">
+    <div class="ch-icon">🔥</div>
+    <div class="ch-info"><div class="ch-name">Iron Streak</div><div class="ch-desc">Log at least one ride every week for 8 consecutive weeks</div></div>
+    <div class="ch-reward"><div class="ch-xp">+1000</div><div class="ch-label">XP + BADGE</div><div class="ch-progress"><div class="ch-fill" style="width:12%"></div></div></div>
+  </div>
+</div>
+
+<!-- SIGNUP -->
+<div class="signup a6" id="join">
+  <h2>Claim your <em>spot.</em></h2>
+  <p>First 100 members get the <strong style="color:var(--yellow)">FOUNDING 100</strong> badge — permanently. It never unlocks again.</p>
+  <div class="field-row">
+    <div class="field"><label>USERNAME</label><input type="text" placeholder="Your handle"></div>
+    <div class="field"><label>EMAIL</label><input type="email" placeholder="you@email.com"></div>
+  </div>
+  <div class="field-row">
+    <div class="field"><label>HOME PARK</label>
+      <select><option value="">Select...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Hersheypark</option><option>Dorney Park</option><option>Knoebels</option><option>Morey's Piers</option><option>Kings Island</option><option>Busch Gardens Williamsburg</option><option>Universal Orlando</option><option>Other</option></select>
+    </div>
+    <div class="field"><label>I WANT TO</label>
+      <select><option value="">Select...</option><option>Log rides + audit parks</option><option>Log rides + browse scores</option><option>Just explore</option></select>
+    </div>
+  </div>
+  <button class="sub" onclick="alert('Welcome to AmusementRating! Check your email for onboarding.')">Join the Beta → Earn 50 XP</button>
+  <div class="signup-bonus"><span>🎁 SIGNUP BONUS: 50 XP + FIRST LOG badge unlocked instantly</span></div>
+  <div class="signup-note">Free forever. 73 of 100 founding spots remaining.</div>
+</div>
+
+<footer>
+  <div class="ft-b">Amusement<em>Rating</em>.org</div>
+  <div class="ft-s">INDEPENDENT · CROWDSOURCED · COMMUNITY-DRIVEN</div>
+  <div class="ft-l">Not affiliated with any park or operator. Scores reflect external observations only.</div>
+  <div class="ft-links"><a href="mailto:hello@amusementrating.org">Contact</a><a href="#">Terms</a><a href="#">Privacy</a></div>
+</footer>
+
+</div>
+</body>
+</html>
