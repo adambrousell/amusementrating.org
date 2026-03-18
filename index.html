@@ -25,29 +25,6 @@ body{font-family:var(--d);background:var(--bg);color:var(--bright);-webkit-font-
 .hero h1 em{font-style:normal;color:var(--ac);}
 .hero-sub{font-size:15px;color:var(--text);line-height:1.7;margin-bottom:12px;}
 .hero-sub strong{color:var(--yellow);font-weight:700;}
-.xp-demo{margin:24px 0 36px;padding:20px;background:var(--s2);border:1px solid var(--border);border-radius:12px;}
-.xp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.xp-user{display:flex;align-items:center;gap:10px;}
-.xp-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,rgba(34,216,124,.2),rgba(250,204,21,.2));display:flex;align-items:center;justify-content:center;font-size:18px;}
-.xp-name{font-size:14px;font-weight:700;}
-.xp-lvl{font-family:var(--m);font-size:10px;color:var(--yellow);background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.2);padding:3px 8px;border-radius:4px;}
-.xp-rank{text-align:right;}
-.xp-rank-n{font-family:var(--m);font-size:18px;font-weight:700;color:var(--ac);line-height:1;}
-.xp-rank-l{font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:1px;}
-.xp-bar-wrap{margin-bottom:10px;}
-.xp-bar-top{display:flex;justify-content:space-between;margin-bottom:4px;}
-.xp-bar-label{font-family:var(--m);font-size:9px;color:var(--dim);}
-.xp-bar-num{font-family:var(--m);font-size:9px;color:var(--yellow);}
-.xp-bar{height:8px;background:var(--mute);border-radius:4px;overflow:hidden;}
-.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ac),var(--yellow));border-radius:4px;transition:width 1.5s cubic-bezier(.4,0,.2,1);}
-.xp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-.xp-stat{text-align:center;padding:8px 4px;background:rgba(255,255,255,.015);border-radius:6px;border:1px solid rgba(255,255,255,.02);}
-.xp-stat-n{font-family:var(--m);font-size:16px;font-weight:700;line-height:1;}
-.xp-stat-l{font-family:var(--m);font-size:7px;color:var(--dim);letter-spacing:.5px;margin-top:2px;}
-.xp-stat:nth-child(1) .xp-stat-n{color:var(--yellow);}
-.xp-stat:nth-child(2) .xp-stat-n{color:var(--ac);}
-.xp-stat:nth-child(3) .xp-stat-n{color:var(--cyan);}
-.xp-stat:nth-child(4) .xp-stat-n{color:var(--purple);}
 .xp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:24px 0;}
 @media(max-width:500px){.xp-grid{grid-template-columns:1fr;}}
 .xp-item{padding:14px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;gap:12px;opacity:0;transform:translateX(-20px);transition:all .4s ease;}
@@ -179,34 +156,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
   <p class="hero-sub">The gamified platform for coaster enthusiasts who care about how parks <em>actually run</em>. Log rides. Submit verified audits. Earn <strong>XP</strong>. Unlock badges. Climb the board.</p>
 </section>
 
-<div class="xp-demo a2">
-  <div class="xp-top">
-    <div class="xp-user">
-      <div class="xp-avatar">🎢</div>
-      <div>
-        <div class="xp-name">CoasterDave_NJ</div>
-        <div class="xp-lvl">LVL 14</div>
-      </div>
-    </div>
-    <div class="xp-rank">
-      <div class="xp-rank-n">#2</div>
-      <div class="xp-rank-l">GLOBAL RANK</div>
-    </div>
-  </div>
-  <div class="xp-bar-wrap">
-    <div class="xp-bar-top">
-      <div class="xp-bar-label">LEVEL 14 → 15</div>
-      <div class="xp-bar-num">2,847 / 4,200 XP</div>
-    </div>
-    <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
-  </div>
-  <div class="xp-stats">
-    <div class="xp-stat"><div class="xp-stat-n" data-target="347">0</div><div class="xp-stat-l">RIDES</div></div>
-    <div class="xp-stat"><div class="xp-stat-n" data-target="87">0</div><div class="xp-stat-l">AUDITS</div></div>
-    <div class="xp-stat"><div class="xp-stat-n" data-target="29">0</div><div class="xp-stat-l">PARKS</div></div>
-    <div class="xp-stat"><div class="xp-stat-n" data-target="12">0</div><div class="xp-stat-l">BADGES</div></div>
-  </div>
-</div>
+
 
 <div class="sec-label a3">HOW YOU EARN XP</div>
 <div class="xp-grid a3" id="xp-grid">
@@ -278,12 +228,12 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
       <a href="https://themeparks.wiki/" target="_blank" rel="noopener" style="font-family:var(--m);font-size:9px;color:var(--cyan);text-decoration:none;">ThemeParks.wiki</a>
     </div>
   </div>
-  <div class="ft-links"><a href="mailto:hello@amusementrating.org">Contact</a><a href="#">Terms</a><a href="#">Privacy</a></div>
+  <div class="ft-links"><a href="/cdn-cgi/l/email-protection#afc7cac3c3c0efcec2dadccac2cac1dbddcedbc6c1c881c0ddc8">Contact</a><a href="#">Terms</a><a href="#">Privacy</a></div>
 </footer>
 
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 var SIGNUP_URL='https://ar-signup.amusementstandards.workers.dev';
 var PARKS_URL='https://ar-parks.amusementstandards.workers.dev';
 var LB_URL='https://ar-leaderboard.amusementstandards.workers.dev';
@@ -298,24 +248,6 @@ document.getElementById('login-btn').onclick=function(){
   n.style.color='var(--yellow)';
 };
 
-// === COUNT-UP ANIMATION ===
-function countUp(){
-  document.querySelectorAll('[data-target]').forEach(function(el){
-    var target=parseInt(el.getAttribute('data-target'));
-    var dur=1400,st=null;
-    function step(ts){
-      if(!st)st=ts;
-      var p=Math.min((ts-st)/dur,1);
-      var e=1-Math.pow(1-p,3);
-      el.textContent=Math.floor(e*target);
-      if(p<1)requestAnimationFrame(step);else el.textContent=target;
-    }
-    requestAnimationFrame(step);
-  });
-}
-
-// === XP BAR ===
-function animateBar(){setTimeout(function(){document.getElementById('xp-fill').style.width='68%';},600);}
 
 // === XP GRID SCROLL-IN ===
 function initXPObs(){
@@ -450,8 +382,6 @@ document.getElementById('signup-btn').addEventListener('click',async function(){
   loadParks();
   loadLB();
   renderFeed(seedFeed);
-  countUp();
-  animateBar();
   initXPObs();
 })();
 </script>
