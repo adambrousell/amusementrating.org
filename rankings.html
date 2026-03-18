@@ -239,167 +239,23 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 
 <div class="rewards-header">
 <h2>Rewards <em>Shop</em></h2>
-<p>Your XP unlocks access to exclusive merch at discounted prices. The more you audit, the better the gear — and the lower the price.</p>
+<p>Your XP unlocks access to exclusive merch at auditor-only prices. The more you audit, the better the gear — and the lower the price. XP is <strong style="color:var(--yellow)">never spent</strong> — it stays on your leaderboard.</p>
 <div class="your-xp">
 <span class="your-xp-num" id="your-xp">—</span>
 <span class="your-xp-label">YOUR XP</span>
 </div>
 </div>
 
-<div class="tiers">
+<div class="tiers" id="rewards-tiers"></div>
 
-<!-- Tier 1 -->
-<div class="tier">
-<div class="tier-header" onclick="toggleTier(this)">
-<div class="tier-badge t1">🌱</div>
-<div class="tier-info">
-<div class="tier-name">Starter Tier</div>
-<div class="tier-req">100 XP required · 2 ride logs or 1 audit</div>
+<div style="text-align:center;margin-top:24px;padding:16px;background:var(--s2);border:1px solid var(--border);border-radius:10px">
+<div style="font-size:11px;color:var(--text);line-height:1.7;margin-bottom:8px">
+XP unlocks access to purchase — it is <strong style="color:var(--bright)">never spent or deducted</strong> from your leaderboard total.<br>
+Your XP stays on the board. Your merch stays on you. All items ship via Printful.
 </div>
-<span class="tier-status unlocked" id="tier1-status">✓ UNLOCKED</span>
+<div style="font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:.5px">
+Prices include production. Shipping calculated at checkout. NJ sales tax applies where required.
 </div>
-<div class="tier-items" id="tier1-items">
-<div class="merch-item">
-<div class="mi-icon">🏷️</div>
-<div class="mi-name">AR Sticker Pack</div>
-<div class="mi-prices"><span class="mi-orig">$8</span><span class="mi-price">$5</span></div>
-<div class="mi-tag">37% OFF</div>
-<button class="mi-btn soon">COMING SOON</button>
-</div>
-<div class="merch-item">
-<div class="mi-icon">📌</div>
-<div class="mi-name">Enamel Pin — "I Audit Parks"</div>
-<div class="mi-prices"><span class="mi-orig">$10</span><span class="mi-price">$7</span></div>
-<div class="mi-tag">30% OFF</div>
-<button class="mi-btn soon">COMING SOON</button>
-</div>
-</div>
-</div>
-
-<!-- Tier 2 -->
-<div class="tier">
-<div class="tier-header" onclick="toggleTier(this)">
-<div class="tier-badge t2">🔍</div>
-<div class="tier-info">
-<div class="tier-name">Observer Tier</div>
-<div class="tier-req">250 XP required · ~5 audits</div>
-</div>
-<span class="tier-status locked" id="tier2-status">🔒 250 XP</span>
-</div>
-<div class="tier-items" id="tier2-items" style="display:none">
-<div class="merch-item">
-<div class="mi-icon">🧢</div>
-<div class="mi-name">AR Snapback Hat</div>
-<div class="mi-prices"><span class="mi-orig">$24</span><span class="mi-price">$16</span></div>
-<div class="mi-tag">33% OFF · OBSERVER EXCLUSIVE</div>
-<button class="mi-btn soon">COMING SOON</button>
-</div>
-<div class="merch-item">
-<div class="mi-icon">🎒</div>
-<div class="mi-name">Patch + Pin Set</div>
-<div class="mi-prices"><span class="mi-orig">$16</span><span class="mi-price">$12</span></div>
-<div class="mi-tag">25% OFF</div>
-<button class="mi-btn soon">COMING SOON</button>
-</div>
-</div>
-</div>
-
-<!-- Tier 3 -->
-<div class="tier">
-<div class="tier-header" onclick="toggleTier(this)">
-<div class="tier-badge t3">⭐</div>
-<div class="tier-info">
-<div class="tier-name">Auditor Tier</div>
-<div class="tier-req">500 XP required · ~10 audits</div>
-</div>
-<span class="tier-status locked" id="tier3-status">🔒 500 XP</span>
-</div>
-<div class="tier-items" id="tier3-items" style="display:none">
-<div class="merch-item">
-<div class="mi-icon">👕</div>
-<div class="mi-name">AR Logo Tee — Black</div>
-<div class="mi-prices"><span class="mi-orig">$28</span><span class="mi-price">$20</span></div>
-<div class="mi-tag">28% OFF · AUDITOR EXCLUSIVE</div>
-<button class="mi-btn soon">COMING SOON</button>
-</div>
-<div class="merch-item">
-<div class="mi-icon">🧃</div>
-<div class="mi-name">AR Water Bottle — 24oz</div>
-<div class="mi-prices"><span class="mi-orig">$22</span><span class="mi-price">$15</span></div>
-<div class="mi-tag">32% OFF</div>
-<button class="mi-btn soon">COMING SOON</button>
-</div>
-<div class="merch-item">
-<div class="mi-icon">👕</div>
-<div class="mi-name">"Log. Audit. Rank. Repeat." Tee</div>
-<div class="mi-prices"><span class="mi-orig">$30</span><span class="mi-price">$22</span></div>
-<div class="mi-tag">26% OFF</div>
-<button class="mi-btn soon">COMING SOON</button>
-</div>
-</div>
-</div>
-
-<!-- Tier 4 -->
-<div class="tier">
-<div class="tier-header" onclick="toggleTier(this)">
-<div class="tier-badge t4">🔮</div>
-<div class="tier-info">
-<div class="tier-name">Expert Tier</div>
-<div class="tier-req">1,000 XP required · serious auditors only</div>
-</div>
-<span class="tier-status locked" id="tier4-status">🔒 1,000 XP</span>
-</div>
-<div class="tier-items" id="tier4-items" style="display:none">
-<div class="merch-item">
-<div class="mi-icon">🧥</div>
-<div class="mi-name">AR Pullover Hoodie</div>
-<div class="mi-prices"><span class="mi-orig">$50</span><span class="mi-price">$35</span></div>
-<div class="mi-tag">30% OFF · EXPERT EXCLUSIVE</div>
-<button class="mi-btn soon">COMING SOON</button>
-</div>
-<div class="merch-item">
-<div class="mi-icon">🎽</div>
-<div class="mi-name">AR Windbreaker</div>
-<div class="mi-prices"><span class="mi-orig">$65</span><span class="mi-price">$45</span></div>
-<div class="mi-tag">30% OFF · EXPERT EXCLUSIVE</div>
-<button class="mi-btn soon">COMING SOON</button>
-</div>
-</div>
-</div>
-
-<!-- Tier 5 -->
-<div class="tier">
-<div class="tier-header" onclick="toggleTier(this)">
-<div class="tier-badge t5">💎</div>
-<div class="tier-info">
-<div class="tier-name">Founding Tier</div>
-<div class="tier-req">2,500 XP required · top of the leaderboard</div>
-</div>
-<span class="tier-status locked" id="tier5-status">🔒 2,500 XP</span>
-</div>
-<div class="tier-items" id="tier5-items" style="display:none">
-<div class="merch-item">
-<div class="mi-icon">🧥</div>
-<div class="mi-name">Limited Edition AR Jacket</div>
-<div class="mi-prices"><span class="mi-price">$55</span></div>
-<div class="mi-tag">💎 ONLY AT 2,500 XP · NOT SOLD ANYWHERE</div>
-<button class="mi-btn soon">COMING SOON</button>
-</div>
-<div class="merch-item">
-<div class="mi-icon">🏅</div>
-<div class="mi-name">Physical Founding Badge</div>
-<div class="mi-prices"><span class="mi-price">FREE</span></div>
-<div class="mi-tag">💎 SHIPS TO YOU · FOUNDING 100 ONLY</div>
-<button class="mi-btn soon">COMING SOON</button>
-</div>
-</div>
-</div>
-
-</div>
-
-<div style="text-align:center;margin-top:20px;font-size:11px;color:var(--dim);line-height:1.7">
-XP unlocks access to purchase — it is <strong style="color:var(--text)">never spent or deducted</strong> from your leaderboard total.<br>
-Your XP stays on the board. Your merch stays on you.
 </div>
 
 </div>
@@ -448,27 +304,129 @@ function showTab(t){
 // Toggle tier accordion
 function toggleTier(header){
   var items=header.nextElementSibling;
+  if(!items||!items.classList.contains('tier-items'))return;
   items.style.display=items.style.display==='none'?'grid':'none';
 }
 
-// Load user XP for rewards
+// ═══════════ REWARDS SHOP DATA ═══════════
+// PRINTFUL STORE CONFIG
+// ─────────────────────────────────────────
+// 1. Create your Quick Store at https://www.printful.com/quick-stores
+// 2. Store name suggestion: "amusementrating"
+//    → URL becomes: https://amusementrating.printful.me
+// 3. Add products, set retail prices (auditor prices below)
+// 4. Copy each product's URL and paste into the 'url' field below
+// 5. Set 'live' to true once the product is published
+// ─────────────────────────────────────────
+var STORE_BASE='https://amusementrating.printful.me';
+var MERCH_TIERS=[
+  {
+    name:'Starter Tier',emoji:'🌱',badge:'t1',xp:100,
+    req:'100 XP · 2 ride logs or 1 audit',
+    items:[
+      {icon:'🏷️',name:'AR Sticker Pack (5ct)',orig:'$8',price:'$5',tag:'37% OFF',url:STORE_BASE+'/product/ar-sticker-pack',live:false},
+      {icon:'📌',name:'Enamel Pin — "I Audit Parks"',orig:'$10',price:'$7',tag:'30% OFF',url:STORE_BASE+'/product/i-audit-parks-pin',live:false}
+    ]
+  },
+  {
+    name:'Observer Tier',emoji:'🔍',badge:'t2',xp:250,
+    req:'250 XP · ~5 audits',
+    items:[
+      {icon:'🧢',name:'AR Snapback Hat — Black',orig:'$28',price:'$18',tag:'35% OFF · OBSERVER ONLY',url:STORE_BASE+'/product/ar-snapback-black',live:false},
+      {icon:'🎒',name:'Patch + Pin Set',orig:'$16',price:'$12',tag:'25% OFF',url:STORE_BASE+'/product/patch-pin-set',live:false}
+    ]
+  },
+  {
+    name:'Auditor Tier',emoji:'⭐',badge:'t3',xp:500,
+    req:'500 XP · ~10 audits',
+    items:[
+      {icon:'👕',name:'AR Logo Tee — Black',orig:'$28',price:'$20',tag:'28% OFF · AUDITOR ONLY',url:STORE_BASE+'/product/ar-logo-tee-black',live:false},
+      {icon:'🧃',name:'AR Water Bottle — 24oz',orig:'$22',price:'$15',tag:'32% OFF',url:STORE_BASE+'/product/ar-water-bottle',live:false},
+      {icon:'👕',name:'"Log. Audit. Rank. Repeat." Tee',orig:'$30',price:'$22',tag:'26% OFF',url:STORE_BASE+'/product/log-audit-rank-repeat-tee',live:false}
+    ]
+  },
+  {
+    name:'Expert Tier',emoji:'🔮',badge:'t4',xp:1000,
+    req:'1,000 XP · serious auditors only',
+    items:[
+      {icon:'🧥',name:'AR Pullover Hoodie',orig:'$50',price:'$35',tag:'30% OFF · EXPERT ONLY',url:STORE_BASE+'/product/ar-pullover-hoodie',live:false},
+      {icon:'🎽',name:'AR Windbreaker — Black/Green',orig:'$65',price:'$45',tag:'30% OFF · EXPERT ONLY',url:STORE_BASE+'/product/ar-windbreaker',live:false}
+    ]
+  },
+  {
+    name:'Founding Tier',emoji:'💎',badge:'t5',xp:2500,
+    req:'2,500 XP · top of the leaderboard',
+    items:[
+      {icon:'🧥',name:'Limited Edition AR Jacket',orig:null,price:'$55',tag:'💎 ONLY AT 2,500 XP · NOT SOLD ANYWHERE',url:STORE_BASE+'/product/limited-ar-jacket',live:false},
+      {icon:'🏅',name:'Physical Founding Badge',orig:null,price:'FREE',tag:'💎 SHIPS TO YOU · FOUNDING 100 ONLY',url:STORE_BASE+'/product/founding-badge',live:false}
+    ]
+  }
+];
+
+function renderRewardsShop(){
+  var container=document.getElementById('rewards-tiers');
+  var h='';
+  MERCH_TIERS.forEach(function(tier,ti){
+    var unlocked=userXP>=tier.xp;
+    var isFirst=ti===0;
+    h+='<div class="tier">';
+    h+='<div class="tier-header" onclick="toggleTier(this)">';
+    h+='<div class="tier-badge '+tier.badge+'">'+tier.emoji+'</div>';
+    h+='<div class="tier-info"><div class="tier-name">'+tier.name+'</div>';
+    h+='<div class="tier-req">'+tier.req+'</div></div>';
+    if(unlocked){
+      h+='<span class="tier-status unlocked">✓ UNLOCKED</span>';
+    }else{
+      var needed=tier.xp-userXP;
+      h+='<span class="tier-status locked">🔒 '+needed.toLocaleString()+' XP to go</span>';
+    }
+    h+='</div>';
+
+    // Items — expanded by default if unlocked and first unlocked tier, or first tier
+    var showItems=isFirst||unlocked;
+    h+='<div class="tier-items" style="display:'+(showItems?'grid':'none')+'">';
+    tier.items.forEach(function(item){
+      var itemLocked=!unlocked;
+      h+='<div class="merch-item'+(itemLocked?' locked-item':'')+'">';
+      h+='<div class="mi-icon">'+item.icon+'</div>';
+      h+='<div class="mi-name">'+item.name+'</div>';
+      h+='<div class="mi-prices">';
+      if(item.orig)h+='<span class="mi-orig">'+item.orig+'</span>';
+      h+='<span class="mi-price">'+item.price+'</span>';
+      h+='</div>';
+      h+='<div class="mi-tag">'+item.tag+'</div>';
+
+      if(itemLocked){
+        h+='<button class="mi-btn soon">🔒 EARN '+(tier.xp).toLocaleString()+' XP</button>';
+      }else if(!item.live){
+        h+='<button class="mi-btn soon">COMING SOON</button>';
+      }else{
+        h+='<a href="'+item.url+'" target="_blank" rel="noopener" class="mi-btn">BUY ON STORE →</a>';
+      }
+      h+='</div>';
+    });
+    h+='</div>';
+    h+='</div>';
+  });
+  container.innerHTML=h;
+}
+
+// Load user XP for rewards + leaderboard highlight
 async function loadUserXP(){
-  if(!username)return;
+  if(!username){
+    document.getElementById('your-xp').textContent='0';
+    renderRewardsShop();
+    return;
+  }
   try{
     var r=await fetch(PROFILE_URL+'?u='+encodeURIComponent(username));
     var d=await r.json();
     if(d.user){
       userXP=d.user.xp||0;
       document.getElementById('your-xp').textContent=userXP.toLocaleString();
-      // Update tier statuses
-      var thresholds=[100,250,500,1000,2500];
-      thresholds.forEach(function(t,i){
-        var el=document.getElementById('tier'+(i+1)+'-status');
-        if(userXP>=t){el.textContent='✓ UNLOCKED';el.className='tier-status unlocked';}
-        else{el.textContent='🔒 '+t.toLocaleString()+' XP';el.className='tier-status locked';}
-      });
     }
   }catch(e){}
+  renderRewardsShop();
 }
 
 // Load leaderboard
