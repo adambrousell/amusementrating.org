@@ -626,8 +626,7 @@ function startAudit(){
   var park=document.getElementById('audit-park').value;
   var type=document.getElementById('audit-type').value;
   if(!park||!type){alert('Select park and audit type');return;}
-  // TODO: redirect to audit checklist page
-  alert('Audit checklist for '+type+' at '+park+' coming soon! This will be a dedicated page with the full observation checklist.');
+  window.location.href='audit.html?park='+encodeURIComponent(park)+'&type='+encodeURIComponent(type);
 }
 
 // === COASTER-COUNT IMPORT ===
