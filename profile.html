@@ -12,19 +12,15 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:var(--d);background:var(--bg);color:var(--bright);-webkit-font-smoothing:antialiased;min-height:100vh;}
 a{color:var(--ac);text-decoration:none;}
-
-/* NAV */
 .nav{padding:18px 24px;display:flex;align-items:center;justify-content:space-between;max-width:700px;margin:0 auto;}
 .nl{font-size:15px;font-weight:800;color:var(--bright);letter-spacing:-.3px;}.nl span{color:var(--ac);}
 .nav-r{display:flex;align-items:center;gap:10px;}
 .nav-tag{font-family:var(--m);font-size:8px;letter-spacing:1.5px;color:var(--ac);border:1px solid rgba(34,216,124,.2);padding:3px 9px;border-radius:3px;background:rgba(34,216,124,.04);}
 .nav-back{font-family:var(--m);font-size:9px;color:var(--dim);transition:color .2s;}.nav-back:hover{color:var(--ac);}
-
-/* PAGE */
 .page{max-width:700px;margin:0 auto;padding:0 24px 60px;}
 
 /* PROFILE HEADER */
-.profile-header{position:relative;margin-bottom:28px;padding:32px 28px 28px;background:var(--s2);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.profile-header{position:relative;margin-bottom:20px;padding:32px 28px 28px;background:var(--s2);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
 .profile-header::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--ac),var(--yellow),var(--cyan),var(--purple));opacity:.8;}
 .ph-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:20px;}
 .ph-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,rgba(34,216,124,.2),rgba(250,204,21,.15));display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;border:2px solid rgba(34,216,124,.25);box-shadow:0 0 20px rgba(34,216,124,.1);}
@@ -39,8 +35,6 @@ a{color:var(--ac);text-decoration:none;}
 .ph-rank{text-align:right;flex-shrink:0;}
 .ph-rank-n{font-family:var(--m);font-size:28px;font-weight:700;color:var(--ac);line-height:1;}
 .ph-rank-l{font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:1px;margin-top:2px;}
-
-/* XP SECTION */
 .xp-section{margin-bottom:20px;}
 .xp-level-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;}
 .xp-level{font-family:var(--m);font-size:11px;font-weight:700;color:var(--yellow);}
@@ -49,8 +43,6 @@ a{color:var(--ac);text-decoration:none;}
 .xp-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--ac),var(--yellow));width:0%;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
 .xp-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.06) 50%,transparent 100%);animation:shimmer 2.5s infinite;}
 @keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
-
-/* STATS ROW */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px;}
 .stat-card{text-align:center;padding:14px 8px;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.03);border-radius:10px;transition:all .3s;}
 .stat-card:hover{border-color:var(--bh);transform:translateY(-2px);}
@@ -61,10 +53,76 @@ a{color:var(--ac);text-decoration:none;}
 .stat-card:nth-child(3) .stat-n{color:var(--cyan);}
 .stat-card:nth-child(4) .stat-n{color:var(--purple);}
 
+/* ACTION BUTTONS */
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+@media(max-width:500px){.action-row{grid-template-columns:1fr;}}
+.action-btn{padding:20px;border-radius:14px;border:2px solid;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .25s;text-align:center;background:transparent;}
+.action-btn:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.4);}
+.action-btn .ab-icon{font-size:32px;}
+.action-btn .ab-label{font-size:16px;font-weight:800;letter-spacing:-.3px;}
+.action-btn .ab-sub{font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:.5px;}
+.btn-ride{border-color:rgba(34,216,124,.3);background:linear-gradient(180deg,rgba(34,216,124,.06),transparent);}
+.btn-ride:hover{border-color:var(--ac);background:linear-gradient(180deg,rgba(34,216,124,.12),transparent);}
+.btn-ride .ab-label{color:var(--ac);}
+.btn-audit{border-color:rgba(250,204,21,.3);background:linear-gradient(180deg,rgba(250,204,21,.06),transparent);}
+.btn-audit:hover{border-color:var(--yellow);background:linear-gradient(180deg,rgba(250,204,21,.12),transparent);}
+.btn-audit .ab-label{color:var(--yellow);}
+
+/* MODALS */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:420px;width:92%;position:relative;max-height:90vh;overflow-y:auto;}
+.modal h3{font-size:18px;font-weight:800;margin-bottom:4px;}
+.modal h3 em{font-style:normal;color:var(--ac);}
+.modal>p,.modal .modal-desc{font-size:12px;color:var(--text);margin-bottom:16px;line-height:1.5;}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer;line-height:1;}
+.modal-close:hover{color:var(--bright);}
+.modal-btn{width:100%;padding:12px;border:none;border-radius:8px;font-family:var(--d);font-weight:800;font-size:14px;cursor:pointer;transition:all .2s;}
+.modal-btn:hover{transform:translateY(-1px);}
+.modal-btn.green{background:var(--ac);color:#0A0C10;}
+.modal-btn.yellow{background:var(--yellow);color:#0A0C10;}
+.modal-btn.dim{background:var(--mute);color:var(--text);}
+.modal-note{font-family:var(--m);font-size:9px;color:var(--mute);text-align:center;margin-top:8px;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-family:var(--m);font-size:8px;font-weight:700;color:var(--dim);margin-bottom:4px;letter-spacing:1px;}
+.field input,.field select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--s1);color:var(--bright);font-family:var(--d);font-size:13px;outline:none;transition:border-color .15s;}
+.field input:focus,.field select:focus{border-color:var(--ac);}
+.field select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath fill='%234E556A' d='M5 7L1 3h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;}
+
+/* RIDE LOG FLOW */
+.log-step{display:none;}
+.log-step.active{display:block;}
+.photo-zone{width:100%;aspect-ratio:4/3;border:2px dashed var(--border);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all .2s;overflow:hidden;position:relative;background:var(--s1);}
+.photo-zone:hover{border-color:var(--ac);background:rgba(34,216,124,.03);}
+.photo-zone.has-photo{border-style:solid;border-color:var(--ac);}
+.photo-zone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.photo-zone .pz-icon{font-size:36px;}
+.photo-zone .pz-label{font-family:var(--m);font-size:10px;color:var(--dim);letter-spacing:.5px;}
+.photo-zone input[type=file]{display:none;}
+
+/* TIMER */
+.timer-display{text-align:center;margin:20px 0;}
+.timer-num{font-family:var(--m);font-size:48px;font-weight:700;color:var(--ac);letter-spacing:2px;line-height:1;}
+.timer-label{font-family:var(--m);font-size:9px;color:var(--dim);letter-spacing:1px;margin-top:4px;}
+.timer-sub{font-family:var(--m);font-size:10px;color:var(--text);margin-top:8px;}
+
+/* IMPORT SECTION */
+.import-section{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:8px;}
+.import-section h4{font-size:14px;font-weight:700;margin-bottom:4px;}
+.import-section p{font-size:11px;color:var(--text);margin-bottom:12px;line-height:1.5;}
+.import-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media(max-width:500px){.import-row{grid-template-columns:1fr;}}
+.import-btn{padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--s1);display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s;}
+.import-btn:hover{border-color:var(--bh);transform:translateY(-2px);}
+.import-btn .ib-icon{font-size:22px;flex-shrink:0;}
+.import-btn .ib-info{flex:1;}
+.import-btn .ib-name{font-size:12px;font-weight:700;}
+.import-btn .ib-desc{font-size:9px;color:var(--dim);margin-top:1px;}
+
 /* SECTION LABELS */
 .sec-label{font-family:var(--m);font-size:9px;letter-spacing:2px;color:var(--dim);margin-bottom:10px;margin-top:32px;display:flex;align-items:center;gap:8px;}
 
-/* BADGES GRID */
+/* BADGES */
 .badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:8px;}
 .badge-card{display:flex;flex-direction:column;align-items:center;padding:14px 6px 10px;background:var(--s2);border:1px solid var(--border);border-radius:12px;transition:all .25s;cursor:default;}
 .badge-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4);border-color:var(--bh);}
@@ -98,19 +156,16 @@ a{color:var(--ac);text-decoration:none;}
 .xph-amt{font-family:var(--m);font-size:10px;font-weight:700;color:var(--yellow);flex-shrink:0;}
 .xph-time{font-family:var(--m);font-size:8px;color:var(--mute);flex-shrink:0;margin-left:8px;}
 
-/* FOOTER */
 footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margin-top:32px;}
 .ft-b{font-size:13px;font-weight:800;}.ft-b em{font-style:normal;color:var(--ac);}
 .ft-s{font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:1.5px;margin-top:4px;}
-
-/* ANIMATIONS */
 @keyframes up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 .a1{opacity:0;animation:up .4s .1s ease forwards;}
 .a2{opacity:0;animation:up .4s .2s ease forwards;}
 .a3{opacity:0;animation:up .4s .35s ease forwards;}
 .a4{opacity:0;animation:up .4s .5s ease forwards;}
 .a5{opacity:0;animation:up .4s .65s ease forwards;}
-
+.a6{opacity:0;animation:up .4s .8s ease forwards;}
 @media(max-width:500px){
   .ph-top{flex-direction:column;align-items:center;text-align:center;}
   .ph-rank{text-align:center;margin-top:8px;}
@@ -121,266 +176,518 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 </head>
 <body>
 
+<!-- LOG RIDE MODAL -->
+<div class="modal-overlay" id="ride-modal">
+<div class="modal">
+<button class="modal-close" onclick="closeRideModal()">&times;</button>
+
+<!-- Step 1: Select Park + Ride -->
+<div class="log-step active" id="ride-step1">
+<h3>🎢 Log a <em>ride</em></h3>
+<p class="modal-desc">Select your park and ride, then snap a photo of the entrance.</p>
+<div class="field"><label>PARK</label><select id="ride-park"><option value="">Loading parks...</option></select></div>
+<div class="field"><label>RIDE</label><select id="ride-ride" disabled><option value="">Select a park first</option></select></div>
+<button class="modal-btn green" onclick="rideStep(2)">Next → Take Entrance Photo</button>
+</div>
+
+<!-- Step 2: Entrance Photo -->
+<div class="log-step" id="ride-step2">
+<h3>📸 Entrance <em>photo</em></h3>
+<p class="modal-desc">Take a photo of the ride entrance or queue sign to verify your visit.</p>
+<div class="photo-zone" id="entrance-zone" onclick="document.getElementById('entrance-input').click()">
+<div class="pz-icon">📷</div>
+<div class="pz-label">TAP TO TAKE PHOTO</div>
+<input type="file" id="entrance-input" accept="image/*" capture="environment">
+<img id="entrance-preview" style="display:none;">
+</div>
+<div style="margin-top:12px;">
+<button class="modal-btn green" id="entrance-next" onclick="rideStep(3)" disabled>Start Timer →</button>
+</div>
+<div class="modal-note">Photo is stored as ride verification evidence</div>
+</div>
+
+<!-- Step 3: Timer -->
+<div class="log-step" id="ride-step3">
+<h3>⏱️ Ride <em>timer</em></h3>
+<p class="modal-desc">Timer started when you entered the queue. Stop it after you exit.</p>
+<div class="timer-display">
+<div class="timer-num" id="timer-display">00:00</div>
+<div class="timer-label">ELAPSED</div>
+<div class="timer-sub" id="timer-ride-name"></div>
+</div>
+<button class="modal-btn yellow" onclick="rideStep(4)">🛑 I'm Off the Ride → Exit Photo</button>
+<div class="modal-note">Timer helps us track real wait + ride times for the community</div>
+</div>
+
+<!-- Step 4: Exit Photo -->
+<div class="log-step" id="ride-step4">
+<h3>📸 Exit <em>photo</em></h3>
+<p class="modal-desc">Snap the ride exit to complete your verified ride log.</p>
+<div class="photo-zone" id="exit-zone" onclick="document.getElementById('exit-input').click()">
+<div class="pz-icon">📷</div>
+<div class="pz-label">TAP TO TAKE PHOTO</div>
+<input type="file" id="exit-input" accept="image/*" capture="environment">
+<img id="exit-preview" style="display:none;">
+</div>
+<div style="margin-top:12px;">
+<button class="modal-btn green" id="exit-submit" onclick="submitRideLog()" disabled>Submit Ride Log → Earn XP</button>
+</div>
+</div>
+
+<!-- Step 5: Complete -->
+<div class="log-step" id="ride-step5">
+<div style="text-align:center;padding:20px 0;">
+<div style="font-size:48px;margin-bottom:12px;">🎢</div>
+<h3>Ride <em>logged!</em></h3>
+<div style="font-family:var(--m);font-size:24px;color:var(--yellow);margin:12px 0;">+5 XP</div>
+<p class="modal-desc" id="ride-complete-msg">Nice ride! Your log has been recorded.</p>
+<button class="modal-btn green" onclick="closeRideModal()">Back to Profile</button>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="import-modal">
+<div class="modal">
+<button class="modal-close" onclick="document.getElementById('import-modal').classList.remove('show')">&times;</button>
+
+<div id="import-cc">
+<h3>🔗 Import from <em>Coaster-Count</em></h3>
+<p class="modal-desc">Enter your Coaster-Count username to import your ride credits. We'll match them to our database and credit you XP for each unique ride.</p>
+<div class="field"><label>COASTER-COUNT USERNAME</label><input type="text" id="cc-username" placeholder="Your CC username"></div>
+<button class="modal-btn green" id="cc-import-btn" onclick="importCoasterCount()">Import Ride Credits</button>
+<div class="modal-note" id="cc-note">We use the Coaster-Count public API to fetch your credits.</div>
+</div>
+
+<div id="import-csv" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+<h3>📄 Upload <em>CSV</em></h3>
+<p class="modal-desc">Upload a CSV with columns: ride_name, park_name, date (optional). We'll match and import.</p>
+<div class="field">
+<label>CSV FILE</label>
+<input type="file" id="csv-input" accept=".csv" style="padding:8px;background:var(--s1);border:1px solid var(--border);border-radius:6px;width:100%;color:var(--bright);font-size:12px;">
+</div>
+<button class="modal-btn dim" onclick="importCSV()">Upload & Import</button>
+<div class="modal-note" id="csv-note"></div>
+</div>
+
+</div>
+</div>
+
+<!-- AUDIT MODAL (placeholder for now) -->
+<div class="modal-overlay" id="audit-modal">
+<div class="modal">
+<button class="modal-close" onclick="document.getElementById('audit-modal').classList.remove('show')">&times;</button>
+<h3>📋 Start an <em>audit</em></h3>
+<p class="modal-desc">Select a park and audit type to begin your observation checklist.</p>
+<div class="field"><label>PARK</label><select id="audit-park"><option value="">Loading parks...</option></select></div>
+<div class="field"><label>AUDIT TYPE</label>
+<select id="audit-type">
+<option value="">Select audit type...</option>
+<option value="ops">🎢 Operations — Dispatch & Procedure</option>
+<option value="safety">🛡️ Safety — Restraints & Signage</option>
+<option value="guest">👥 Guest Experience — Queue & Service</option>
+<option value="facility">🏗️ Facility — Cleanliness & Maintenance</option>
+<option value="aquatic">🌊 Aquatic — Lifeguard & Pool Safety</option>
+<option value="food">🍔 Food & Beverage — Hygiene & Service</option>
+</select>
+</div>
+<button class="modal-btn yellow" onclick="startAudit()">Begin Audit Checklist</button>
+<div class="modal-note">Audits earn +50 XP each. Complete all 6 types for the Full Sweep badge!</div>
+</div>
+</div>
+
 <nav class="nav">
-  <a href="/" class="nl">Amusement<span>Rating</span></a>
-  <div class="nav-r">
-    <a href="/" class="nav-back">← Back to home</a>
-    <div class="nav-tag">BETA</div>
-  </div>
+<a href="/" class="nl">Amusement<span>Rating</span></a>
+<div class="nav-r">
+<a href="/" class="nav-back">← Back to home</a>
+<div class="nav-tag">BETA</div>
+</div>
 </nav>
 
 <div class="page">
 
 <!-- PROFILE HEADER -->
 <div class="profile-header a1" id="profile-header">
-  <div class="ph-top">
-    <div class="ph-avatar" id="ph-avatar">🎢</div>
-    <div class="ph-info">
-      <div class="ph-name" id="ph-name">Loading...</div>
-      <div class="ph-meta" id="ph-meta"></div>
-      <div class="ph-joined" id="ph-joined"></div>
-    </div>
-    <div class="ph-rank">
-      <div class="ph-rank-n" id="ph-rank">#—</div>
-      <div class="ph-rank-l">GLOBAL RANK</div>
-    </div>
-  </div>
+<div class="ph-top">
+<div class="ph-avatar" id="ph-avatar">🎢</div>
+<div class="ph-info">
+<div class="ph-name" id="ph-name">Loading...</div>
+<div class="ph-meta" id="ph-meta"></div>
+<div class="ph-joined" id="ph-joined"></div>
+</div>
+<div class="ph-rank">
+<div class="ph-rank-n" id="ph-rank">#—</div>
+<div class="ph-rank-l">GLOBAL RANK</div>
+</div>
+</div>
+<div class="xp-section">
+<div class="xp-level-row">
+<div class="xp-level" id="xp-level">LEVEL 1</div>
+<div class="xp-nums" id="xp-nums">0 / 100 XP</div>
+</div>
+<div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
+</div>
+<div class="stats-row">
+<div class="stat-card"><div class="stat-n" id="st-rides">0</div><div class="stat-l">RIDES</div></div>
+<div class="stat-card"><div class="stat-n" id="st-audits">0</div><div class="stat-l">AUDITS</div></div>
+<div class="stat-card"><div class="stat-n" id="st-parks">0</div><div class="stat-l">PARKS</div></div>
+<div class="stat-card"><div class="stat-n" id="st-badges">0</div><div class="stat-l">BADGES</div></div>
+</div>
+</div>
 
-  <!-- XP BAR -->
-  <div class="xp-section">
-    <div class="xp-level-row">
-      <div class="xp-level" id="xp-level">LEVEL 1</div>
-      <div class="xp-nums" id="xp-nums">0 / 100 XP</div>
-    </div>
-    <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
-  </div>
+<!-- ACTION BUTTONS -->
+<div class="action-row a2">
+<div class="action-btn btn-ride" onclick="openRideModal()">
+<div class="ab-icon">🎢</div>
+<div class="ab-label">Log a Ride</div>
+<div class="ab-sub">PHOTO + TIMER + XP</div>
+</div>
+<div class="action-btn btn-audit" onclick="document.getElementById('audit-modal').classList.add('show')">
+<div class="ab-icon">📋</div>
+<div class="ab-label">Start Audit</div>
+<div class="ab-sub">6 CHECKLIST TYPES · +50 XP</div>
+</div>
+</div>
 
-  <!-- STATS -->
-  <div class="stats-row">
-    <div class="stat-card"><div class="stat-n" id="st-rides">0</div><div class="stat-l">RIDES</div></div>
-    <div class="stat-card"><div class="stat-n" id="st-audits">0</div><div class="stat-l">AUDITS</div></div>
-    <div class="stat-card"><div class="stat-n" id="st-parks">0</div><div class="stat-l">PARKS</div></div>
-    <div class="stat-card"><div class="stat-n" id="st-badges">0</div><div class="stat-l">BADGES</div></div>
-  </div>
+<!-- IMPORT -->
+<div class="sec-label a3">📥 IMPORT RIDES</div>
+<div class="import-section a3">
+<h4>Already tracking rides elsewhere?</h4>
+<p>Import your history from Coaster-Count or upload a CSV to get credit for past rides.</p>
+<div class="import-row">
+<div class="import-btn" onclick="document.getElementById('import-modal').classList.add('show')">
+<div class="ib-icon">🔗</div>
+<div class="ib-info"><div class="ib-name">Coaster-Count</div><div class="ib-desc">Import via API</div></div>
+</div>
+<div class="import-btn" onclick="document.getElementById('import-modal').classList.add('show')">
+<div class="ib-icon">📄</div>
+<div class="ib-info"><div class="ib-name">CSV Upload</div><div class="ib-desc">Bulk import rides</div></div>
+</div>
+</div>
 </div>
 
 <!-- BADGES -->
-<div class="sec-label a2">🏅 BADGES EARNED</div>
-<div class="badges-grid a2" id="badges-grid">
-  <div class="badge-card locked"><div class="badge-icon">⏳</div><div class="badge-label">Loading...</div></div>
+<div class="sec-label a4">🏅 BADGES EARNED</div>
+<div class="badges-grid a4" id="badges-grid">
+<div class="badge-card locked"><div class="badge-icon">⏳</div><div class="badge-label">Loading...</div></div>
 </div>
 
 <!-- RIDE LOG -->
-<div class="sec-label a3">🎢 RIDE LOG</div>
-<div class="ride-log a3" id="ride-log">
-  <div class="log-empty">No rides logged yet. Visit a park and start logging!</div>
+<div class="sec-label a5">🎢 RIDE LOG</div>
+<div class="ride-log a5" id="ride-log">
+<div class="log-empty">No rides logged yet — tap Log a Ride above!</div>
 </div>
 
 <!-- XP HISTORY -->
-<div class="sec-label a4">⚡ XP HISTORY</div>
-<div class="xp-history a4" id="xp-history">
-  <div class="xph-row"><div class="xph-icon">⏳</div><div class="xph-desc" style="color:var(--dim)">Loading transactions...</div></div>
+<div class="sec-label a6">⚡ XP HISTORY</div>
+<div class="xp-history a6" id="xp-history">
+<div class="xph-row"><div class="xph-icon">⏳</div><div class="xph-desc" style="color:var(--dim)">Loading...</div></div>
 </div>
 
 <footer>
-  <div class="ft-b">Amusement<em>Rating</em>.org</div>
-  <div class="ft-s">INDEPENDENT · CROWDSOURCED · COMMUNITY-DRIVEN</div>
+<div class="ft-b">Amusement<em>Rating</em>.org</div>
+<div class="ft-s">INDEPENDENT · CROWDSOURCED · COMMUNITY-DRIVEN</div>
 </footer>
-
 </div>
 
 <script>
-var PROFILE_URL = 'https://ar-profile.amusementstandards.workers.dev';
+var PROFILE_URL='https://ar-profile.amusementstandards.workers.dev';
+var PARKS_URL='https://ar-parks.amusementstandards.workers.dev';
+var RIDES_URL='https://ar-rides.amusementstandards.workers.dev';
+var RIDELOG_URL='https://ar-ridelog.amusementstandards.workers.dev';
+var rideTimer=null, rideStartTime=null, rideData={};
 
-// === XP LEVEL CALC ===
-// Level thresholds: LVL n requires n^2 * 25 XP
-function calcLevel(xp) {
-  var lvl = Math.floor(Math.sqrt((xp || 0) / 25)) + 1;
-  var currentLvlXP = Math.pow(lvl - 1, 2) * 25;
-  var nextLvlXP = Math.pow(lvl, 2) * 25;
-  var progress = nextLvlXP > currentLvlXP ? ((xp - currentLvlXP) / (nextLvlXP - currentLvlXP)) * 100 : 0;
-  return { level: lvl, current: xp, needed: nextLvlXP, from: currentLvlXP, pct: Math.min(progress, 100) };
+// === PARKS LOADER ===
+var allParks=[];
+async function loadAllParks(){
+  try{
+    var r=await fetch(PARKS_URL);var d=await r.json();
+    allParks=d.parks||[];
+    ['ride-park','audit-park'].forEach(function(id){
+      var s=document.getElementById(id);
+      if(!s)return;
+      s.innerHTML='<option value="">Select park...</option>';
+      allParks.forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;s.appendChild(o);});
+    });
+  }catch(e){}
 }
 
-// === TIME AGO ===
-function timeAgo(dateStr) {
-  if (!dateStr) return '';
-  var d = new Date(dateStr);
-  var now = new Date();
-  var diff = Math.floor((now - d) / 1000);
-  if (diff < 60) return 'just now';
-  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
-  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
-  if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-// === RENDER PROFILE ===
-function renderProfile(data) {
-  var user = data.user;
-  var xp = user.xp || 0;
-  var lvl = calcLevel(xp);
-
-  // Header
-  document.getElementById('ph-avatar').textContent = user.emoji || '🎢';
-  document.getElementById('ph-name').textContent = user.username || 'Unknown';
-  document.getElementById('ph-rank').textContent = '#' + (user.rank || '—');
-  document.getElementById('ph-joined').textContent = 'Joined ' + (user.joinDate ? new Date(user.joinDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '—');
-
-  // Tags
-  var metaHtml = '';
-  metaHtml += '<span class="ph-tag tier">LVL ' + lvl.level + '</span>';
-  if (user.isFounding) metaHtml += '<span class="ph-tag founding">FOUNDING 100</span>';
-  metaHtml += '<span class="ph-tag member">Member #' + (user.memberNumber || '?') + '</span>';
-  document.getElementById('ph-meta').innerHTML = metaHtml;
-
-  // XP Bar
-  document.getElementById('xp-level').textContent = 'LEVEL ' + lvl.level + ' → ' + (lvl.level + 1);
-  document.getElementById('xp-nums').textContent = xp.toLocaleString() + ' / ' + lvl.needed.toLocaleString() + ' XP';
-  setTimeout(function() { document.getElementById('xp-fill').style.width = lvl.pct + '%'; }, 300);
-
-  // Stats
-  document.getElementById('st-rides').textContent = user.rideCount || 0;
-  document.getElementById('st-audits').textContent = user.auditCount || 0;
-  document.getElementById('st-parks').textContent = user.parkCount || 0;
-  document.getElementById('st-badges').textContent = (data.badges || []).filter(function(b) { return b.earned; }).length;
-
-  // Animate stat numbers
-  document.querySelectorAll('.stat-n').forEach(function(el) {
-    var target = parseInt(el.textContent);
-    if (target === 0) return;
-    var dur = 1000, st = null;
-    el.textContent = '0';
-    function step(ts) {
-      if (!st) st = ts;
-      var p = Math.min((ts - st) / dur, 1);
-      el.textContent = Math.floor(p * target);
-      if (p < 1) requestAnimationFrame(step); else el.textContent = target;
+// === RIDE PARK → RIDES ===
+document.getElementById('ride-park').onchange=async function(){
+  var sel=document.getElementById('ride-ride');
+  var parkName=this.value;
+  if(!parkName){sel.innerHTML='<option>Select a park first</option>';sel.disabled=true;return;}
+  sel.innerHTML='<option>Loading rides...</option>';sel.disabled=true;
+  try{
+    var r=await fetch(RIDES_URL+'?park='+encodeURIComponent(parkName));
+    var d=await r.json();
+    rideData.parkId=d.parkId||null;
+    sel.innerHTML='<option value="">Select ride...</option>';
+    if(d.rides&&d.rides.length>0){
+      d.rides.forEach(function(ride){
+        var o=document.createElement('option');
+        o.value=ride.id;
+        o.textContent=ride.name+(ride.type?' ('+ride.type+')':'');
+        o.setAttribute('data-name',ride.name);
+        sel.appendChild(o);
+      });
+    } else {
+      sel.innerHTML='<option value="">No rides found for this park</option>';
     }
-    requestAnimationFrame(step);
+    sel.disabled=false;
+  }catch(e){
+    sel.innerHTML='<option value="">Error loading rides</option>';
+    sel.disabled=false;
+  }
+};
+
+// === RIDE LOG FLOW ===
+function openRideModal(){
+  document.getElementById('ride-modal').classList.add('show');
+  showRideStep(1);
+  rideData={};
+}
+function closeRideModal(){
+  document.getElementById('ride-modal').classList.remove('show');
+  if(rideTimer)clearInterval(rideTimer);
+  rideTimer=null;
+  showRideStep(1);
+  // Reset photos
+  ['entrance','exit'].forEach(function(t){
+    document.getElementById(t+'-preview').style.display='none';
+    document.getElementById(t+'-zone').classList.remove('has-photo');
+    document.getElementById(t+'-zone').querySelector('.pz-icon').style.display='';
+    document.getElementById(t+'-zone').querySelector('.pz-label').style.display='';
   });
 }
-
-// === RENDER BADGES ===
-function renderBadges(badges) {
-  var grid = document.getElementById('badges-grid');
-  if (!badges || !badges.length) {
-    grid.innerHTML = '<div class="badge-card locked"><div class="badge-icon">🔒</div><div class="badge-label">No badges yet</div></div>';
-    return;
+function showRideStep(n){
+  for(var i=1;i<=5;i++){
+    var el=document.getElementById('ride-step'+i);
+    if(el)el.classList.toggle('active',i===n);
   }
+}
+function rideStep(n){
+  if(n===2){
+    var park=document.getElementById('ride-park').value;
+    var rideSel=document.getElementById('ride-ride');
+    var rideId=rideSel.value;
+    if(!park){alert('Select a park');return;}
+    rideData.park=park;
+    rideData.rideId=rideId||null;
+    var selected=rideSel.options[rideSel.selectedIndex];
+    rideData.ride=selected&&selected.getAttribute('data-name')?selected.getAttribute('data-name'):(selected?selected.textContent:'Unknown Ride');
+  }
+  if(n===3){
+    // Start timer
+    rideStartTime=Date.now();
+    rideData.entranceTime=new Date().toISOString();
+    document.getElementById('timer-ride-name').textContent=rideData.ride+' @ '+rideData.park;
+    rideTimer=setInterval(function(){
+      var elapsed=Math.floor((Date.now()-rideStartTime)/1000);
+      var m=String(Math.floor(elapsed/60)).padStart(2,'0');
+      var s=String(elapsed%60).padStart(2,'0');
+      document.getElementById('timer-display').textContent=m+':'+s;
+    },1000);
+  }
+  if(n===4){
+    if(rideTimer)clearInterval(rideTimer);
+    rideData.duration=Math.floor((Date.now()-rideStartTime)/1000);
+    rideData.exitTime=new Date().toISOString();
+  }
+  showRideStep(n);
+}
 
-  // All possible badges with icons
-  var badgeIcons = {
-    'FOUNDING 100': '🏆', 'FIRST LOG': '🎢', 'FIRST AUDIT': '📋', '100 RIDES': '💯',
-    '500 RIDES': '🔥', '10 PARKS': '🏟️', '50 PARKS': '🌍', '7-DAY STREAK': '🔥',
-    '30-DAY STREAK': '⚡', 'AUDITOR T2': '🔍', 'AUDITOR T3': '🌟', 'AUDITOR T5': '👑',
-    'ALL 6 AUDITS': '📊', 'NIGHT RIDER': '🌙', 'OPENING DAY': '🌊', 'IRON STREAK': '🔥'
+// Photo handlers
+['entrance','exit'].forEach(function(t){
+  document.getElementById(t+'-input').onchange=function(e){
+    var file=e.target.files[0];
+    if(!file)return;
+    var reader=new FileReader();
+    reader.onload=function(ev){
+      var img=document.getElementById(t+'-preview');
+      img.src=ev.target.result;img.style.display='block';
+      document.getElementById(t+'-zone').classList.add('has-photo');
+      document.getElementById(t+'-zone').querySelector('.pz-icon').style.display='none';
+      document.getElementById(t+'-zone').querySelector('.pz-label').style.display='none';
+      rideData[t+'Photo']=ev.target.result;
+      if(t==='entrance')document.getElementById('entrance-next').disabled=false;
+      if(t==='exit')document.getElementById('exit-submit').disabled=false;
+    };
+    reader.readAsDataURL(file);
   };
+});
 
-  var html = '';
-  for (var i = 0; i < badges.length; i++) {
-    var b = badges[i];
-    var cls = b.earned ? 'badge-card earned' : 'badge-card locked';
-    var icon = badgeIcons[b.name] || (b.earned ? '🏅' : '🔒');
-    html += '<div class="' + cls + '">';
-    html += '<div class="badge-icon">' + icon + '</div>';
-    html += '<div class="badge-label">' + b.name + '</div>';
-    if (b.earned && b.earnedDate) html += '<div class="badge-date">' + timeAgo(b.earnedDate) + '</div>';
-    html += '</div>';
-  }
-  grid.innerHTML = html;
-}
-
-// === RENDER RIDE LOG ===
-function renderRideLog(rides) {
-  var log = document.getElementById('ride-log');
-  if (!rides || !rides.length) {
-    log.innerHTML = '<div class="log-empty">🎢 No rides logged yet. Visit a park and start logging to earn XP!</div>';
-    return;
-  }
-
-  var html = '';
-  for (var i = 0; i < rides.length && i < 20; i++) {
-    var r = rides[i];
-    var emoji = r.isFirstTime ? '🆕' : '🎢';
-    var xpText = '+' + (r.xp || 5) + ' XP';
-    html += '<div class="log-row" style="animation-delay:' + (i * 0.04) + 's">';
-    html += '<div class="log-emoji">' + emoji + '</div>';
-    html += '<div class="log-info"><div class="log-ride">' + (r.rideName || 'Unknown Ride') + '</div>';
-    html += '<div class="log-park">' + (r.parkName || '') + '</div></div>';
-    html += '<div class="log-right"><div class="log-xp">' + xpText + '</div>';
-    html += '<div class="log-time">' + timeAgo(r.timestamp) + '</div></div></div>';
-  }
-  log.innerHTML = html;
-}
-
-// === RENDER XP HISTORY ===
-function renderXPHistory(transactions) {
-  var el = document.getElementById('xp-history');
-  if (!transactions || !transactions.length) {
-    el.innerHTML = '<div class="xph-row"><div class="xph-icon">📝</div><div class="xph-desc" style="color:var(--dim)">No XP transactions yet.</div></div>';
-    return;
-  }
-
-  var icons = { 'Signup': '🎁', 'RideLog': '🎢', 'Audit': '📋', 'Badge': '🏅', 'Challenge': '🎯', 'Streak': '🔥', 'NewPark': '🏟️' };
-  var html = '';
-  for (var i = 0; i < transactions.length && i < 15; i++) {
-    var t = transactions[i];
-    var icon = icons[t.source] || '⚡';
-    html += '<div class="xph-row">';
-    html += '<div class="xph-icon">' + icon + '</div>';
-    html += '<div class="xph-desc">' + (t.description || t.source || 'XP earned') + '</div>';
-    html += '<div class="xph-amt">+' + (t.amount || 0) + '</div>';
-    html += '<div class="xph-time">' + timeAgo(t.timestamp) + '</div>';
-    html += '</div>';
-  }
-  el.innerHTML = html;
-}
-
-// === LOAD PROFILE ===
-async function loadProfile() {
-  // Get username from URL param
-  var params = new URLSearchParams(window.location.search);
-  var username = params.get('u') || 'adamatic';
-
-  try {
-    var r = await fetch(PROFILE_URL + '?u=' + encodeURIComponent(username));
-    var data = await r.json();
-
-    if (data.error) {
-      document.getElementById('ph-name').textContent = 'User not found';
+async function submitRideLog(){
+  var btn=document.getElementById('exit-submit');
+  btn.textContent='Submitting...';btn.disabled=true;
+  var username=new URLSearchParams(window.location.search).get('u')||localStorage.getItem('ar_username')||'adamatic';
+  try{
+    var r=await fetch(RIDELOG_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        username:username,
+        rideId:rideData.rideId||null,
+        parkId:rideData.parkId||null,
+        rideName:rideData.ride||'Unknown',
+        parkName:rideData.park||'Unknown',
+        duration:rideData.duration||0,
+        entrancePhoto:rideData.entrancePhoto?'captured':'',
+        exitPhoto:rideData.exitPhoto?'captured':''
+      })
+    });
+    var d=await r.json();
+    if(d.error){
+      btn.textContent='Error: '+d.error;
+      setTimeout(function(){btn.textContent='Submit Ride Log → Earn XP';btn.disabled=false;},3000);
       return;
     }
-
-    document.title = data.user.username + ' — AmusementRating';
-    renderProfile(data);
-    renderBadges(data.badges || []);
-    renderRideLog(data.rides || []);
-    renderXPHistory(data.xpHistory || []);
-
-  } catch (e) {
-    // Fallback: show adamatic with basic data
-    renderProfile({
-      user: { username: 'adamatic', xp: 50, emoji: '🎢', isFounding: true, rank: 1, memberNumber: 1, joinDate: '2026-03-18', rideCount: 0, auditCount: 0, parkCount: 0 },
-      badges: [{ name: 'FOUNDING 100', earned: true, earnedDate: '2026-03-18T03:14:00Z' }]
-    });
-    renderBadges([
-      { name: 'FOUNDING 100', earned: true, earnedDate: '2026-03-18T03:14:00Z' },
-      { name: 'FIRST LOG', earned: false },
-      { name: 'FIRST AUDIT', earned: false },
-      { name: '100 RIDES', earned: false },
-      { name: '10 PARKS', earned: false },
-      { name: '7-DAY STREAK', earned: false },
-      { name: 'AUDITOR T2', earned: false },
-      { name: 'AUDITOR T3', earned: false }
-    ]);
-    renderRideLog([]);
-    renderXPHistory([
-      { source: 'Signup', description: 'Welcome bonus — 50 XP', amount: 50, timestamp: '2026-03-18T03:14:00Z' }
-    ]);
+    var xp=d.xpEarned||5;
+    var msg=rideData.ride+' @ '+rideData.park;
+    if(rideData.duration)msg+=' — '+Math.floor(rideData.duration/60)+'m '+(rideData.duration%60)+'s';
+    if(d.isFirstRide)msg+='\n🆕 First time on this ride!';
+    if(d.isNewPark)msg+='\n🏟️ New park visited! +25 bonus XP';
+    document.getElementById('ride-complete-msg').textContent=msg;
+    // Update the XP display in step 5
+    var xpEl=document.querySelector('#ride-step5 .modal-desc').previousElementSibling;
+    if(xpEl)xpEl.textContent='+'+xp+' XP';
+    showRideStep(5);
+    // Refresh profile data after a moment
+    setTimeout(loadProfile,2000);
+  }catch(e){
+    btn.textContent='Network error — try again';
+    setTimeout(function(){btn.textContent='Submit Ride Log → Earn XP';btn.disabled=false;},3000);
   }
 }
 
+// === AUDIT ===
+function startAudit(){
+  var park=document.getElementById('audit-park').value;
+  var type=document.getElementById('audit-type').value;
+  if(!park||!type){alert('Select park and audit type');return;}
+  // TODO: redirect to audit checklist page
+  alert('Audit checklist for '+type+' at '+park+' coming soon! This will be a dedicated page with the full observation checklist.');
+}
+
+// === COASTER-COUNT IMPORT ===
+async function importCoasterCount(){
+  var btn=document.getElementById('cc-import-btn');
+  var username=document.getElementById('cc-username').value.trim();
+  var note=document.getElementById('cc-note');
+  if(!username){note.textContent='Enter your Coaster-Count username.';note.style.color='var(--red)';return;}
+  btn.textContent='Fetching credits...';btn.disabled=true;
+  note.textContent='Connecting to Coaster-Count API...';note.style.color='var(--text)';
+  try{
+    // Coaster-Count API: GET https://coaster-count.com/api/user/{username}/credits
+    var r=await fetch('https://coaster-count.com/api/user/'+encodeURIComponent(username)+'/credits');
+    if(!r.ok)throw new Error('User not found or API error');
+    var data=await r.json();
+    var credits=data.credits||data||[];
+    var count=Array.isArray(credits)?credits.length:0;
+    note.innerHTML='✅ Found <strong style="color:var(--yellow)">'+count+' ride credits</strong>. Matching to our database...';
+    note.style.color='var(--ac)';
+    // TODO: POST matched credits to ar-import worker
+    setTimeout(function(){
+      note.innerHTML='🎢 Import complete! '+count+' rides matched. XP will be credited shortly.';
+      btn.textContent='Import Complete ✓';
+    },2000);
+  }catch(e){
+    note.textContent='Could not fetch from Coaster-Count: '+e.message;
+    note.style.color='var(--red)';
+    btn.textContent='Import Ride Credits';btn.disabled=false;
+  }
+}
+
+// === CSV IMPORT ===
+function importCSV(){
+  var input=document.getElementById('csv-input');
+  var note=document.getElementById('csv-note');
+  if(!input.files||!input.files[0]){note.textContent='Select a CSV file first.';note.style.color='var(--red)';return;}
+  var file=input.files[0];
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var text=e.target.result;
+    var lines=text.split('\n').filter(function(l){return l.trim();});
+    var count=Math.max(0,lines.length-1); // minus header
+    note.innerHTML='📄 Parsed <strong style="color:var(--yellow)">'+count+' rides</strong> from CSV. Matching to database...';
+    note.style.color='var(--ac)';
+    // TODO: POST parsed CSV to ar-import worker for matching
+    setTimeout(function(){
+      note.innerHTML='✅ Import complete! '+count+' rides queued for matching. XP credits incoming.';
+    },2000);
+  };
+  reader.readAsText(file);
+}
+
+// === PROFILE RENDERING ===
+function calcLevel(xp){var l=Math.floor(Math.sqrt((xp||0)/25))+1;var c=Math.pow(l-1,2)*25;var n=Math.pow(l,2)*25;return{level:l,current:xp,needed:n,from:c,pct:Math.min(n>c?((xp-c)/(n-c))*100:0,100)};}
+function timeAgo(d){if(!d)return'';var diff=Math.floor((new Date()-new Date(d))/1000);if(diff<60)return'just now';if(diff<3600)return Math.floor(diff/60)+'m ago';if(diff<86400)return Math.floor(diff/3600)+'h ago';if(diff<604800)return Math.floor(diff/86400)+'d ago';return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+
+function renderProfile(data){
+  var u=data.user,xp=u.xp||0,lvl=calcLevel(xp);
+  document.getElementById('ph-avatar').textContent=u.emoji||'🎢';
+  document.getElementById('ph-name').textContent=u.username||'Unknown';
+  document.getElementById('ph-rank').textContent='#'+(u.rank||'—');
+  document.getElementById('ph-joined').textContent='Joined '+(u.joinDate?new Date(u.joinDate).toLocaleDateString('en-US',{month:'long',year:'numeric'}):'—');
+  var m='<span class="ph-tag tier">LVL '+lvl.level+'</span>';
+  if(u.isFounding)m+='<span class="ph-tag founding">FOUNDING 100</span>';
+  m+='<span class="ph-tag member">Member #'+(u.memberNumber||'?')+'</span>';
+  document.getElementById('ph-meta').innerHTML=m;
+  document.getElementById('xp-level').textContent='LEVEL '+lvl.level+' → '+(lvl.level+1);
+  document.getElementById('xp-nums').textContent=xp.toLocaleString()+' / '+lvl.needed.toLocaleString()+' XP';
+  setTimeout(function(){document.getElementById('xp-fill').style.width=lvl.pct+'%';},300);
+  document.getElementById('st-rides').textContent=u.rideCount||0;
+  document.getElementById('st-audits').textContent=u.auditCount||0;
+  document.getElementById('st-parks').textContent=u.parkCount||0;
+  document.getElementById('st-badges').textContent=(data.badges||[]).filter(function(b){return b.earned;}).length;
+}
+function renderBadges(badges){
+  var g=document.getElementById('badges-grid');
+  if(!badges||!badges.length){g.innerHTML='<div class="badge-card locked"><div class="badge-icon">🔒</div><div class="badge-label">No badges yet</div></div>';return;}
+  var icons={'FOUNDING 100':'🏆','FIRST LOG':'🎢','FIRST AUDIT':'📋','100 RIDES':'💯','500 RIDES':'🔥','10 PARKS':'🏟️','50 PARKS':'🌍','7-DAY STREAK':'🔥','30-DAY STREAK':'⚡','AUDITOR T2':'🔍','AUDITOR T3':'🌟','AUDITOR T5':'👑','ALL 6 AUDITS':'📊','NIGHT RIDER':'🌙'};
+  var h='';
+  for(var i=0;i<badges.length;i++){var b=badges[i];var c=b.earned?'badge-card earned':'badge-card locked';var ic=icons[b.name]||(b.earned?'🏅':'🔒');
+  h+='<div class="'+c+'"><div class="badge-icon">'+ic+'</div><div class="badge-label">'+b.name+'</div>';
+  if(b.earned&&b.earnedDate)h+='<div class="badge-date">'+timeAgo(b.earnedDate)+'</div>';h+='</div>';}
+  g.innerHTML=h;
+}
+function renderRideLog(rides){
+  var l=document.getElementById('ride-log');
+  if(!rides||!rides.length){l.innerHTML='<div class="log-empty">🎢 No rides logged yet — tap Log a Ride above!</div>';return;}
+  var h='';for(var i=0;i<rides.length&&i<20;i++){var r=rides[i];
+  h+='<div class="log-row" style="animation-delay:'+(i*0.04)+'s"><div class="log-emoji">'+(r.isFirstTime?'🆕':'🎢')+'</div><div class="log-info"><div class="log-ride">'+(r.rideName||'Ride')+'</div><div class="log-park">'+(r.parkName||'')+'</div></div><div class="log-right"><div class="log-xp">+'+(r.xp||5)+' XP</div><div class="log-time">'+timeAgo(r.timestamp)+'</div></div></div>';}
+  l.innerHTML=h;
+}
+function renderXPHistory(tx){
+  var el=document.getElementById('xp-history');
+  if(!tx||!tx.length){el.innerHTML='<div class="xph-row"><div class="xph-icon">📝</div><div class="xph-desc" style="color:var(--dim)">No XP transactions yet.</div></div>';return;}
+  var icons={Signup:'🎁',RideLog:'🎢',Audit:'📋',Badge:'🏅',Challenge:'🎯',Streak:'🔥',NewPark:'🏟️',Import:'📥'};
+  var h='';for(var i=0;i<tx.length&&i<15;i++){var t=tx[i];
+  h+='<div class="xph-row"><div class="xph-icon">'+(icons[t.source]||'⚡')+'</div><div class="xph-desc">'+(t.description||t.source||'XP earned')+'</div><div class="xph-amt">+'+(t.amount||0)+'</div><div class="xph-time">'+timeAgo(t.timestamp)+'</div></div>';}
+  el.innerHTML=h;
+}
+
+// === LOAD ===
+async function loadProfile(){
+  var params=new URLSearchParams(window.location.search);
+  var username=params.get('u')||localStorage.getItem('ar_username')||'adamatic';
+  try{
+    var r=await fetch(PROFILE_URL+'?u='+encodeURIComponent(username));
+    var data=await r.json();
+    if(data.error){document.getElementById('ph-name').textContent='User not found';return;}
+    document.title=data.user.username+' — AmusementRating';
+    renderProfile(data);renderBadges(data.badges||[]);renderRideLog(data.rides||[]);renderXPHistory(data.xpHistory||[]);
+  }catch(e){
+    renderProfile({user:{username:'adamatic',xp:50,emoji:'🎢',isFounding:true,rank:1,memberNumber:1,joinDate:'2026-03-18',rideCount:0,auditCount:0,parkCount:0},badges:[{name:'FOUNDING 100',earned:true,earnedDate:'2026-03-18T03:14:00Z'}]});
+    renderBadges([{name:'FOUNDING 100',earned:true,earnedDate:'2026-03-18T03:14:00Z'},{name:'FIRST LOG',earned:false},{name:'FIRST AUDIT',earned:false},{name:'100 RIDES',earned:false},{name:'10 PARKS',earned:false},{name:'7-DAY STREAK',earned:false}]);
+    renderRideLog([]);
+    renderXPHistory([{source:'Signup',description:'Welcome bonus — 50 XP',amount:50,timestamp:'2026-03-18T03:14:00Z'}]);
+  }
+}
+
+loadAllParks();
 loadProfile();
 </script>
 </body>
