@@ -274,19 +274,15 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 <div class="modal">
 <button class="modal-close" onclick="document.getElementById('audit-modal').classList.remove('show')">&times;</button>
 <h3>📋 Start an <em>audit</em></h3>
-<p class="modal-desc">Select a park and audit type to begin your observation checklist.</p>
+<p class="modal-desc">Select a park and ride to begin. The correct checklist loads automatically based on ride type.</p>
 <div class="field"><label>PARK</label><select id="audit-park"><option value="">Loading parks...</option></select></div>
-<div class="field"><label>AUDIT TYPE</label>
-<select id="audit-type">
-<option value="">Select audit type...</option>
-<option value="coaster-audit.html">🎢 Roller Coaster — Restraints, Dispatch, Track</option>
-<option value="flatride-audit.html">🎡 Flat Ride — Loading, Cycle, Operator</option>
-<option value="water-audit.html">🌊 Water Ride — Lifeguard, Flow, Containment</option>
-<option value="play-audit.html">🧒 Play Structure — Surface, Barriers, Supervision</option>
-</select>
+<div class="field"><label>RIDE</label><select id="audit-ride" disabled><option value="">Select a park first</option></select></div>
+<div id="audit-type-tag" style="margin-bottom:12px;display:none;">
+<span style="font-family:var(--m);font-size:9px;color:var(--dim);letter-spacing:.5px;">CHECKLIST → </span>
+<span id="audit-type-label" style="font-family:var(--m);font-size:10px;font-weight:700;color:var(--yellow);"></span>
 </div>
-<button class="modal-btn yellow" onclick="startAudit()">Begin Audit Checklist</button>
-<div class="modal-note">Audits earn +50 XP each. Complete all 6 types for the Full Sweep badge!</div>
+<button class="modal-btn yellow" id="audit-start-btn" onclick="startAudit()" style="opacity:.5;cursor:default;" disabled>Select a ride to begin</button>
+<div class="modal-note">Audits earn +50 XP each. Checklist auto-detected from ride type.</div>
 </div>
 </div>
 
@@ -595,11 +591,102 @@ async function submitRideLog(){
 }
 
 // === AUDIT ===
+var auditCategoryMap={
+  "Roller Coaster":{page:"coaster-audit.html",icon:"🎢",label:"Roller Coaster — Restraints, Dispatch, Track"},
+  "Flat Ride":{page:"flatride-audit.html",icon:"🎡",label:"Flat Ride — Loading, Cycle, Operator"},
+  "Water Ride":{page:"water-audit.html",icon:"🌊",label:"Water Ride — Lifeguard, Flow, Containment"},
+  "Play Structure":{page:"play-audit.html",icon:"🧒",label:"Play Structure — Surface, Barriers, Supervision"}
+};
+var auditRideData={};
+
+document.getElementById('audit-park').onchange=async function(){
+  var sel=document.getElementById('audit-ride');
+  var parkName=this.value;
+  var btn=document.getElementById('audit-start-btn');
+  var tag=document.getElementById('audit-type-tag');
+  tag.style.display='none';
+  btn.disabled=true;btn.style.opacity='.5';btn.style.cursor='default';btn.textContent='Select a ride to begin';
+  if(!parkName){sel.innerHTML='<option>Select a park first</option>';sel.disabled=true;return;}
+  sel.innerHTML='<option>Loading rides...</option>';sel.disabled=true;
+  try{
+    var r=await fetch(RIDES_URL+'?park='+encodeURIComponent(parkName));
+    var d=await r.json();
+    auditRideData.parkId=d.parkId||null;
+    sel.innerHTML='<option value="">Select ride to audit...</option>';
+    var order=d.categoryOrder||["Roller Coaster","Flat Ride","Water Ride","Play Structure","Other"];
+    var groups=d.groups||{};
+    if(Object.keys(groups).length>0){
+      order.forEach(function(cat){
+        var ridesInCat=groups[cat];
+        if(!ridesInCat||!ridesInCat.length)return;
+        var icon=categoryIcons[cat]||'🎪';
+        var og=document.createElement('optgroup');
+        og.label=icon+' '+cat+' ('+ridesInCat.length+')';
+        ridesInCat.forEach(function(ride){
+          var o=document.createElement('option');
+          o.value=ride.id;
+          o.textContent=ride.name;
+          o.setAttribute('data-name',ride.name);
+          o.setAttribute('data-category',cat);
+          og.appendChild(o);
+        });
+        sel.appendChild(og);
+      });
+    } else if(d.rides&&d.rides.length>0){
+      d.rides.forEach(function(ride){
+        var o=document.createElement('option');
+        o.value=ride.id;
+        o.textContent=ride.name;
+        o.setAttribute('data-name',ride.name);
+        o.setAttribute('data-category',ride.type||'Other');
+        sel.appendChild(o);
+      });
+    } else {
+      sel.innerHTML='<option value="">No rides found for this park</option>';
+    }
+    sel.disabled=false;
+  }catch(e){
+    sel.innerHTML='<option value="">Error loading rides</option>';
+    sel.disabled=false;
+  }
+};
+
+document.getElementById('audit-ride').onchange=function(){
+  var sel=this;
+  var btn=document.getElementById('audit-start-btn');
+  var tag=document.getElementById('audit-type-tag');
+  var label=document.getElementById('audit-type-label');
+  if(!sel.value){
+    tag.style.display='none';
+    btn.disabled=true;btn.style.opacity='.5';btn.style.cursor='default';btn.textContent='Select a ride to begin';
+    return;
+  }
+  var selected=sel.options[sel.selectedIndex];
+  var cat=selected.getAttribute('data-category')||'Other';
+  var mapped=auditCategoryMap[cat];
+  if(mapped){
+    tag.style.display='block';
+    label.textContent=mapped.icon+' '+mapped.label;
+    btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';
+    btn.textContent='Begin '+mapped.icon+' '+cat+' Audit → +50 XP';
+  } else {
+    tag.style.display='block';
+    label.textContent='⚠️ No checklist available for "'+cat+'" rides yet';
+    label.style.color='var(--orange)';
+    btn.disabled=true;btn.style.opacity='.5';btn.style.cursor='default';btn.textContent='Checklist not available for this ride type';
+  }
+};
+
 function startAudit(){
   var park=document.getElementById('audit-park').value;
-  var page=document.getElementById('audit-type').value;
-  if(!park||!page){alert('Select park and audit type');return;}
-  window.location.href=page+'?park='+encodeURIComponent(park);
+  var rideSel=document.getElementById('audit-ride');
+  var selected=rideSel.options[rideSel.selectedIndex];
+  if(!park||!rideSel.value){alert('Select a park and ride');return;}
+  var rideName=selected.getAttribute('data-name')||selected.textContent;
+  var cat=selected.getAttribute('data-category')||'Other';
+  var mapped=auditCategoryMap[cat];
+  if(!mapped){alert('No checklist available for this ride type yet.');return;}
+  window.location.href=mapped.page+'?park='+encodeURIComponent(park)+'&ride='+encodeURIComponent(rideName);
 }
 
 // === COASTER-COUNT IMPORT ===
