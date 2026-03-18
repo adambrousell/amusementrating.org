@@ -397,6 +397,7 @@ var PROFILE_URL='https://ar-profile.amusementstandards.workers.dev';
 var PARKS_URL='https://ar-parks.amusementstandards.workers.dev';
 var RIDES_URL='https://ar-rides.amusementstandards.workers.dev';
 var RIDELOG_URL='https://ar-ridelog.amusementstandards.workers.dev';
+var IMPORT_URL='https://ar-import.amusementstandards.workers.dev';
 var rideTimer=null, rideStartTime=null, rideData={};
 
 // === PARKS LOADER ===
@@ -574,49 +575,77 @@ function startAudit(){
 // === COASTER-COUNT IMPORT ===
 async function importCoasterCount(){
   var btn=document.getElementById('cc-import-btn');
-  var username=document.getElementById('cc-username').value.trim();
+  var ccUser=document.getElementById('cc-username').value.trim();
   var note=document.getElementById('cc-note');
-  if(!username){note.textContent='Enter your Coaster-Count username.';note.style.color='var(--red)';return;}
-  btn.textContent='Fetching credits...';btn.disabled=true;
-  note.textContent='Connecting to Coaster-Count API...';note.style.color='var(--text)';
-  try{
-    // Coaster-Count API: GET https://coaster-count.com/api/user/{username}/credits
-    var r=await fetch('https://coaster-count.com/api/user/'+encodeURIComponent(username)+'/credits');
-    if(!r.ok)throw new Error('User not found or API error');
-    var data=await r.json();
-    var credits=data.credits||data||[];
-    var count=Array.isArray(credits)?credits.length:0;
-    note.innerHTML='✅ Found <strong style="color:var(--yellow)">'+count+' ride credits</strong>. Matching to our database...';
-    note.style.color='var(--ac)';
-    // TODO: POST matched credits to ar-import worker
-    setTimeout(function(){
-      note.innerHTML='🎢 Import complete! '+count+' rides matched. XP will be credited shortly.';
-      btn.textContent='Import Complete ✓';
-    },2000);
-  }catch(e){
-    note.textContent='Could not fetch from Coaster-Count: '+e.message;
-    note.style.color='var(--red)';
-    btn.textContent='Import Ride Credits';btn.disabled=false;
-  }
+  if(!ccUser){note.textContent='Enter your Coaster-Count username or profile URL.';note.style.color='var(--red)';return;}
+  btn.textContent='Fetching profile...';btn.disabled=true;
+  note.textContent='Looking up your Coaster-Count profile...';note.style.color='var(--text)';
+  
+  // CC requires API registration. For now, instruct user to export CSV.
+  note.innerHTML='⚠️ Coaster-Count requires API authorization. For now:<br><br>' +
+    '1. Go to <a href="https://coaster-count.com" target="_blank" style="color:var(--ac);">coaster-count.com</a><br>' +
+    '2. Log in → go to your profile → Numbers page<br>' +
+    '3. Look for an export/download option<br>' +
+    '4. Upload the CSV below<br><br>' +
+    '<strong style="color:var(--yellow);">We\'re registering for the CC API — direct import coming soon!</strong>';
+  note.style.color='var(--text)';
+  btn.textContent='Import Ride Credits';btn.disabled=false;
 }
 
 // === CSV IMPORT ===
-function importCSV(){
+async function importCSV(){
   var input=document.getElementById('csv-input');
   var note=document.getElementById('csv-note');
   if(!input.files||!input.files[0]){note.textContent='Select a CSV file first.';note.style.color='var(--red)';return;}
+  
+  var arUser=new URLSearchParams(window.location.search).get('u')||localStorage.getItem('ar_username')||'adamatic';
   var file=input.files[0];
   var reader=new FileReader();
-  reader.onload=function(e){
+  reader.onload=async function(e){
     var text=e.target.result;
     var lines=text.split('\n').filter(function(l){return l.trim();});
-    var count=Math.max(0,lines.length-1); // minus header
-    note.innerHTML='📄 Parsed <strong style="color:var(--yellow)">'+count+' rides</strong> from CSV. Matching to database...';
+    if(lines.length<2){note.textContent='CSV appears empty.';note.style.color='var(--red)';return;}
+    
+    // Parse header
+    var header=lines[0].toLowerCase().split(',').map(function(h){return h.trim().replace(/"/g,'');});
+    var nameIdx=header.indexOf('ride_name');if(nameIdx<0)nameIdx=header.indexOf('name');if(nameIdx<0)nameIdx=header.indexOf('coaster');if(nameIdx<0)nameIdx=header.indexOf('ride');if(nameIdx<0)nameIdx=0;
+    var parkIdx=header.indexOf('park_name');if(parkIdx<0)parkIdx=header.indexOf('park');if(parkIdx<0)parkIdx=header.indexOf('location');if(parkIdx<0)parkIdx=1;
+    var dateIdx=header.indexOf('date');if(dateIdx<0)dateIdx=header.indexOf('visit_date');if(dateIdx<0)dateIdx=header.indexOf('ridden_date');
+    
+    var rides=[];
+    for(var i=1;i<lines.length;i++){
+      var cols=lines[i].split(',').map(function(c){return c.trim().replace(/"/g,'');});
+      var rideName=cols[nameIdx]||'';
+      var parkName=cols[parkIdx]||'';
+      if(!rideName)continue;
+      rides.push({rideName:rideName,parkName:parkName,date:dateIdx>=0&&cols[dateIdx]?cols[dateIdx]:null});
+    }
+    
+    if(!rides.length){note.textContent='No rides found in CSV.';note.style.color='var(--red)';return;}
+    
+    note.innerHTML='📄 Parsed <strong style="color:var(--yellow)">'+rides.length+' rides</strong>. Importing and matching...';
     note.style.color='var(--ac)';
-    // TODO: POST parsed CSV to ar-import worker for matching
-    setTimeout(function(){
-      note.innerHTML='✅ Import complete! '+count+' rides queued for matching. XP credits incoming.';
-    },2000);
+    
+    try{
+      var r=await fetch(IMPORT_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({username:arUser,rides:rides,source:'CSV'})
+      });
+      var d=await r.json();
+      if(d.error){
+        note.textContent='Error: '+d.error;note.style.color='var(--red)';return;
+      }
+      note.innerHTML='✅ Import complete!<br><br>' +
+        '<strong style="color:var(--yellow)">'+d.matched+'</strong> rides matched to our database<br>' +
+        '<strong style="color:var(--dim)">'+d.unmatched+'</strong> rides imported (unmatched)<br>' +
+        '<strong style="color:var(--ac)">+'+d.xpEarned+' XP</strong> earned from import';
+      note.style.color='var(--text)';
+      // Refresh profile
+      setTimeout(loadProfile,2000);
+    }catch(err){
+      note.textContent='Network error during import.';note.style.color='var(--red)';
+    }
   };
   reader.readAsText(file);
 }
