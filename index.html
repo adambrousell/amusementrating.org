@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -223,20 +222,20 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
   <h2>Claim your <em>spot.</em></h2>
   <p>First 100 members get the <strong style="color:var(--yellow)">FOUNDING 100</strong> badge — permanently. It never unlocks again.</p>
   <div class="field-row">
-    <div class="field"><label>USERNAME</label><input type="text" id="su-user" placeholder="Your handle"></div>
-    <div class="field"><label>EMAIL</label><input type="email" id="su-email" placeholder="you@email.com"></div>
+    <div class="field"><label for="su-user">USERNAME</label><input type="text" id="su-user" placeholder="Your handle"></div>
+    <div class="field"><label for="su-email">EMAIL</label><input type="email" id="su-email" placeholder="you@email.com"></div>
   </div>
   <div class="field-row">
-    <div class="field"><label>HOME PARK</label>
-      <select id="su-park"><option value="">Select...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Hersheypark</option><option>Dorney Park</option><option>Knoebels</option><option>Morey's Piers</option><option>Kings Island</option><option>Busch Gardens Williamsburg</option><option>Universal Orlando</option><option>Other</option></select>
+    <div class="field"><label for="su-park">HOME PARK</label>
+      <select id="su-park"><option value="">Loading parks...</option></select>
     </div>
-    <div class="field"><label>I WANT TO</label>
+    <div class="field"><label for="su-intent">I WANT TO</label>
       <select id="su-intent"><option value="">Select...</option><option value="Log + Audit">Log rides + audit parks</option><option value="Log + Browse">Log rides + browse scores</option><option value="Explore">Just explore</option></select>
     </div>
   </div>
   <button class="sub" id="signup-btn">Join the Beta → Earn 50 XP</button>
   <div class="signup-bonus"><span>🎁 SIGNUP BONUS: 50 XP + FIRST LOG badge unlocked instantly</span></div>
-  <div class="signup-note" id="signup-note">Free forever. <span id="spots-left">Loading...</span> of 100 founding spots remaining.</div>
+  <div class="signup-note" id="signup-note">Free forever. <span id="spots-left">99</span> of 100 founding spots remaining.</div>
 </div>
 
 <footer>
@@ -256,13 +255,32 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 </div>
 
 <script>
-// Dynamic stats
-// Dynamic stats
+var SIGNUP_URL = 'https://ar-signup.amusementstandards.workers.dev';
+var PARKS_URL = 'https://ar-parks.amusementstandards.workers.dev';
+
+// Load parks into dropdown
 (async function() {
   try {
-    document.getElementById('nav-stat').textContent = '3,937 rides tracked';
-    document.getElementById('spots-left').textContent = '99';
-  } catch(e) {}
+    var res = await fetch(PARKS_URL);
+    var data = await res.json();
+    var select = document.getElementById('su-park');
+    select.innerHTML = '<option value="">Select your home park...</option>';
+    if (data.parks && data.parks.length > 0) {
+      for (var i = 0; i < data.parks.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = data.parks[i].name;
+        opt.textContent = data.parks[i].name;
+        select.appendChild(opt);
+      }
+      document.getElementById('nav-stat').textContent = data.count.toLocaleString() + ' parks · 3,937 rides tracked';
+    }
+    if (data.foundingSpotsLeft !== undefined) {
+      document.getElementById('spots-left').textContent = data.foundingSpotsLeft;
+    }
+  } catch(e) {
+    var select = document.getElementById('su-park');
+    select.innerHTML = '<option value="">Select...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Hersheypark</option><option>Dorney Park</option><option>Knoebels</option><option>Kings Island</option><option>Busch Gardens Williamsburg</option><option>Universal Orlando</option><option>Other</option>';
+  }
 })();
 
 // Signup handler
@@ -283,7 +301,7 @@ document.getElementById('signup-btn').addEventListener('click', async function()
   btn.disabled = true;
 
   try {
-    var res = await fetch('https://ar-signup.amusementstandards.workers.dev', {
+    var res = await fetch(SIGNUP_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: username, email: email, homePark: homePark, intent: intent })
@@ -302,7 +320,9 @@ document.getElementById('signup-btn').addEventListener('click', async function()
       } else {
         document.getElementById('signup-note').textContent = 'Welcome aboard, member #' + data.userNumber + '!';
       }
-      document.getElementById('spots-left').textContent = data.foundingSpotsLeft;
+      if (data.foundingSpotsLeft !== undefined) {
+        document.getElementById('spots-left').textContent = data.foundingSpotsLeft;
+      }
     }
   } catch (err) {
     btn.textContent = 'Network error — try again';
