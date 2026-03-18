@@ -106,32 +106,22 @@ a{color:var(--ac);text-decoration:none;}
 .timer-label{font-family:var(--m);font-size:9px;color:var(--dim);letter-spacing:1px;margin-top:4px;}
 .timer-sub{font-family:var(--m);font-size:10px;color:var(--text);margin-top:8px;}
 
-/* IMPORT SECTION */
-.import-section{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:8px;}
-.import-section h4{font-size:14px;font-weight:700;margin-bottom:4px;}
-.import-section p{font-size:11px;color:var(--text);margin-bottom:12px;line-height:1.5;}
-.import-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-@media(max-width:500px){.import-row{grid-template-columns:1fr;}}
-.import-btn{padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--s1);display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s;}
-.import-btn:hover{border-color:var(--bh);transform:translateY(-2px);}
-.import-btn .ib-icon{font-size:22px;flex-shrink:0;}
-.import-btn .ib-info{flex:1;}
-.import-btn .ib-name{font-size:12px;font-weight:700;}
-.import-btn .ib-desc{font-size:9px;color:var(--dim);margin-top:1px;}
-
 /* SECTION LABELS */
 .sec-label{font-family:var(--m);font-size:9px;letter-spacing:2px;color:var(--dim);margin-bottom:10px;margin-top:32px;display:flex;align-items:center;gap:8px;}
 
-/* BADGES */
-.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:8px;}
-.badge-card{display:flex;flex-direction:column;align-items:center;padding:14px 6px 10px;background:var(--s2);border:1px solid var(--border);border-radius:12px;transition:all .25s;cursor:default;}
+/* BADGES — LARGER REDESIGN */
+.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px;margin-bottom:8px;}
+.badge-card{display:flex;flex-direction:column;align-items:center;padding:20px 10px 16px;background:var(--s2);border:1px solid var(--border);border-radius:14px;transition:all .25s;cursor:default;}
 .badge-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4);border-color:var(--bh);}
-.badge-card.earned{border-color:rgba(250,204,21,.25);background:rgba(250,204,21,.03);}
-.badge-card.locked{opacity:.3;}
-.badge-icon{font-size:26px;margin-bottom:4px;}
-.badge-label{font-family:var(--m);font-size:7px;color:var(--dim);letter-spacing:.5px;text-align:center;line-height:1.3;}
+.badge-card.earned{border-color:rgba(250,204,21,.3);background:linear-gradient(180deg,rgba(250,204,21,.06) 0%,rgba(250,204,21,.01) 100%);}
+.badge-card.earned:hover{border-color:rgba(250,204,21,.5);box-shadow:0 8px 28px rgba(250,204,21,.08);}
+.badge-card.locked{opacity:.25;}
+.badge-icon{font-size:36px;margin-bottom:8px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.3));}
+.badge-card.earned .badge-icon{filter:drop-shadow(0 2px 8px rgba(250,204,21,.2));}
+.badge-label{font-family:var(--m);font-size:8.5px;color:var(--dim);letter-spacing:.4px;text-align:center;line-height:1.4;font-weight:700;}
 .badge-card.earned .badge-label{color:var(--yellow);}
-.badge-date{font-family:var(--m);font-size:7px;color:var(--mute);margin-top:2px;}
+.badge-date{font-family:var(--m);font-size:8px;color:var(--mute);margin-top:4px;}
+.badge-card.earned .badge-date{color:rgba(250,204,21,.4);}
 
 /* RIDE LOG TABLE */
 .ride-log{margin-bottom:8px;}
@@ -156,6 +146,9 @@ a{color:var(--ac);text-decoration:none;}
 .xph-amt{font-family:var(--m);font-size:10px;font-weight:700;color:var(--yellow);flex-shrink:0;}
 .xph-time{font-family:var(--m);font-size:8px;color:var(--mute);flex-shrink:0;margin-left:8px;}
 
+/* IMPORT — subtle bottom section */
+.import-placeholder{padding:20px;background:var(--s2);border:1px dashed var(--border);border-radius:12px;text-align:center;margin-bottom:8px;}
+
 footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margin-top:32px;}
 .ft-b{font-size:13px;font-weight:800;}.ft-b em{font-style:normal;color:var(--ac);}
 .ft-s{font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:1.5px;margin-top:4px;}
@@ -166,6 +159,7 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 .a4{opacity:0;animation:up .4s .5s ease forwards;}
 .a5{opacity:0;animation:up .4s .65s ease forwards;}
 .a6{opacity:0;animation:up .4s .8s ease forwards;}
+.a7{opacity:0;animation:up .4s .95s ease forwards;}
 @media(max-width:500px){
   .ph-top{flex-direction:column;align-items:center;text-align:center;}
   .ph-rank{text-align:center;margin-top:8px;}
@@ -275,7 +269,7 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 </div>
 </div>
 
-<!-- AUDIT MODAL (placeholder for now) -->
+<!-- AUDIT MODAL -->
 <div class="modal-overlay" id="audit-modal">
 <div class="modal">
 <button class="modal-close" onclick="document.getElementById('audit-modal').classList.remove('show')">&times;</button>
@@ -349,30 +343,30 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 </div>
 </div>
 
-<!-- IMPORT -->
-<div class="sec-label a3">📥 IMPORT RIDES</div>
-<div style="padding:20px;background:var(--s2);border:1px dashed var(--border);border-radius:12px;text-align:center;margin-bottom:8px;" class="a3">
-<div style="font-size:28px;margin-bottom:8px">🔗</div>
-<div style="font-size:14px;font-weight:700;color:var(--bright);margin-bottom:4px">Import Coming Soon</div>
-<div style="font-size:11px;color:var(--dim);line-height:1.5">Coaster-Count sync, CSV upload, and bulk ride import<br>arriving in the next update.</div>
-</div>
-
-<!-- BADGES -->
-<div class="sec-label a4">🏅 BADGES EARNED</div>
-<div class="badges-grid a4" id="badges-grid">
+<!-- BADGES (moved up, larger) -->
+<div class="sec-label a3">🏅 BADGES EARNED</div>
+<div class="badges-grid a3" id="badges-grid">
 <div class="badge-card locked"><div class="badge-icon">⏳</div><div class="badge-label">Loading...</div></div>
 </div>
 
 <!-- RIDE LOG -->
-<div class="sec-label a5">🎢 RIDE LOG</div>
-<div class="ride-log a5" id="ride-log">
+<div class="sec-label a4">🎢 RIDE LOG</div>
+<div class="ride-log a4" id="ride-log">
 <div class="log-empty">No rides logged yet — tap Log a Ride above!</div>
 </div>
 
 <!-- XP HISTORY -->
-<div class="sec-label a6">⚡ XP HISTORY</div>
-<div class="xp-history a6" id="xp-history">
+<div class="sec-label a5">⚡ XP HISTORY</div>
+<div class="xp-history a5" id="xp-history">
 <div class="xph-row"><div class="xph-icon">⏳</div><div class="xph-desc" style="color:var(--dim)">Loading...</div></div>
+</div>
+
+<!-- IMPORT (moved to bottom) -->
+<div class="sec-label a6">📥 IMPORT RIDES</div>
+<div class="import-placeholder a6">
+<div style="font-size:28px;margin-bottom:8px">🔗</div>
+<div style="font-size:14px;font-weight:700;color:var(--bright);margin-bottom:4px">Import Coming Soon</div>
+<div style="font-size:11px;color:var(--dim);line-height:1.5">Coaster-Count sync, CSV upload, and bulk ride import<br>arriving in the next update.</div>
 </div>
 
 <footer>
@@ -396,19 +390,15 @@ async function loadAllParks(){
     var r=await fetch(PARKS_URL);var d=await r.json();
     allParks=d.parks||[];
     var groups=d.groups||{};
-    
-    // Sort group names: known chains first, then alphabetical
     var groupNames=Object.keys(groups).sort(function(a,b){
       if(a==='Independent')return 1;
       if(b==='Independent')return -1;
       return a.localeCompare(b);
     });
-    
     ['ride-park','audit-park'].forEach(function(id){
       var s=document.getElementById(id);
       if(!s)return;
       s.innerHTML='<option value="">Select park...</option>';
-      
       if(groupNames.length>0){
         groupNames.forEach(function(gName){
           var og=document.createElement('optgroup');
@@ -452,10 +442,8 @@ document.getElementById('ride-park').onchange=async function(){
     var d=await r.json();
     rideData.parkId=d.parkId||null;
     sel.innerHTML='<option value="">Select ride...</option>';
-    
     var order=d.categoryOrder||["Roller Coaster","Flat Ride","Water Ride","Play Structure","Other"];
     var groups=d.groups||{};
-    
     if(Object.keys(groups).length>0){
       order.forEach(function(cat){
         var ridesInCat=groups[cat];
@@ -502,7 +490,6 @@ function closeRideModal(){
   if(rideTimer)clearInterval(rideTimer);
   rideTimer=null;
   showRideStep(1);
-  // Reset photos
   ['entrance','exit'].forEach(function(t){
     document.getElementById(t+'-preview').style.display='none';
     document.getElementById(t+'-zone').classList.remove('has-photo');
@@ -528,7 +515,6 @@ function rideStep(n){
     rideData.ride=selected&&selected.getAttribute('data-name')?selected.getAttribute('data-name'):(selected?selected.textContent:'Unknown Ride');
   }
   if(n===3){
-    // Start timer
     rideStartTime=Date.now();
     rideData.entranceTime=new Date().toISOString();
     document.getElementById('timer-ride-name').textContent=rideData.ride+' @ '+rideData.park;
@@ -598,11 +584,9 @@ async function submitRideLog(){
     if(d.isFirstRide)msg+='\n🆕 First time on this ride!';
     if(d.isNewPark)msg+='\n🏟️ New park visited! +25 bonus XP';
     document.getElementById('ride-complete-msg').textContent=msg;
-    // Update the XP display in step 5
     var xpEl=document.querySelector('#ride-step5 .modal-desc').previousElementSibling;
     if(xpEl)xpEl.textContent='+'+xp+' XP';
     showRideStep(5);
-    // Refresh profile data after a moment
     setTimeout(loadProfile,2000);
   }catch(e){
     btn.textContent='Network error — try again';
@@ -626,8 +610,6 @@ async function importCoasterCount(){
   if(!ccUser){note.textContent='Enter your Coaster-Count username or profile URL.';note.style.color='var(--red)';return;}
   btn.textContent='Fetching profile...';btn.disabled=true;
   note.textContent='Looking up your Coaster-Count profile...';note.style.color='var(--text)';
-  
-  // CC requires API registration. For now, instruct user to export CSV.
   note.innerHTML='⚠️ Coaster-Count requires API authorization. For now:<br><br>' +
     '1. Go to <a href="https://coaster-count.com" target="_blank" style="color:var(--ac);">coaster-count.com</a><br>' +
     '2. Log in → go to your profile → Numbers page<br>' +
@@ -643,7 +625,6 @@ async function importCSV(){
   var input=document.getElementById('csv-input');
   var note=document.getElementById('csv-note');
   if(!input.files||!input.files[0]){note.textContent='Select a CSV file first.';note.style.color='var(--red)';return;}
-  
   var arUser=new URLSearchParams(window.location.search).get('u')||localStorage.getItem('ar_username')||'adamatic';
   var file=input.files[0];
   var reader=new FileReader();
@@ -651,13 +632,10 @@ async function importCSV(){
     var text=e.target.result;
     var lines=text.split('\n').filter(function(l){return l.trim();});
     if(lines.length<2){note.textContent='CSV appears empty.';note.style.color='var(--red)';return;}
-    
-    // Parse header
     var header=lines[0].toLowerCase().split(',').map(function(h){return h.trim().replace(/"/g,'');});
     var nameIdx=header.indexOf('ride_name');if(nameIdx<0)nameIdx=header.indexOf('name');if(nameIdx<0)nameIdx=header.indexOf('coaster');if(nameIdx<0)nameIdx=header.indexOf('ride');if(nameIdx<0)nameIdx=0;
     var parkIdx=header.indexOf('park_name');if(parkIdx<0)parkIdx=header.indexOf('park');if(parkIdx<0)parkIdx=header.indexOf('location');if(parkIdx<0)parkIdx=1;
     var dateIdx=header.indexOf('date');if(dateIdx<0)dateIdx=header.indexOf('visit_date');if(dateIdx<0)dateIdx=header.indexOf('ridden_date');
-    
     var rides=[];
     for(var i=1;i<lines.length;i++){
       var cols=lines[i].split(',').map(function(c){return c.trim().replace(/"/g,'');});
@@ -666,12 +644,9 @@ async function importCSV(){
       if(!rideName)continue;
       rides.push({rideName:rideName,parkName:parkName,date:dateIdx>=0&&cols[dateIdx]?cols[dateIdx]:null});
     }
-    
     if(!rides.length){note.textContent='No rides found in CSV.';note.style.color='var(--red)';return;}
-    
     note.innerHTML='📄 Parsed <strong style="color:var(--yellow)">'+rides.length+' rides</strong>. Importing and matching...';
     note.style.color='var(--ac)';
-    
     try{
       var r=await fetch(IMPORT_URL,{
         method:'POST',
@@ -679,15 +654,12 @@ async function importCSV(){
         body:JSON.stringify({username:arUser,rides:rides,source:'CSV'})
       });
       var d=await r.json();
-      if(d.error){
-        note.textContent='Error: '+d.error;note.style.color='var(--red)';return;
-      }
+      if(d.error){note.textContent='Error: '+d.error;note.style.color='var(--red)';return;}
       note.innerHTML='✅ Import complete!<br><br>' +
         '<strong style="color:var(--yellow)">'+d.matched+'</strong> rides matched to our database<br>' +
         '<strong style="color:var(--dim)">'+d.unmatched+'</strong> rides imported (unmatched)<br>' +
         '<strong style="color:var(--ac)">+'+d.xpEarned+' XP</strong> earned from import';
       note.style.color='var(--text)';
-      // Refresh profile
       setTimeout(loadProfile,2000);
     }catch(err){
       note.textContent='Network error during import.';note.style.color='var(--red)';
@@ -721,10 +693,10 @@ function renderProfile(data){
 function renderBadges(badges){
   var g=document.getElementById('badges-grid');
   if(!badges||!badges.length){g.innerHTML='<div class="badge-card locked"><div class="badge-icon">🔒</div><div class="badge-label">No badges yet</div></div>';return;}
-  var icons={'FOUNDING 100':'🏆','FIRST LOG':'🎢','FIRST AUDIT':'📋','100 RIDES':'💯','500 RIDES':'🔥','10 PARKS':'🏟️','50 PARKS':'🌍','7-DAY STREAK':'🔥','30-DAY STREAK':'⚡','AUDITOR T2':'🔍','AUDITOR T3':'🌟','AUDITOR T5':'👑','ALL 6 AUDITS':'📊','NIGHT RIDER':'🌙'};
+  var icons={'FOUNDING 100':'🏆','FIRST LOG':'🎢','FIRST AUDIT':'📋','100 RIDES':'💯','500 RIDES':'🔥','10 PARKS':'🏟️','50 PARKS':'🌍','7-DAY STREAK':'🔥','30-DAY STREAK':'⚡','AUDITOR T2':'🔍','AUDITOR T3':'🌟','AUDITOR T4':'⭐','AUDITOR T5':'👑','ALL 6 AUDITS':'📊','NIGHT RIDER':'🌙','HISTORIAN':'📜','MIGRATOR':'🔗'};
   var h='';
   for(var i=0;i<badges.length;i++){var b=badges[i];var c=b.earned?'badge-card earned':'badge-card locked';var ic=icons[b.name]||(b.earned?'🏅':'🔒');
-  h+='<div class="'+c+'"><div class="badge-icon">'+ic+'</div><div class="badge-label">'+b.name+'</div>';
+  h+='<div class="'+c+'" title="'+b.name+'"><div class="badge-icon">'+ic+'</div><div class="badge-label">'+b.name+'</div>';
   if(b.earned&&b.earnedDate)h+='<div class="badge-date">'+timeAgo(b.earnedDate)+'</div>';h+='</div>';}
   g.innerHTML=h;
 }
