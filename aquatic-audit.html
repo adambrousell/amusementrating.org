@@ -403,15 +403,23 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── SUBMIT ──────────────────────────────────────────────────────
+var AUDIT_URL = 'https://ar-audit.amusementstandards.workers.dev';
+
 async function submitAudit() {
   var btn = document.getElementById('submit-btn');
   btn.textContent = 'Submitting...';
   btn.disabled = true;
 
+  // Read URL params for ride context
+  var urlParams = new URLSearchParams(window.location.search);
+
   var payload = {
+    username: localStorage.getItem('ar_username') || 'anonymous',
     auditType: 'Aquatic',
-    park: document.getElementById('audit-park').value,
-    attraction: document.getElementById('audit-attraction').value,
+    rideType: urlParams.get('rideType') || 'Aquatic',
+    rideId: urlParams.get('rideId') || '',
+    rideName: urlParams.get('rideName') || document.getElementById('audit-attraction').value,
+    park: urlParams.get('park') || document.getElementById('audit-park').value,
     date: document.getElementById('audit-date').value,
     timeSlot: document.getElementById('audit-time').value,
     notes: document.getElementById('audit-notes').value,
@@ -426,25 +434,33 @@ async function submitAudit() {
     };
   }
 
-  // TODO: POST to your audit submission Worker
-  // try {
-  //   var r = await fetch(AUDIT_URL, {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify(payload)
-  //   });
-  //   var d = await r.json();
-  // } catch(e) {}
+  try {
+    var r = await fetch(AUDIT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    var d = await r.json();
 
-  console.log('Audit payload:', payload);
+    if (d.error) {
+      btn.textContent = 'Error: ' + d.error;
+      btn.style.background = 'var(--red)';
+      setTimeout(function() { btn.textContent = 'Complete Audit → +50 XP'; btn.disabled = false; btn.style.background = ''; }, 3000);
+      return;
+    }
 
-  btn.textContent = '✓ Audit Submitted! +50 XP';
-  btn.style.background = 'var(--yellow)';
-  btn.style.color = '#0A0C10';
+    btn.textContent = '✓ Audit Submitted! +50 XP (Score: ' + d.score + '%)';
+    btn.style.background = 'var(--yellow)';
+    btn.style.color = '#0A0C10';
 
-  setTimeout(function() {
-    window.location.href = 'profile.html';
-  }, 2000);
+    setTimeout(function() {
+      window.location.href = 'profile.html';
+    }, 2500);
+  } catch (e) {
+    btn.textContent = 'Network error — try again';
+    btn.style.background = 'var(--red)';
+    setTimeout(function() { btn.textContent = 'Complete Audit → +50 XP'; btn.disabled = false; btn.style.background = ''; }, 3000);
+  }
 }
 
 // ── INIT ────────────────────────────────────────────────────────
