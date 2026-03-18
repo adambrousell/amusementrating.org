@@ -25,6 +25,19 @@ body{font-family:var(--d);background:var(--bg);color:var(--bright);-webkit-font-
 .hero h1 em{font-style:normal;color:var(--ac);}
 .hero-sub{font-size:15px;color:var(--text);line-height:1.7;margin-bottom:12px;}
 .hero-sub strong{color:var(--yellow);font-weight:700;}
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 8px;}
+@media(max-width:500px){.action-row{grid-template-columns:1fr;}}
+.action-btn{padding:20px;border-radius:14px;border:2px solid;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .25s;text-align:center;background:transparent;}
+.action-btn:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.4);}
+.action-btn .ab-icon{font-size:32px;}
+.action-btn .ab-label{font-size:16px;font-weight:800;letter-spacing:-.3px;}
+.action-btn .ab-sub{font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:.5px;}
+.btn-ride{border-color:rgba(34,216,124,.3);background:linear-gradient(180deg,rgba(34,216,124,.06),transparent);}
+.btn-ride:hover{border-color:var(--ac);background:linear-gradient(180deg,rgba(34,216,124,.12),transparent);}
+.btn-ride .ab-label{color:var(--ac);}
+.btn-audit{border-color:rgba(250,204,21,.3);background:linear-gradient(180deg,rgba(250,204,21,.06),transparent);}
+.btn-audit:hover{border-color:var(--yellow);background:linear-gradient(180deg,rgba(250,204,21,.12),transparent);}
+.btn-audit .ab-label{color:var(--yellow);}
 .xp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:24px 0;}
 @media(max-width:500px){.xp-grid{grid-template-columns:1fr;}}
 .xp-item{padding:14px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;gap:12px;opacity:0;transform:translateX(-20px);transition:all .4s ease;}
@@ -171,6 +184,20 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
   <h1>Log. Audit. Rank.<br><em>Repeat.</em></h1>
   <p class="hero-sub">The gamified platform for coaster enthusiasts who care about how parks <em>actually run</em>. Log rides. Submit verified audits. Earn <strong>XP</strong>. Unlock badges. Climb the board.</p>
 </section>
+
+<!-- ACTION BUTTONS -->
+<div class="action-row a2" id="action-row">
+  <div class="action-btn btn-ride" id="btn-log-ride" onclick="gatedAction('ride')">
+    <div class="ab-icon">🎢</div>
+    <div class="ab-label">Log a Ride</div>
+    <div class="ab-sub">PHOTO + TIMER + XP</div>
+  </div>
+  <div class="action-btn btn-audit" id="btn-start-audit" onclick="gatedAction('audit')">
+    <div class="ab-icon">📋</div>
+    <div class="ab-label">Start Audit</div>
+    <div class="ab-sub">6 CHECKLIST TYPES · +50 XP</div>
+  </div>
+</div>
 
 
 
@@ -462,6 +489,31 @@ async function loadParks(){
   }catch(e){
     var s=document.getElementById('su-park');
     s.innerHTML='<option value="">Select...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Hersheypark</option><option>Dorney Park</option><option>Knoebels</option><option>Kings Island</option><option>Busch Gardens Williamsburg</option><option>Universal Orlando</option><option>Morey\'s Piers</option><option>Other</option>';
+  }
+}
+
+// === GATED ACTION BUTTONS ===
+function gatedAction(type){
+  var token=localStorage.getItem('ar_token');
+  var username=localStorage.getItem('ar_username');
+  if(token&&username){
+    // Logged in — go to profile page with action
+    window.location.href='profile.html?u='+encodeURIComponent(username)+'&action='+type;
+  } else {
+    // Not logged in — show join/login choice
+    var modal=document.getElementById('login-modal');
+    // Reset to step 1
+    document.getElementById('login-step1').style.display='block';
+    document.getElementById('login-step2').style.display='none';
+    document.getElementById('login-step3').style.display='none';
+    document.getElementById('login-send').textContent='Send Login Code';
+    document.getElementById('login-send').disabled=false;
+    var note=document.getElementById('login-note1');
+    note.innerHTML='<span style="color:var(--yellow)">Log in to '+
+      (type==='ride'?'log a ride':'start an audit')+
+      '</span> — or <a href="#join" onclick="document.getElementById(\'login-modal\').classList.remove(\'show\')" style="color:var(--ac);">sign up below</a> if you\'re new.';
+    note.style.color='';
+    modal.classList.add('show');
   }
 }
 
