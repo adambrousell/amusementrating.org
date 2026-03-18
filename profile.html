@@ -285,12 +285,10 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 <div class="field"><label>AUDIT TYPE</label>
 <select id="audit-type">
 <option value="">Select audit type...</option>
-<option value="coaster">🎢 Roller Coaster — Restraints, Dispatch, Track</option>
-<option value="flat">🎡 Flat Ride — Loading, Cycle, Operator</option>
-<option value="water">🌊 Water Ride — Lifeguard, Flow, Containment</option>
-<option value="play">🧒 Play Structure — Surface, Barriers, Supervision</option>
-<option value="facility">🏗️ Facility — Cleanliness, Signage, Accessibility</option>
-<option value="guest">👥 Guest Experience — Queue, Service, Communication</option>
+<option value="coaster-audit.html">🎢 Roller Coaster — Restraints, Dispatch, Track</option>
+<option value="flat-audit.html">🎡 Flat Ride — Loading, Cycle, Operator</option>
+<option value="water-audit.html">🌊 Water Ride — Lifeguard, Flow, Containment</option>
+<option value="play-audit.html">🧒 Play Structure — Surface, Barriers, Supervision</option>
 </select>
 </div>
 <button class="modal-btn yellow" onclick="startAudit()">Begin Audit Checklist</button>
@@ -624,9 +622,9 @@ async function submitRideLog(){
 // === AUDIT ===
 function startAudit(){
   var park=document.getElementById('audit-park').value;
-  var type=document.getElementById('audit-type').value;
-  if(!park||!type){alert('Select park and audit type');return;}
-  window.location.href='audit.html?park='+encodeURIComponent(park)+'&type='+encodeURIComponent(type);
+  var page=document.getElementById('audit-type').value;
+  if(!park||!page){alert('Select park and audit type');return;}
+  window.location.href=page+'?park='+encodeURIComponent(park);
 }
 
 // === COASTER-COUNT IMPORT ===
