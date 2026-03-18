@@ -406,13 +406,49 @@ async function loadAllParks(){
   try{
     var r=await fetch(PARKS_URL);var d=await r.json();
     allParks=d.parks||[];
+    var groups=d.groups||{};
+    
+    // Sort group names: known chains first, then alphabetical
+    var groupNames=Object.keys(groups).sort(function(a,b){
+      if(a==='Independent')return 1;
+      if(b==='Independent')return -1;
+      return a.localeCompare(b);
+    });
+    
     ['ride-park','audit-park'].forEach(function(id){
       var s=document.getElementById(id);
       if(!s)return;
       s.innerHTML='<option value="">Select park...</option>';
-      allParks.forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;s.appendChild(o);});
+      
+      if(groupNames.length>0){
+        groupNames.forEach(function(gName){
+          var og=document.createElement('optgroup');
+          og.label=gName;
+          var parksInGroup=groups[gName]||[];
+          parksInGroup.forEach(function(p){
+            var o=document.createElement('option');
+            o.value=p.name;
+            o.textContent=p.name;
+            og.appendChild(o);
+          });
+          if(parksInGroup.length>0)s.appendChild(og);
+        });
+      } else {
+        allParks.forEach(function(p){
+          var o=document.createElement('option');
+          o.value=p.name;
+          o.textContent=p.name;
+          s.appendChild(o);
+        });
+      }
     });
-  }catch(e){}
+  }catch(e){
+    ['ride-park','audit-park'].forEach(function(id){
+      var s=document.getElementById(id);
+      if(!s)return;
+      s.innerHTML='<option value="">Select...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Hersheypark</option><option>Other</option>';
+    });
+  }
 }
 
 // === RIDE PARK → RIDES ===
@@ -720,14 +756,23 @@ loadAllParks();
 loadProfile();
 
 // === SESSION CHECK ===
-// If user has a saved session, update nav. If not and viewing own profile, prompt login.
 (async function(){
   var token=localStorage.getItem('ar_token');
   var savedUser=localStorage.getItem('ar_username');
   if(token&&savedUser){
-    // Already logged in — update nav
     var backLink=document.querySelector('.nav-back');
     if(backLink)backLink.innerHTML='👤 '+savedUser+' &nbsp;·&nbsp; <span style="color:var(--dim)">Home</span>';
+  }
+})();
+
+// === AUTO-OPEN ACTION FROM HOMEPAGE ===
+(function(){
+  var params=new URLSearchParams(window.location.search);
+  var action=params.get('action');
+  if(action==='ride'){
+    setTimeout(openRideModal,600);
+  } else if(action==='audit'){
+    setTimeout(function(){document.getElementById('audit-modal').classList.add('show');},600);
   }
 })();
 </script>
