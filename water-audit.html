@@ -105,9 +105,34 @@ function showSubmit(){
   var j=JSON.stringify(payload,null,2);
 
   var ov=document.createElement('div');ov.className='overlay';ov.onclick=function(e){if(e.target===ov)ov.remove();};
-  ov.innerHTML='<div class="modal"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div><h3 style="font-size:16px;font-weight:800">'+CHECKLIST_ICON+' Audit Summary</h3><p style="font-size:11px;color:#6B7280;margin-top:2px">'+c.scored+'/'+c.total+' scored · '+(meta.park||'—')+'</p></div><button onclick="this.closest(\'.overlay\').remove()" style="border:none;background:#F3F4F6;border-radius:8px;width:32px;height:32px;font-size:16px;cursor:pointer;color:#6B7280">✕</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">'+['O','S','G','F'].map(function(p){var v=pillarAvg[p];return'<div style="padding:10px;border-radius:8px;background:#F9FAFB;border:1px solid var(--border);text-align:center"><div class="mono" style="font-size:9px;font-weight:700;color:#6B7280">'+P[p].l+'</div><div class="mono" style="font-size:22px;font-weight:800;color:'+(v>=4?'#059669':v>=3?'#CA8A04':v>0?'#DC2626':'#9CA3AF')+'">'+(v?v.toFixed(1):'—')+'</div></div>';}).join('')+'</div><pre class="mono" style="background:#0A0F1A;color:#E2E8F0;padding:14px;border-radius:10px;font-size:9.5px;overflow:auto;white-space:pre-wrap;line-height:1.6;max-height:35vh">'+j.replace(/</g,'&lt;')+'</pre><div style="margin-top:14px;display:flex;gap:8px"><button onclick="navigator.clipboard.writeText(JSON.stringify(window._ap,null,2));this.textContent=\'✓ Copied\';setTimeout(function(){}.bind(this),2000)" style="flex:1;padding:12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);font-weight:700;font-size:13px;cursor:pointer">Copy JSON</button><button onclick="this.textContent=\'✓ Submitted! +50 XP\';this.style.background=\'#FACC15\';setTimeout(function(){window.location.href=\'profile.html\';},1500)" style="flex:1;padding:12px;border-radius:10px;border:none;background:var(--ar);color:#0A0C10;font-weight:800;font-size:13px;cursor:pointer">Submit → +50 XP</button></div></div>';
+  ov.innerHTML='<div class="modal"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div><h3 style="font-size:16px;font-weight:800">'+CHECKLIST_ICON+' Audit Summary</h3><p style="font-size:11px;color:#6B7280;margin-top:2px">'+c.scored+'/'+c.total+' scored · '+(meta.park||'—')+'</p></div><button onclick="this.closest(\'.overlay\').remove()" style="border:none;background:#F3F4F6;border-radius:8px;width:32px;height:32px;font-size:16px;cursor:pointer;color:#6B7280">✕</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">'+['O','S','G','F'].map(function(p){var v=pillarAvg[p];return'<div style="padding:10px;border-radius:8px;background:#F9FAFB;border:1px solid var(--border);text-align:center"><div class="mono" style="font-size:9px;font-weight:700;color:#6B7280">'+P[p].l+'</div><div class="mono" style="font-size:22px;font-weight:800;color:'+(v>=4?'#059669':v>=3?'#CA8A04':v>0?'#DC2626':'#9CA3AF')+'">'+(v?v.toFixed(1):'—')+'</div></div>';}).join('')+'</div><pre class="mono" style="background:#0A0F1A;color:#E2E8F0;padding:14px;border-radius:10px;font-size:9.5px;overflow:auto;white-space:pre-wrap;line-height:1.6;max-height:35vh">'+j.replace(/</g,'&lt;')+'</pre><div style="margin-top:14px;display:flex;gap:8px"><button onclick="navigator.clipboard.writeText(JSON.stringify(window._ap,null,2));this.textContent=\'✓ Copied\';setTimeout(function(){}.bind(this),2000)" style="flex:1;padding:12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);font-weight:700;font-size:13px;cursor:pointer">Copy JSON</button><button id="submit-final" onclick="submitAudit(this)" style="flex:1;padding:12px;border-radius:10px;border:none;background:var(--ar);color:#0A0C10;font-weight:800;font-size:13px;cursor:pointer">Submit → +50 XP</button></div></div>';
   window._ap=payload;
   document.body.appendChild(ov);
+}
+
+async function submitAudit(btn){
+  btn.textContent='Submitting...';btn.disabled=true;
+  try{
+    var r=await fetch('https://ar-audit.amusementstandards.workers.dev',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(window._ap)
+    });
+    var d=await r.json();
+    if(d.error){
+      btn.textContent='Error: '+d.error;
+      btn.disabled=false;
+      return;
+    }
+    btn.textContent='✓ Submitted! +'+d.xpEarned+' XP';
+    btn.style.background='#FACC15';
+    setTimeout(function(){
+      document.querySelector('.overlay').remove();
+      window.location.href='profile.html';
+    },1500);
+  }catch(e){
+    btn.textContent='Network error — try again';
+    btn.disabled=false;
+  }
 }
 
 render();
