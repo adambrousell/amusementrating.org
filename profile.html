@@ -285,12 +285,12 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 <div class="field"><label>AUDIT TYPE</label>
 <select id="audit-type">
 <option value="">Select audit type...</option>
-<option value="ops">🎢 Operations — Dispatch & Procedure</option>
-<option value="safety">🛡️ Safety — Restraints & Signage</option>
-<option value="guest">👥 Guest Experience — Queue & Service</option>
-<option value="facility">🏗️ Facility — Cleanliness & Maintenance</option>
-<option value="aquatic">🌊 Aquatic — Lifeguard & Pool Safety</option>
-<option value="food">🍔 Food & Beverage — Hygiene & Service</option>
+<option value="coaster">🎢 Roller Coaster — Restraints, Dispatch, Track</option>
+<option value="flat">🎡 Flat Ride — Loading, Cycle, Operator</option>
+<option value="water">🌊 Water Ride — Lifeguard, Flow, Containment</option>
+<option value="play">🧒 Play Structure — Surface, Barriers, Supervision</option>
+<option value="facility">🏗️ Facility — Cleanliness, Signage, Accessibility</option>
+<option value="guest">👥 Guest Experience — Queue, Service, Communication</option>
 </select>
 </div>
 <button class="modal-btn yellow" onclick="startAudit()">Begin Audit Checklist</button>
@@ -452,6 +452,7 @@ async function loadAllParks(){
 }
 
 // === RIDE PARK → RIDES ===
+var categoryIcons={"Roller Coaster":"🎢","Flat Ride":"🎡","Water Ride":"🌊","Play Structure":"🧒","Other":"🎪"};
 document.getElementById('ride-park').onchange=async function(){
   var sel=document.getElementById('ride-ride');
   var parkName=this.value;
@@ -462,11 +463,32 @@ document.getElementById('ride-park').onchange=async function(){
     var d=await r.json();
     rideData.parkId=d.parkId||null;
     sel.innerHTML='<option value="">Select ride...</option>';
-    if(d.rides&&d.rides.length>0){
+    
+    var order=d.categoryOrder||["Roller Coaster","Flat Ride","Water Ride","Play Structure","Other"];
+    var groups=d.groups||{};
+    
+    if(Object.keys(groups).length>0){
+      order.forEach(function(cat){
+        var ridesInCat=groups[cat];
+        if(!ridesInCat||!ridesInCat.length)return;
+        var icon=categoryIcons[cat]||'🎪';
+        var og=document.createElement('optgroup');
+        og.label=icon+' '+cat+' ('+ridesInCat.length+')';
+        ridesInCat.forEach(function(ride){
+          var o=document.createElement('option');
+          o.value=ride.id;
+          o.textContent=ride.name;
+          o.setAttribute('data-name',ride.name);
+          o.setAttribute('data-category',cat);
+          og.appendChild(o);
+        });
+        sel.appendChild(og);
+      });
+    } else if(d.rides&&d.rides.length>0){
       d.rides.forEach(function(ride){
         var o=document.createElement('option');
         o.value=ride.id;
-        o.textContent=ride.name+(ride.type?' ('+ride.type+')':'');
+        o.textContent=ride.name;
         o.setAttribute('data-name',ride.name);
         sel.appendChild(o);
       });
