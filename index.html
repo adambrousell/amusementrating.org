@@ -548,11 +548,15 @@ var amRides=[],amSelected=null;
     s.innerHTML='<option value="">Select park...</option>';
     var groups=d.groups||{};
     var gn=Object.keys(groups).sort(function(a,b){if(a==='Independent')return 1;if(b==='Independent')return -1;return a.localeCompare(b);});
-    gn.forEach(function(g){
-      var og=document.createElement('optgroup');og.label=g;
-      (groups[g]||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;og.appendChild(o);});
-      if((groups[g]||[]).length)s.appendChild(og);
-    });
+    if(gn.length>0){
+      gn.forEach(function(g){
+        var og=document.createElement('optgroup');og.label=g;
+        (groups[g]||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;og.appendChild(o);});
+        if((groups[g]||[]).length)s.appendChild(og);
+      });
+    } else {
+      (d.parks||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;s.appendChild(o);});
+    }
   }catch(e){
     var s=document.getElementById('am-park');
     if(s)s.innerHTML='<option value="">Error loading parks</option>';
