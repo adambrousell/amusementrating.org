@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Roller Coaster Audit — AmusementRating</title>
+<title>Flat Ride Audit — AmusementRating</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#FAFAFA;--card:#fff;--border:#E5E7EB;--text:#374151;--dim:#9CA3AF;--dark:#0A0F1A;--dark2:#12141C;--ar:#22D87C;--ar2:#1BB86A;--green:#059669;--greenbg:#ECFDF5;--greenbd:#86EFAC;--purple:#7C3AED;--purplebg:#F5F3FF;--purplebd:#E9D5FF;--mono:'Space Mono',monospace;--sans:'Sora',system-ui,sans-serif}
+:root{--bg:#FAFAFA;--card:#fff;--border:#E5E7EB;--text:#374151;--dim:#9CA3AF;--dark:#0A0F1A;--dark2:#12141C;--ar:#22D87C;--green:#059669;--greenbg:#ECFDF5;--greenbd:#86EFAC;--mono:'Space Mono',monospace;--sans:'Sora',system-ui,sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--sans);background:var(--bg);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}button,input,textarea{font-family:var(--sans)}input:focus,textarea:focus{outline:none;border-color:var(--ar)!important}
 .mono{font-family:var(--mono)}
 .bdg{display:inline-block;font-family:var(--mono);font-weight:700;letter-spacing:.06em;line-height:1.6;border-radius:4px;font-size:9.5px;padding:1px 7px}
@@ -27,28 +27,24 @@
 </head>
 <body>
 <div class="wrap" id="app"></div>
-</head>
-<body>
-<div class="wrap" id="app"></div>
 <script>
-
-var CHECKLIST_TITLE="Flat Rides";
+var CHECKLIST_TITLE="Flat Ride";
 var CHECKLIST_ICON="🎡";
 var CHECKLIST_ID="fr";
 var PHASES=[
 {n:"Approach",ph:1,items:[{t:"Ride name and type identifiable from pathway",p:"G"},{t:"Height/weight/health restrictions posted",p:"S"},{t:"Wait time display present and current",p:"O"},{t:"Approach path clear and well-maintained",p:"F"}],data:[{k:"posted_wait",l:"Posted Wait Time",u:"min",icon:"⏱️"}]},
-{n:"Queue Entry",w:1,items:[{t:"Safety rules and rider responsibility signage posted",p:"S"},{t:"Loose article storage bins or lockers visible",p:"G"},{t:"Queue entry staffed — line-jumping controlled",p:"O"},{t:"Entry infrastructure in good repair",p:"F"}]},
-{n:"Queue Experience",w:1,items:[{t:"Queue flow managed — no bottlenecks",p:"O"},{t:"Guest comfort measures in place (shade, seating)",p:"G"},{t:"Barriers intact — no climbable hazards",p:"S"},{t:"Queue surface level, clean, no trip hazards",p:"F"}]},
-{n:"Station / Loading",w:1,ph:1,items:[{t:"Operator seats guests efficiently — balanced loading",p:"O"},{t:"Restraint check performed individually on every guest",p:"S"},{t:"Operator delivers safety instructions audibly",p:"S"},{t:"Operator friendly — attentive to children/nervous riders",p:"G"},{t:"Loading area surface and seating units clean",p:"F"}],data:[{k:"workers_platform",l:"Workers on Platform",u:"",icon:"👷"},{k:"workers_training",l:"Employees in Training",u:"",icon:"🎓"},{k:"seats_per_cycle",l:"Seats per Cycle",u:"",icon:"💺"},{k:"cycle_duration",l:"Cycle Duration",u:"sec",icon:"⏱️"}]},
-{n:"Dispatch",w:1,items:[{t:"Clear verbal or visual all-clear before start",p:"S"},{t:"Cycle time consistent with posted duration",p:"O"},{t:"Control panel area organized — operator focused",p:"O"}],data:[{k:"load_unload_time",l:"Load/Unload Time",u:"sec",icon:"🔄"}]},
-{n:"Ride",w:1,items:[{t:"Ride operates within expected motion envelope",p:"S"},{t:"Lighting/music/effects functioning",p:"G"},{t:"Visible mechanical components appear maintained",p:"F"}]},
-{n:"Unload",w:1,items:[{t:"Full stop confirmed before restraint release",p:"S"},{t:"Exit direction clearly communicated",p:"G"},{t:"Operator assists guests needing help exiting",p:"G"},{t:"Unload zone clean — free of debris",p:"F"}]},
+{n:"Queue Entry",items:[{t:"Safety rules and rider responsibility signage posted",p:"S"},{t:"Loose article storage bins or lockers visible",p:"G"},{t:"Queue entry staffed — line-jumping controlled",p:"O"},{t:"Entry infrastructure in good repair",p:"F"}]},
+{n:"Queue Experience",items:[{t:"Queue flow managed — no bottlenecks",p:"O"},{t:"Guest comfort measures in place (shade, seating)",p:"G"},{t:"Barriers intact — no climbable hazards",p:"S"},{t:"Queue surface level, clean, no trip hazards",p:"F"}]},
+{n:"Station / Loading",ph:1,items:[{t:"Operator seats guests efficiently — balanced loading",p:"O"},{t:"Restraint check performed individually on every guest",p:"S"},{t:"Operator delivers safety instructions audibly",p:"S"},{t:"Operator friendly — attentive to children/nervous riders",p:"G"},{t:"Loading area surface and seating units clean",p:"F"}],data:[{k:"workers_platform",l:"Workers on Platform",u:"",icon:"👷"},{k:"workers_training",l:"Employees in Training",u:"",icon:"🎓"},{k:"seats_per_cycle",l:"Seats per Cycle",u:"",icon:"💺"},{k:"cycle_duration",l:"Cycle Duration",u:"sec",icon:"⏱️"}]},
+{n:"Dispatch",items:[{t:"Clear verbal or visual all-clear before start",p:"S"},{t:"Cycle time consistent with posted duration",p:"O"},{t:"Control panel area organized — operator focused",p:"O"}],data:[{k:"load_unload_time",l:"Load/Unload Time",u:"sec",icon:"🔄"}]},
+{n:"Ride",items:[{t:"Ride operates within expected motion envelope",p:"S"},{t:"Lighting/music/effects functioning",p:"G"},{t:"Visible mechanical components appear maintained",p:"F"}]},
+{n:"Unload",items:[{t:"Full stop confirmed before restraint release",p:"S"},{t:"Exit direction clearly communicated",p:"G"},{t:"Operator assists guests needing help exiting",p:"G"},{t:"Unload zone clean — free of debris",p:"F"}]},
 {n:"Exit",ph:1,items:[{t:"Exit path intuitive — reconnects to main pathway",p:"G"},{t:"No pinch points or crowd conflicts at exit",p:"S"},{t:"Exit area well-lit and maintained",p:"F"},{t:"Staff visible if guest needs post-ride assistance",p:"O"}]}
 ];
 </script>
 <script>
 // ═══════ SHARED AUDIT ENGINE ═══════
-var P={O:{l:"OPS",c:"#0D9488"},S:{l:"SAFE",c:"#DC2626"},G:{l:"GUEST",c:"#2563EB"},F:{l:"FACIL",c:"#B45309"}};
+var P={O:{l:"OPS",c:"#0D9488"},S:{l:"SAFETY",c:"#DC2626"},G:{l:"GUEST SVC",c:"#2563EB"},F:{l:"FACILITY",c:"#B45309"}};
 var AN=[{n:1,l:"Critical",d:"Safety hazard or total failure",c:"#DC2626"},{n:2,l:"Poor",d:"Below minimum standard",c:"#EA580C"},{n:3,l:"Acceptable",d:"Meets baseline expectations",c:"#CA8A04"},{n:4,l:"Good",d:"Above average",c:"#16A34A"},{n:5,l:"Excellent",d:"Best-in-class",c:"#059669"}];
 
 var params=new URLSearchParams(window.location.search);
@@ -65,7 +61,7 @@ function scoreBtns(key){return'<div class="scores">'+AN.map(function(a){return'<
 function gpsBlock(label,field,icon){var v=meta[field+'Time'];return'<button class="gps'+(v?' on':'')+'" onclick="captGPS(\''+field+'\')"><span style="font-size:20px">'+(v?'📍':icon)+'</span><div style="flex:1"><div style="font-size:11.5px;font-weight:700;color:'+(v?'var(--green)':'#6B7280')+'">'+label+'</div><div class="mono" style="font-size:10.5px;color:'+(v?'#065F46':'var(--dim)')+';margin-top:1px">'+(v||'Tap to capture GPS + timestamp')+'</div></div></button>';}
 function noteField(key){var v=notes[key];if(v)return'<textarea class="note-area" onchange="notes[\''+key+'\']=this.value" rows="2">'+v+'</textarea>';return'<button class="note-btn" onclick="this.outerHTML=\'<textarea class=\\\'note-area\\\' onchange=\\\'notes[\\\"'+key+'\\\"]=this.value\\\' rows=\\\'2\\\' placeholder=\\\'Observation note…\\\'></textarea>\'">+ note</button>';}
 function photoBtn(idx){var on=photos[idx];return'<button class="photo-btn'+(on?' on':'')+'" onclick="setPhoto('+idx+','+(on?'false':'true')+')">'+(on?'✓ 📷 Photo captured':'📷 Add photo')+'</button>';}
-function dataFields(phase,pi){if(!phase.data||!phase.data.length)return'';var h='<div style="margin-top:10px;padding:12px;border-radius:10px;background:#F0FDF4;border:1px solid #86EFAC"><div style="font-size:10px;font-weight:700;color:#065F46;letter-spacing:.06em;margin-bottom:8px">📊 DATA CAPTURE</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';phase.data.forEach(function(d){var v=dataCapture[d.k]||'';h+='<div><label style="font-size:10px;font-weight:600;color:#374151;display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="font-size:13px">'+d.icon+'</span>'+d.l+'</label><div style="display:flex;align-items:center;gap:4px"><input type="number" inputmode="numeric" value="'+(v||'')+'" placeholder="—" onchange="dataCapture[\''+d.k+'\']=this.value?parseInt(this.value):null" style="width:100%;padding:8px 10px;border:1.5px solid #D1D5DB;border-radius:7px;font-family:var(--mono);font-size:14px;font-weight:700;text-align:center;background:#fff">'+(d.u?'<span style="font-size:10px;color:var(--dim);white-space:nowrap;min-width:28px">'+d.u+'</span>':'')+'</div></div>';});h+='</div></div>';return h;}
+function dataFields(phase){if(!phase.data||!phase.data.length)return'';var h='<div style="margin-top:10px;padding:12px;border-radius:10px;background:#F0FDF4;border:1px solid #86EFAC"><div style="font-size:10px;font-weight:700;color:#065F46;letter-spacing:.06em;margin-bottom:8px">📊 DATA CAPTURE</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';phase.data.forEach(function(d){var v=dataCapture[d.k]||'';h+='<div><label style="font-size:10px;font-weight:600;color:#374151;display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="font-size:13px">'+d.icon+'</span>'+d.l+'</label><div style="display:flex;align-items:center;gap:4px"><input type="number" inputmode="numeric" value="'+(v||'')+'" placeholder="—" onchange="dataCapture[\''+d.k+'\']=this.value?parseInt(this.value):null" style="width:100%;padding:8px 10px;border:1.5px solid #D1D5DB;border-radius:7px;font-family:var(--mono);font-size:14px;font-weight:700;text-align:center;background:#fff">'+(d.u?'<span style="font-size:10px;color:var(--dim);white-space:nowrap;min-width:28px">'+d.u+'</span>':'')+'</div></div>';});h+='</div></div>';return h;}
 
 function render(){
   var c=counted();
@@ -74,7 +70,6 @@ function render(){
   h+='<div class="body">';
   if(meta.park)h+='<span class="tag" style="margin-bottom:6px;display:inline-block">📍 '+meta.park+'</span> ';
   if(meta.auditor)h+='<span class="tag" style="margin-bottom:6px;display:inline-block">👤 '+meta.auditor+'</span>';
-
   h+=gpsBlock('START — GPS + Timestamp','start','🟢');
 
   h+='<button onclick="showLeg=!showLeg;render()" style="padding:5px 10px;font-size:11px;border:1px solid var(--border);border-radius:6px;background:var(--card);cursor:pointer;color:#6B7280;font-weight:600;margin-top:10px">'+(showLeg?'▾ Hide':'▸ Show')+' score guide</button>';
@@ -92,7 +87,7 @@ function render(){
     var done=phase.items.filter(function(_,i){return scores[pi+'-'+i]!=null;}).length;
     var comp=done===phase.items.length;var isExp=expanded[pi]!==false;
     h+='<div class="phase'+(comp?' complete':'')+'"><button class="phase-hdr" onclick="expanded['+pi+']='+(isExp?'false':'true')+';render()"><div style="display:flex;align-items:center;gap:8px;text-align:left"><span style="font-size:11px;color:var(--dim);transform:rotate('+(isExp?'0':'-90')+'deg)">▾</span>'+(comp?'<span style="font-size:13px">✓</span>':'')+'<span style="font-weight:700;font-size:13.5px;color:#111827">'+phase.n+'</span>'+(phase.ph?'<span style="font-size:10px">📷</span>':'')+'</div><span class="mono" style="font-size:11px;font-weight:600;color:'+(comp?'#16A34A':'var(--dim)')+'">'+done+'/'+phase.items.length+'</span></button>';
-    if(isExp){h+='<div class="phase-body">';phase.items.forEach(function(item,i){var k=pi+'-'+i;h+='<div class="item"><div style="display:flex;gap:8px;align-items:flex-start">'+bdg(item.p)+'<span style="font-size:12.5px;color:var(--text);line-height:1.55;flex:1">'+item.t+'</span></div>'+scoreBtns(k)+noteField(k)+'</div>';});h+=dataFields(phase,pi);if(phase.ph)h+='<div style="margin-top:8px;padding-top:8px;border-top:1px solid #F3F4F6">'+photoBtn(pi)+'</div>';h+='</div>';}
+    if(isExp){h+='<div class="phase-body">';phase.items.forEach(function(item,i){var k=pi+'-'+i;h+='<div class="item"><div style="display:flex;gap:8px;align-items:flex-start">'+bdg(item.p)+'<span style="font-size:12.5px;color:var(--text);line-height:1.55;flex:1">'+item.t+'</span></div>'+scoreBtns(k)+noteField(k)+'</div>';});h+=dataFields(phase);if(phase.ph)h+='<div style="margin-top:8px;padding-top:8px;border-top:1px solid #F3F4F6">'+photoBtn(pi)+'</div>';h+='</div>';}
     h+='</div>';
   });
 
@@ -110,10 +105,10 @@ function showSubmit(){
   var j=JSON.stringify(payload,null,2);
 
   var ov=document.createElement('div');ov.className='overlay';ov.onclick=function(e){if(e.target===ov)ov.remove();};
-  ov.innerHTML='<div class="modal"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div><h3 style="font-size:16px;font-weight:800">'+CHECKLIST_ICON+' Audit Summary</h3><p style="font-size:11px;color:#6B7280;margin-top:2px">'+c.scored+'/'+c.total+' scored · '+(meta.park||'—')+'</p></div><button onclick="this.closest(\'.overlay\').remove()" style="border:none;background:#F3F4F6;border-radius:8px;width:32px;height:32px;font-size:16px;cursor:pointer;color:#6B7280">✕</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">'+['O','S','G','F'].map(function(p){var v=pillarAvg[p];return'<div style="padding:10px;border-radius:8px;background:#F9FAFB;border:1px solid var(--border);text-align:center"><div class="mono" style="font-size:9px;font-weight:700;color:#6B7280">'+P[p].l+'</div><div class="mono" style="font-size:22px;font-weight:800;color:'+(v>=4?'#059669':v>=3?'#CA8A04':v>0?'#DC2626':'#9CA3AF')+'">'+(v?v.toFixed(1):'—')+'</div></div>';}).join('')+'</div><pre class="mono" style="background:#0A0F1A;color:#E2E8F0;padding:14px;border-radius:10px;font-size:9.5px;overflow:auto;white-space:pre-wrap;line-height:1.6;max-height:35vh">'+j.replace(/</g,'&lt;')+'</pre><div style="margin-top:14px;display:flex;gap:8px"><button onclick="navigator.clipboard.writeText(\''+j.replace(/'/g,"\\'")+'\');this.textContent=\'✓ Copied\'" style="flex:1;padding:12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);font-weight:700;font-size:13px;cursor:pointer">Copy JSON</button><button onclick="this.textContent=\'✓ Submitted! +50 XP\';this.style.background=\'#FACC15\';setTimeout(function(){window.location.href=\'profile.html\';},1500)" style="flex:1;padding:12px;border-radius:10px;border:none;background:var(--ar);color:#0A0C10;font-weight:800;font-size:13px;cursor:pointer">Submit → +50 XP</button></div></div>';
+  ov.innerHTML='<div class="modal"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div><h3 style="font-size:16px;font-weight:800">'+CHECKLIST_ICON+' Audit Summary</h3><p style="font-size:11px;color:#6B7280;margin-top:2px">'+c.scored+'/'+c.total+' scored · '+(meta.park||'—')+'</p></div><button onclick="this.closest(\'.overlay\').remove()" style="border:none;background:#F3F4F6;border-radius:8px;width:32px;height:32px;font-size:16px;cursor:pointer;color:#6B7280">✕</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">'+['O','S','G','F'].map(function(p){var v=pillarAvg[p];return'<div style="padding:10px;border-radius:8px;background:#F9FAFB;border:1px solid var(--border);text-align:center"><div class="mono" style="font-size:9px;font-weight:700;color:#6B7280">'+P[p].l+'</div><div class="mono" style="font-size:22px;font-weight:800;color:'+(v>=4?'#059669':v>=3?'#CA8A04':v>0?'#DC2626':'#9CA3AF')+'">'+(v?v.toFixed(1):'—')+'</div></div>';}).join('')+'</div><pre class="mono" style="background:#0A0F1A;color:#E2E8F0;padding:14px;border-radius:10px;font-size:9.5px;overflow:auto;white-space:pre-wrap;line-height:1.6;max-height:35vh">'+j.replace(/</g,'&lt;')+'</pre><div style="margin-top:14px;display:flex;gap:8px"><button onclick="navigator.clipboard.writeText(JSON.stringify(window._ap,null,2));this.textContent=\'✓ Copied\';setTimeout(function(){}.bind(this),2000)" style="flex:1;padding:12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);font-weight:700;font-size:13px;cursor:pointer">Copy JSON</button><button onclick="this.textContent=\'✓ Submitted! +50 XP\';this.style.background=\'#FACC15\';setTimeout(function(){window.location.href=\'profile.html\';},1500)" style="flex:1;padding:12px;border-radius:10px;border:none;background:var(--ar);color:#0A0C10;font-weight:800;font-size:13px;cursor:pointer">Submit → +50 XP</button></div></div>';
+  window._ap=payload;
   document.body.appendChild(ov);
 }
 
 render();
-</script>
-</body></html>
+</script></body></html>
