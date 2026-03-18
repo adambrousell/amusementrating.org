@@ -689,6 +689,18 @@ async function loadProfile(){
 
 loadAllParks();
 loadProfile();
+
+// === SESSION CHECK ===
+// If user has a saved session, update nav. If not and viewing own profile, prompt login.
+(async function(){
+  var token=localStorage.getItem('ar_token');
+  var savedUser=localStorage.getItem('ar_username');
+  if(token&&savedUser){
+    // Already logged in — update nav
+    var backLink=document.querySelector('.nav-back');
+    if(backLink)backLink.innerHTML='👤 '+savedUser+' &nbsp;·&nbsp; <span style="color:var(--dim)">Home</span>';
+  }
+})();
 </script>
 </body>
 </html>
