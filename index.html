@@ -210,9 +210,10 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <nav class="nav a1">
 <a href="/" class="nl">Amusement<span>Rating</span></a>
 <div class="nav-r">
+<a href="rankings.html" class="nav-login" id="nav-rankings" style="display:none">🏆 Rankings</a>
 <span class="nav-stat" id="nav-stat"><strong>3,937</strong> rides tracked</span>
 <div class="nav-tag">BETA</div>
-<button class="nav-login" onclick="document.getElementById('login-modal').classList.add('show')">Log In</button>
+<button class="nav-login" id="nav-login-btn" onclick="document.getElementById('login-modal').classList.add('show')">Log In</button>
 </div>
 </nav>
 
@@ -332,8 +333,10 @@ var LB_URL='https://ar-leaderboard.amusementstandards.workers.dev';
   var token=localStorage.getItem('ar_token');
   var user=localStorage.getItem('ar_username');
   if(token&&user){
-    var btn=document.querySelector('.nav-login');
+    var btn=document.getElementById('nav-login-btn');
     if(btn){btn.textContent='👤 '+user;btn.onclick=function(){window.location.href='profile.html';};}
+    var rankLink=document.getElementById('nav-rankings');
+    if(rankLink)rankLink.style.display='inline-block';
   }
 })();
 
