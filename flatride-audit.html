@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Roller Coaster Audit — AmusementRating</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#FAFAFA;--card:#fff;--border:#E5E7EB;--text:#374151;--dim:#9CA3AF;--dark:#0A0F1A;--dark2:#12141C;--ar:#22D87C;--ar2:#1BB86A;--green:#059669;--greenbg:#ECFDF5;--greenbd:#86EFAC;--purple:#7C3AED;--purplebg:#F5F3FF;--purplebd:#E9D5FF;--mono:'Space Mono',monospace;--sans:'Sora',system-ui,sans-serif}
@@ -26,11 +27,11 @@
 </head>
 <body>
 <div class="wrap" id="app"></div>
-<title>Flat Rides Audit — AmusementRating</title>
 </head>
 <body>
 <div class="wrap" id="app"></div>
 <script>
+
 var CHECKLIST_TITLE="Flat Rides";
 var CHECKLIST_ICON="🎡";
 var CHECKLIST_ID="fr";
@@ -45,7 +46,6 @@ var PHASES=[
 {n:"Exit",ph:1,items:[{t:"Exit path intuitive — reconnects to main pathway",p:"G"},{t:"No pinch points or crowd conflicts at exit",p:"S"},{t:"Exit area well-lit and maintained",p:"F"},{t:"Staff visible if guest needs post-ride assistance",p:"O"}]}
 ];
 </script>
-<script>
 <script>
 // ═══════ SHARED AUDIT ENGINE ═══════
 var P={O:{l:"OPS",c:"#0D9488"},S:{l:"SAFE",c:"#DC2626"},G:{l:"GUEST",c:"#2563EB"},F:{l:"FACIL",c:"#B45309"}};
@@ -116,5 +116,4 @@ function showSubmit(){
 
 render();
 </script>
-</body>
-</html>
+</body></html>
