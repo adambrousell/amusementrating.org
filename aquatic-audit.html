@@ -410,29 +410,66 @@ async function submitAudit() {
   btn.textContent = 'Submitting...';
   btn.disabled = true;
 
-  // Read URL params for ride context
   var urlParams = new URLSearchParams(window.location.search);
 
-  var payload = {
-    username: localStorage.getItem('ar_username') || 'anonymous',
-    auditType: 'Aquatic',
-    rideType: urlParams.get('rideType') || 'Aquatic',
-    rideId: urlParams.get('rideId') || '',
-    rideName: urlParams.get('rideName') || document.getElementById('audit-attraction').value,
-    park: urlParams.get('park') || document.getElementById('audit-park').value,
-    date: document.getElementById('audit-date').value,
-    timeSlot: document.getElementById('audit-time').value,
-    notes: document.getElementById('audit-notes').value,
-    items: {},
-    photoCount: photos.length
-  };
+  // Calculate pillar scores from item prefixes
+  var pillarItems = { O: { pass: 0, total: 0 }, S: { pass: 0, total: 0 }, G: { pass: 0, total: 0 }, F: { pass: 0, total: 0 } };
+  var pillarMap = { 'AQ-LG': 'O', 'AQ-WS': 'S', 'AQ-DF': 'F', 'AQ-SR': 'S', 'AQ-ER': 'S', 'AQ-GX': 'G' };
+
+  var passCount = 0, failCount = 0, naCount = 0;
+  var itemsArray = [];
 
   for (var id in itemStates) {
-    payload.items[id] = {
-      state: itemStates[id],
-      note: (document.getElementById('note-' + id) || {}).value || ''
-    };
+    var state = itemStates[id];
+    var note = (document.getElementById('note-' + id) || {}).value || '';
+    itemsArray.push({ id: id, state: state, note: note });
+
+    if (state === 'pass') passCount++;
+    else if (state === 'fail') failCount++;
+    else if (state === 'na') naCount++;
+
+    if (state === 'na') continue;
+
+    for (var prefix in pillarMap) {
+      if (id.startsWith(prefix)) {
+        var p = pillarMap[prefix];
+        pillarItems[p].total++;
+        if (state === 'pass') pillarItems[p].pass++;
+        break;
+      }
+    }
   }
+
+  var calcPillar = function(p) { return p.total > 0 ? Math.round((p.pass / p.total) * 100) : null; };
+  var scored = passCount + failCount;
+  var total = Object.keys(itemStates).length;
+  var pct = total > 0 ? Math.round(((scored + naCount) / total) * 100) : 0;
+
+  var payload = {
+    auditor: localStorage.getItem('ar_username') || 'anonymous',
+    park: urlParams.get('park') || document.getElementById('audit-park').value,
+    checklist: 'Aquatic',
+    audit_id: 'AR-AQU-' + Date.now().toString(36).toUpperCase(),
+    pillars: {
+      O: calcPillar(pillarItems.O),
+      S: calcPillar(pillarItems.S),
+      G: calcPillar(pillarItems.G),
+      F: calcPillar(pillarItems.F)
+    },
+    scored: scored,
+    total: total,
+    pct: pct,
+    data_capture: {
+      ride: urlParams.get('rideName') || document.getElementById('audit-attraction').value,
+      rideId: urlParams.get('rideId') || '',
+      rideType: urlParams.get('rideType') || 'Aquatic',
+      date: document.getElementById('audit-date').value,
+      timeSlot: document.getElementById('audit-time').value,
+      photoCount: photos.length
+    },
+    items: itemsArray,
+    notes: document.getElementById('audit-notes').value
+  };
 
   try {
     var r = await fetch(AUDIT_URL, {
@@ -449,7 +486,8 @@ async function submitAudit() {
       return;
     }
 
-    btn.textContent = '✓ Audit Submitted! +50 XP (Score: ' + d.score + '%)';
+    var xpMsg = d.xpEarned ? ' +' + d.xpEarned + ' XP' : ' +50 XP';
+    btn.textContent = '✓ Audit Submitted!' + xpMsg;
     btn.style.background = 'var(--yellow)';
     btn.style.color = '#0A0C10';
 
