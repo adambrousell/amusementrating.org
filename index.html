@@ -131,12 +131,27 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <div class="modal-overlay" id="login-modal">
   <div class="modal">
     <button class="modal-close" id="modal-close">&times;</button>
-    <h3>Welcome back, <em>auditor.</em></h3>
-    <p>Log in to access your dashboard, submit audits, and track your XP.</p>
-    <div class="field"><label for="login-user">USERNAME OR EMAIL</label><input type="text" id="login-user" placeholder="Your handle or email"></div>
-    <div class="field"><label for="login-pass">ACCESS CODE</label><input type="password" id="login-pass" placeholder="Sent to your email at signup"></div>
-    <button class="modal-btn" id="login-btn">Log In</button>
-    <div class="modal-note" id="login-note">Access codes will be emailed to Founding 100 members in Phase 2.</div>
+    <!-- STEP 1: Enter email -->
+    <div id="login-step1">
+      <h3>Welcome back, <em>auditor.</em></h3>
+      <p>Enter your email and we'll send you a 6-digit login code.</p>
+      <div class="field"><label for="login-email">EMAIL</label><input type="email" id="login-email" placeholder="you@email.com"></div>
+      <button class="modal-btn" id="login-send">Send Login Code</button>
+      <div class="modal-note" id="login-note1">No password needed — we'll email you a one-time code.</div>
+    </div>
+    <!-- STEP 2: Enter code -->
+    <div id="login-step2" style="display:none;">
+      <h3>Check your <em>inbox.</em></h3>
+      <p>We sent a 6-digit code to <strong id="login-sent-to"></strong></p>
+      <div class="field"><label for="login-code">LOGIN CODE</label><input type="text" id="login-code" placeholder="123456" maxlength="6" style="font-family:var(--m);font-size:20px;letter-spacing:6px;text-align:center;"></div>
+      <button class="modal-btn" id="login-verify">Verify & Log In</button>
+      <div class="modal-note" id="login-note2">Code expires in 15 minutes. <a href="#" id="login-resend" style="color:var(--ac);">Resend code</a></div>
+    </div>
+    <!-- STEP 3: Logged in -->
+    <div id="login-step3" style="display:none;">
+      <h3 style="text-align:center;">You're in, <em id="login-welcome-name">auditor</em>.</h3>
+      <p style="text-align:center;">Redirecting to your profile...</p>
+    </div>
   </div>
 </div>
 
@@ -146,6 +161,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
     <div class="nav-count" id="nav-stat">3,937 rides tracked</div>
     <div class="nav-tag">BETA</div>
     <button class="nav-login" id="login-open">Log In</button>
+    <a href="#" class="nav-login" id="nav-profile" style="display:none;">👤 <span id="nav-username"></span></a>
   </div>
 </nav>
 
@@ -238,15 +254,113 @@ var SIGNUP_URL='https://ar-signup.amusementstandards.workers.dev';
 var PARKS_URL='https://ar-parks.amusementstandards.workers.dev';
 var LB_URL='https://ar-leaderboard.amusementstandards.workers.dev';
 
+var AUTH_URL='https://ar-auth.amusementstandards.workers.dev';
+
 // === LOGIN MODAL ===
+var loginEmail='';
 document.getElementById('login-open').onclick=function(){document.getElementById('login-modal').classList.add('show');};
 document.getElementById('modal-close').onclick=function(){document.getElementById('login-modal').classList.remove('show');};
 document.getElementById('login-modal').onclick=function(e){if(e.target===this)this.classList.remove('show');};
-document.getElementById('login-btn').onclick=function(){
-  var n=document.getElementById('login-note');
-  n.innerHTML='🔒 Full login launching with Phase 2. Your Founding 100 spot is secured!';
-  n.style.color='var(--yellow)';
+
+// Step 1: Send code
+document.getElementById('login-send').onclick=async function(){
+  var btn=this;
+  var email=document.getElementById('login-email').value.trim();
+  if(!email){document.getElementById('login-note1').textContent='Please enter your email.';document.getElementById('login-note1').style.color='var(--red)';return;}
+  btn.textContent='Sending code...';btn.disabled=true;
+  try{
+    var r=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send',email:email})});
+    var d=await r.json();
+    if(d.error){
+      document.getElementById('login-note1').textContent=d.error;
+      document.getElementById('login-note1').style.color='var(--red)';
+      btn.textContent='Send Login Code';btn.disabled=false;
+    } else {
+      loginEmail=email;
+      document.getElementById('login-sent-to').textContent=email;
+      document.getElementById('login-step1').style.display='none';
+      document.getElementById('login-step2').style.display='block';
+    }
+  }catch(e){
+    document.getElementById('login-note1').textContent='Network error — try again.';
+    document.getElementById('login-note1').style.color='var(--red)';
+    btn.textContent='Send Login Code';btn.disabled=false;
+  }
 };
+
+// Step 2: Verify code
+document.getElementById('login-verify').onclick=async function(){
+  var btn=this;
+  var code=document.getElementById('login-code').value.trim();
+  if(!code||code.length!==6){document.getElementById('login-note2').textContent='Enter the 6-digit code from your email.';document.getElementById('login-note2').style.color='var(--red)';return;}
+  btn.textContent='Verifying...';btn.disabled=true;
+  try{
+    var r=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'verify',email:loginEmail,code:code})});
+    var d=await r.json();
+    if(d.error){
+      document.getElementById('login-note2').innerHTML=d.error+' <a href="#" id="login-resend" style="color:var(--ac);">Resend code</a>';
+      document.getElementById('login-note2').style.color='var(--red)';
+      btn.textContent='Verify & Log In';btn.disabled=false;
+      bindResend();
+    } else {
+      localStorage.setItem('ar_token',d.token);
+      localStorage.setItem('ar_username',d.username);
+      document.getElementById('login-step2').style.display='none';
+      document.getElementById('login-step3').style.display='block';
+      document.getElementById('login-welcome-name').textContent=d.username;
+      showLoggedIn(d.username);
+      setTimeout(function(){
+        document.getElementById('login-modal').classList.remove('show');
+        window.location.href='profile.html?u='+encodeURIComponent(d.username);
+      },1500);
+    }
+  }catch(e){
+    document.getElementById('login-note2').textContent='Network error — try again.';
+    document.getElementById('login-note2').style.color='var(--red)';
+    btn.textContent='Verify & Log In';btn.disabled=false;
+  }
+};
+
+// Resend code link
+function bindResend(){
+  var el=document.getElementById('login-resend');
+  if(el)el.onclick=function(e){
+    e.preventDefault();
+    document.getElementById('login-step2').style.display='none';
+    document.getElementById('login-step1').style.display='block';
+    document.getElementById('login-send').textContent='Send Login Code';
+    document.getElementById('login-send').disabled=false;
+    document.getElementById('login-note1').textContent='No password needed — we\'ll email you a one-time code.';
+    document.getElementById('login-note1').style.color='';
+  };
+}
+bindResend();
+
+// Show logged-in state in nav
+function showLoggedIn(username){
+  document.getElementById('login-open').style.display='none';
+  document.getElementById('nav-profile').style.display='';
+  document.getElementById('nav-username').textContent=username;
+  document.getElementById('nav-profile').href='profile.html?u='+encodeURIComponent(username);
+}
+
+// Check existing session on load
+async function checkSession(){
+  var token=localStorage.getItem('ar_token');
+  var username=localStorage.getItem('ar_username');
+  if(!token||!username)return;
+  try{
+    var r=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'session',token:token})});
+    var d=await r.json();
+    if(d.success){
+      showLoggedIn(d.username);
+    } else {
+      localStorage.removeItem('ar_token');
+      localStorage.removeItem('ar_username');
+    }
+  }catch(e){}
+}
+
 
 
 // === XP GRID SCROLL-IN ===
@@ -379,6 +493,7 @@ document.getElementById('signup-btn').addEventListener('click',async function(){
 
 // === INIT ===
 (function(){
+  checkSession();
   loadParks();
   loadLB();
   renderFeed(seedFeed);
