@@ -171,6 +171,22 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 .modal-btn:hover{transform:translateY(-1px)}
 .modal-note{font-family:var(--m);font-size:9px;color:var(--mute);text-align:center;margin-top:8px}
 
+/* AUDIT MODAL */
+.audit-modal-content{max-width:400px}
+.audit-modal-content h3 em{color:var(--yellow)}
+.audit-type-badge{min-height:28px;margin:10px 0 4px;text-align:center}
+.at-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:6px;font-family:var(--m);font-size:9px;font-weight:700;letter-spacing:.5px}
+.at-tag.t-coaster{color:var(--red);background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25)}
+.at-tag.t-flat{color:var(--text);background:rgba(156,163,184,.08);border:1px solid rgba(156,163,184,.2)}
+.at-tag.t-water{color:var(--blue);background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.25)}
+.at-tag.t-aquatic{color:var(--cyan);background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25)}
+.at-tag.t-play{color:var(--ac);background:rgba(34,216,124,.08);border:1px solid rgba(34,216,124,.2)}
+.at-tag.t-none{color:var(--dim);background:rgba(78,85,106,.1);border:1px solid rgba(78,85,106,.2)}
+.audit-go{width:100%;padding:13px;border:none;border-radius:9px;background:var(--yellow);color:#0A0C10;font-family:var(--d);font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;margin-top:6px}
+.audit-go:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(250,204,21,.2)}
+.audit-go:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.audit-ride-count{font-family:var(--m);font-size:9px;color:var(--mute);text-align:center;margin-top:6px}
+
 /* ANIMATIONS */
 @keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 .a1{opacity:0;animation:up .5s .1s ease forwards}
@@ -215,6 +231,20 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 </div>
 </div>
 
+<!-- AUDIT MODAL -->
+<div class="modal-overlay" id="audit-modal">
+<div class="modal audit-modal-content">
+<button class="modal-close" onclick="document.getElementById('audit-modal').classList.remove('show')">&times;</button>
+<h3>Start an <em>audit.</em></h3>
+<p>Pick a park and ride — the correct checklist loads automatically.</p>
+<div class="field"><label>PARK</label><select id="am-park" onchange="auditParkChanged()"><option value="">Loading parks...</option></select></div>
+<div class="field"><label>RIDE</label><select id="am-ride" disabled onchange="auditRideChanged()"><option value="">Select a park first...</option></select></div>
+<div class="audit-type-badge" id="am-type-badge"></div>
+<button class="audit-go" id="am-go" disabled onclick="auditGo()">Select a ride to start</button>
+<div class="audit-ride-count" id="am-ride-count"></div>
+</div>
+</div>
+
 <!-- CONTEST BANNER -->
 <div class="contest-banner a1">
 <a href="contest-rules.html"><span class="cb-badge">NEW</span> 🏆 Spring 2026 Leaderboard Contest — Win All Season Fast Lane Ultimate → Official Rules</a>
@@ -239,7 +269,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <p>The gamified platform for coaster enthusiasts who care about how parks <em>actually run</em>. Log rides. Submit verified audits. Earn <strong>XP</strong>. Unlock badges. Climb the board.</p>
 <div class="actions">
 <a href="profile.html?action=ride" class="act act-ride"><span class="act-icon">🎢</span><span class="act-label">Log a Ride</span><span class="act-sub">+5 XP</span></a>
-<a href="profile.html?action=audit" class="act act-audit"><span class="act-icon">📋</span><span class="act-label">Start Audit</span><span class="act-sub">+50 XP</span></a>
+<a href="#" class="act act-audit" onclick="document.getElementById('audit-modal').classList.add('show');return false;"><span class="act-icon">📋</span><span class="act-label">Start Audit</span><span class="act-sub">+50 XP</span></a>
 </div>
 </div>
 
@@ -326,7 +356,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <div class="ft-disc">Not affiliated with any park or operator. Scores reflect external observations only.</div>
 <div class="ft-data">RIDE DATA POWERED BY <a href="https://queue-times.com/" target="_blank">Queue-Times.com</a> · <a href="https://themeparks.wiki/" target="_blank">ThemeParks.wiki</a></div>
 <div class="ft-links">
-<a href="mailto:contact@amusementrating.org">Contact</a>
+<a href="/cdn-cgi/l/email-protection#f2919d9c86939186b2939f8781979f979c868093869b9c95dc9d8095">Contact</a>
 <a href="how-it-works.html">How Your Data Works</a>
 <a href="terms.html">Terms of Service</a>
 <a href="privacy.html">Privacy Policy</a>
@@ -336,7 +366,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 var SIGNUP_URL='https://ar-signup.amusementstandards.workers.dev';
 var PARKS_URL='https://ar-parks.amusementstandards.workers.dev';
 var PROFILE_URL='https://ar-profile.amusementstandards.workers.dev';
@@ -495,6 +525,117 @@ async function verifyLoginCode(){
     document.getElementById('login-modal').classList.remove('show');
     alert('Login system is being set up. Use your username on the profile page.');
   }
+}
+
+// ── Audit Modal ─────────────────────────────────────────────────
+var AUDIT_FORMS={
+  'Coaster':'audit-coaster.html',
+  'Flat Ride':'audit-flatride.html',
+  'Water':'audit-water.html',
+  'Aquatic':'audit-aquatic.html',
+  'Play Structure':'audit-play.html'
+};
+var AUDIT_CSS={'Coaster':'t-coaster','Flat Ride':'t-flat','Water':'t-water','Aquatic':'t-aquatic','Play Structure':'t-play'};
+var AUDIT_EMOJI={'Coaster':'🎢','Flat Ride':'🎡','Water':'💧','Aquatic':'🏊','Play Structure':'🏗️'};
+var amRides=[],amSelected=null;
+
+// Load parks into audit modal (reuse the same fetch)
+(async function(){
+  try{
+    var r=await fetch(PARKS_URL);var d=await r.json();
+    var s=document.getElementById('am-park');
+    if(!s)return;
+    s.innerHTML='<option value="">Select park...</option>';
+    var groups=d.groups||{};
+    var gn=Object.keys(groups).sort(function(a,b){if(a==='Independent')return 1;if(b==='Independent')return -1;return a.localeCompare(b);});
+    gn.forEach(function(g){
+      var og=document.createElement('optgroup');og.label=g;
+      (groups[g]||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;og.appendChild(o);});
+      if((groups[g]||[]).length)s.appendChild(og);
+    });
+  }catch(e){
+    var s=document.getElementById('am-park');
+    if(s)s.innerHTML='<option value="">Error loading parks</option>';
+  }
+})();
+
+async function auditParkChanged(){
+  var parkSel=document.getElementById('am-park');
+  var rideSel=document.getElementById('am-ride');
+  var btn=document.getElementById('am-go');
+  amSelected=null;
+  document.getElementById('am-type-badge').innerHTML='';
+  btn.disabled=true;btn.textContent='Select a ride to start';
+  document.getElementById('am-ride-count').textContent='';
+
+  if(!parkSel.value){
+    rideSel.innerHTML='<option value="">Select a park first...</option>';
+    rideSel.disabled=true;return;
+  }
+
+  rideSel.innerHTML='<option value="">Loading rides...</option>';
+  rideSel.disabled=true;
+
+  try{
+    var r=await fetch(PARKS_URL+'?parkName='+encodeURIComponent(parkSel.value));
+    var d=await r.json();
+    amRides=d.rides||[];
+    if(!amRides.length){
+      rideSel.innerHTML='<option value="">No rides found</option>';return;
+    }
+    // Group by type
+    var grouped={};
+    amRides.forEach(function(ride){
+      var t=ride.rideType||'Unclassified';
+      if(!grouped[t])grouped[t]=[];
+      grouped[t].push(ride);
+    });
+    var html='<option value="">Select a ride...</option>';
+    ['Coaster','Flat Ride','Water','Aquatic','Play Structure','Unclassified'].forEach(function(type){
+      if(!grouped[type]||!grouped[type].length)return;
+      html+='<optgroup label="'+esc(type)+' ('+grouped[type].length+')">';
+      grouped[type].forEach(function(ride){
+        html+='<option value="'+esc(ride.id)+'">'+esc(ride.name)+(ride.land?' — '+esc(ride.land):'')+'</option>';
+      });
+      html+='</optgroup>';
+    });
+    rideSel.innerHTML=html;
+    rideSel.disabled=false;
+    document.getElementById('am-ride-count').textContent=amRides.length+' rides at this park';
+  }catch(e){
+    rideSel.innerHTML='<option value="">Error loading rides</option>';
+  }
+}
+
+function auditRideChanged(){
+  var rideSel=document.getElementById('am-ride');
+  var btn=document.getElementById('am-go');
+  var badge=document.getElementById('am-type-badge');
+  if(!rideSel.value){
+    amSelected=null;btn.disabled=true;btn.textContent='Select a ride to start';badge.innerHTML='';return;
+  }
+  amSelected=amRides.find(function(r){return r.id===rideSel.value;});
+  if(amSelected&&amSelected.rideType&&AUDIT_FORMS[amSelected.rideType]){
+    var t=amSelected.rideType;
+    badge.innerHTML='<span class="at-tag '+(AUDIT_CSS[t]||'t-none')+'">'+(AUDIT_EMOJI[t]||'📋')+' '+esc(t).toUpperCase()+' AUDIT</span>';
+    btn.disabled=false;
+    btn.textContent='Start '+t+' Audit → +50 XP';
+  }else{
+    badge.innerHTML='<span class="at-tag t-none">⚠️ No audit form for this type</span>';
+    btn.disabled=true;btn.textContent='No audit form available';
+  }
+}
+
+function auditGo(){
+  if(!amSelected||!amSelected.rideType)return;
+  var form=AUDIT_FORMS[amSelected.rideType];
+  if(!form)return;
+  var p=new URLSearchParams();
+  p.set('rideId',amSelected.id);
+  p.set('rideName',amSelected.name);
+  p.set('rideType',amSelected.rideType);
+  p.set('park',document.getElementById('am-park').value);
+  window.location.href=form+'?'+p.toString();
 }
 </script>
 </body>
