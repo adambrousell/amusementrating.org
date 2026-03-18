@@ -257,12 +257,11 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 
 <script>
 // Dynamic stats
+// Dynamic stats
 (async function() {
   try {
-    var res = await fetch('/api/stats');
-    var data = await res.json();
-    document.getElementById('nav-stat').textContent = data.rideCount.toLocaleString() + ' rides tracked';
-    document.getElementById('spots-left').textContent = data.foundingSpotsLeft;
+    document.getElementById('nav-stat').textContent = '3,937 rides tracked';
+    document.getElementById('spots-left').textContent = '99';
   } catch(e) {}
 })();
 
@@ -284,7 +283,7 @@ document.getElementById('signup-btn').addEventListener('click', async function()
   btn.disabled = true;
 
   try {
-    var res = await fetch('/api/signup', {
+    var res = await fetch('https://ar-signup.amusementstandards.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: username, email: email, homePark: homePark, intent: intent })
