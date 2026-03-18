@@ -35,16 +35,17 @@ var CHECKLIST_TITLE="Flat Rides";
 var CHECKLIST_ICON="🎡";
 var CHECKLIST_ID="fr";
 var PHASES=[
-{n:"Approach",ph:1,items:[{t:"Ride name and type identifiable from pathway",p:"G"},{t:"Height/weight/health restrictions posted",p:"S"},{t:"Wait time display present and current",p:"O"},{t:"Approach path clear and well-maintained",p:"F"}]},
+{n:"Approach",ph:1,items:[{t:"Ride name and type identifiable from pathway",p:"G"},{t:"Height/weight/health restrictions posted",p:"S"},{t:"Wait time display present and current",p:"O"},{t:"Approach path clear and well-maintained",p:"F"}],data:[{k:"posted_wait",l:"Posted Wait Time",u:"min",icon:"⏱️"}]},
 {n:"Queue Entry",w:1,items:[{t:"Safety rules and rider responsibility signage posted",p:"S"},{t:"Loose article storage bins or lockers visible",p:"G"},{t:"Queue entry staffed — line-jumping controlled",p:"O"},{t:"Entry infrastructure in good repair",p:"F"}]},
 {n:"Queue Experience",w:1,items:[{t:"Queue flow managed — no bottlenecks",p:"O"},{t:"Guest comfort measures in place (shade, seating)",p:"G"},{t:"Barriers intact — no climbable hazards",p:"S"},{t:"Queue surface level, clean, no trip hazards",p:"F"}]},
-{n:"Station / Loading",w:1,ph:1,items:[{t:"Operator seats guests efficiently — balanced loading",p:"O"},{t:"Restraint check performed individually on every guest",p:"S"},{t:"Operator delivers safety instructions audibly",p:"S"},{t:"Operator friendly — attentive to children/nervous riders",p:"G"},{t:"Loading area surface and seating units clean",p:"F"}]},
-{n:"Dispatch",w:1,items:[{t:"Clear verbal or visual all-clear before start",p:"S"},{t:"Cycle time consistent with posted duration",p:"O"},{t:"Control panel area organized — operator focused",p:"O"}]},
+{n:"Station / Loading",w:1,ph:1,items:[{t:"Operator seats guests efficiently — balanced loading",p:"O"},{t:"Restraint check performed individually on every guest",p:"S"},{t:"Operator delivers safety instructions audibly",p:"S"},{t:"Operator friendly — attentive to children/nervous riders",p:"G"},{t:"Loading area surface and seating units clean",p:"F"}],data:[{k:"workers_platform",l:"Workers on Platform",u:"",icon:"👷"},{k:"workers_training",l:"Employees in Training",u:"",icon:"🎓"},{k:"seats_per_cycle",l:"Seats per Cycle",u:"",icon:"💺"},{k:"cycle_duration",l:"Cycle Duration",u:"sec",icon:"⏱️"}]},
+{n:"Dispatch",w:1,items:[{t:"Clear verbal or visual all-clear before start",p:"S"},{t:"Cycle time consistent with posted duration",p:"O"},{t:"Control panel area organized — operator focused",p:"O"}],data:[{k:"load_unload_time",l:"Load/Unload Time",u:"sec",icon:"🔄"}]},
 {n:"Ride",w:1,items:[{t:"Ride operates within expected motion envelope",p:"S"},{t:"Lighting/music/effects functioning",p:"G"},{t:"Visible mechanical components appear maintained",p:"F"}]},
 {n:"Unload",w:1,items:[{t:"Full stop confirmed before restraint release",p:"S"},{t:"Exit direction clearly communicated",p:"G"},{t:"Operator assists guests needing help exiting",p:"G"},{t:"Unload zone clean — free of debris",p:"F"}]},
 {n:"Exit",ph:1,items:[{t:"Exit path intuitive — reconnects to main pathway",p:"G"},{t:"No pinch points or crowd conflicts at exit",p:"S"},{t:"Exit area well-lit and maintained",p:"F"},{t:"Staff visible if guest needs post-ride assistance",p:"O"}]}
 ];
 </script>
+<script>
 <script>
 // ═══════ SHARED AUDIT ENGINE ═══════
 var P={O:{l:"OPS",c:"#0D9488"},S:{l:"SAFE",c:"#DC2626"},G:{l:"GUEST",c:"#2563EB"},F:{l:"FACIL",c:"#B45309"}};
@@ -52,7 +53,7 @@ var AN=[{n:1,l:"Critical",d:"Safety hazard or total failure",c:"#DC2626"},{n:2,l
 
 var params=new URLSearchParams(window.location.search);
 var meta={park:params.get('park')||'',auditor:localStorage.getItem('ar_username')||''};
-var scores={},notes={},photos={},expanded={},showLeg=false;
+var scores={},notes={},photos={},expanded={},showLeg=false,dataCapture={};
 
 function setScore(k,v){scores[k]=(scores[k]===v)?null:v;render();}
 function setPhoto(k,v){photos[k]=v;render();}
@@ -64,6 +65,7 @@ function scoreBtns(key){return'<div class="scores">'+AN.map(function(a){return'<
 function gpsBlock(label,field,icon){var v=meta[field+'Time'];return'<button class="gps'+(v?' on':'')+'" onclick="captGPS(\''+field+'\')"><span style="font-size:20px">'+(v?'📍':icon)+'</span><div style="flex:1"><div style="font-size:11.5px;font-weight:700;color:'+(v?'var(--green)':'#6B7280')+'">'+label+'</div><div class="mono" style="font-size:10.5px;color:'+(v?'#065F46':'var(--dim)')+';margin-top:1px">'+(v||'Tap to capture GPS + timestamp')+'</div></div></button>';}
 function noteField(key){var v=notes[key];if(v)return'<textarea class="note-area" onchange="notes[\''+key+'\']=this.value" rows="2">'+v+'</textarea>';return'<button class="note-btn" onclick="this.outerHTML=\'<textarea class=\\\'note-area\\\' onchange=\\\'notes[\\\"'+key+'\\\"]=this.value\\\' rows=\\\'2\\\' placeholder=\\\'Observation note…\\\'></textarea>\'">+ note</button>';}
 function photoBtn(idx){var on=photos[idx];return'<button class="photo-btn'+(on?' on':'')+'" onclick="setPhoto('+idx+','+(on?'false':'true')+')">'+(on?'✓ 📷 Photo captured':'📷 Add photo')+'</button>';}
+function dataFields(phase,pi){if(!phase.data||!phase.data.length)return'';var h='<div style="margin-top:10px;padding:12px;border-radius:10px;background:#F0FDF4;border:1px solid #86EFAC"><div style="font-size:10px;font-weight:700;color:#065F46;letter-spacing:.06em;margin-bottom:8px">📊 DATA CAPTURE</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';phase.data.forEach(function(d){var v=dataCapture[d.k]||'';h+='<div><label style="font-size:10px;font-weight:600;color:#374151;display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="font-size:13px">'+d.icon+'</span>'+d.l+'</label><div style="display:flex;align-items:center;gap:4px"><input type="number" inputmode="numeric" value="'+(v||'')+'" placeholder="—" onchange="dataCapture[\''+d.k+'\']=this.value?parseInt(this.value):null" style="width:100%;padding:8px 10px;border:1.5px solid #D1D5DB;border-radius:7px;font-family:var(--mono);font-size:14px;font-weight:700;text-align:center;background:#fff">'+(d.u?'<span style="font-size:10px;color:var(--dim);white-space:nowrap;min-width:28px">'+d.u+'</span>':'')+'</div></div>';});h+='</div></div>';return h;}
 
 function render(){
   var c=counted();
@@ -90,7 +92,7 @@ function render(){
     var done=phase.items.filter(function(_,i){return scores[pi+'-'+i]!=null;}).length;
     var comp=done===phase.items.length;var isExp=expanded[pi]!==false;
     h+='<div class="phase'+(comp?' complete':'')+'"><button class="phase-hdr" onclick="expanded['+pi+']='+(isExp?'false':'true')+';render()"><div style="display:flex;align-items:center;gap:8px;text-align:left"><span style="font-size:11px;color:var(--dim);transform:rotate('+(isExp?'0':'-90')+'deg)">▾</span>'+(comp?'<span style="font-size:13px">✓</span>':'')+'<span style="font-weight:700;font-size:13.5px;color:#111827">'+phase.n+'</span>'+(phase.ph?'<span style="font-size:10px">📷</span>':'')+'</div><span class="mono" style="font-size:11px;font-weight:600;color:'+(comp?'#16A34A':'var(--dim)')+'">'+done+'/'+phase.items.length+'</span></button>';
-    if(isExp){h+='<div class="phase-body">';phase.items.forEach(function(item,i){var k=pi+'-'+i;h+='<div class="item"><div style="display:flex;gap:8px;align-items:flex-start">'+bdg(item.p)+'<span style="font-size:12.5px;color:var(--text);line-height:1.55;flex:1">'+item.t+'</span></div>'+scoreBtns(k)+noteField(k)+'</div>';});if(phase.ph)h+='<div style="margin-top:8px;padding-top:8px;border-top:1px solid #F3F4F6">'+photoBtn(pi)+'</div>';h+='</div>';}
+    if(isExp){h+='<div class="phase-body">';phase.items.forEach(function(item,i){var k=pi+'-'+i;h+='<div class="item"><div style="display:flex;gap:8px;align-items:flex-start">'+bdg(item.p)+'<span style="font-size:12.5px;color:var(--text);line-height:1.55;flex:1">'+item.t+'</span></div>'+scoreBtns(k)+noteField(k)+'</div>';});h+=dataFields(phase,pi);if(phase.ph)h+='<div style="margin-top:8px;padding-top:8px;border-top:1px solid #F3F4F6">'+photoBtn(pi)+'</div>';h+='</div>';}
     h+='</div>';
   });
 
@@ -104,7 +106,7 @@ function showSubmit(){
   var c=counted();var pv={O:[],S:[],G:[],F:[]};var items=[];
   PHASES.forEach(function(ph,pi){ph.items.forEach(function(it,ii){var k=pi+'-'+ii;var v=scores[k];if(v!=null){items.push({phase:ph.n,observation:it.t,pillar:it.p,score:v,note:notes[k]||null});pv[it.p].push(v);}});});
   var pillarAvg={};Object.keys(pv).forEach(function(p){var arr=pv[p];pillarAvg[p]=arr.length?+(arr.reduce(function(a,b){return a+b;},0)/arr.length).toFixed(2):null;});
-  var payload={audit_id:'AR-'+CHECKLIST_ID.toUpperCase()+'-'+Date.now().toString(36).toUpperCase(),checklist:CHECKLIST_TITLE,park:meta.park,auditor:meta.auditor,gps_start:meta.startTime||null,gps_end:meta.endTime||null,pillars:pillarAvg,scored:c.scored,total:c.total,pct:c.pct,items:items};
+  var payload={audit_id:'AR-'+CHECKLIST_ID.toUpperCase()+'-'+Date.now().toString(36).toUpperCase(),checklist:CHECKLIST_TITLE,park:meta.park,auditor:meta.auditor,gps_start:meta.startTime||null,gps_end:meta.endTime||null,pillars:pillarAvg,scored:c.scored,total:c.total,pct:c.pct,data_capture:dataCapture,items:items};
   var j=JSON.stringify(payload,null,2);
 
   var ov=document.createElement('div');ov.className='overlay';ov.onclick=function(e){if(e.target===ov)ov.remove();};
@@ -116,4 +118,3 @@ render();
 </script>
 </body>
 </html>
-</script></body></html>
