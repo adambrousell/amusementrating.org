@@ -3,10 +3,3 @@
   "include": ["/api/*"],
   "exclude": []
 }
-```
-
-Push it to GitHub and Cloudflare will auto-redeploy. That tells Pages "route anything under `/api/` to the functions, everything else is static."
-
-Actually wait — looking again, the nav says 3,937 which means `/api/stats` IS returning JSON when called from the fetch in the page. The issue might just be with the signup POST. Try the direct URL:
-```
-https://amusementrating.pages.dev/api/stats
