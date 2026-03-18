@@ -381,14 +381,17 @@ async function checkSession(){
   var token=localStorage.getItem('ar_token');
   var username=localStorage.getItem('ar_username');
   if(!token||!username)return;
+  // Show logged in immediately — don't wait for server
+  showLoggedIn(username);
+  // Verify in background — if invalid, log out silently
   try{
     var r=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'session',token:token})});
     var d=await r.json();
-    if(d.success){
-      showLoggedIn(d.username);
-    } else {
+    if(!d.success){
       localStorage.removeItem('ar_token');
       localStorage.removeItem('ar_username');
+      document.getElementById('login-open').style.display='';
+      document.getElementById('nav-profile').style.display='none';
     }
   }catch(e){}
 }
