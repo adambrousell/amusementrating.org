@@ -198,12 +198,7 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 <option value="name-asc">A → Z</option>
 </select>
 <select id="park-region" onchange="filterParks()">
-<option value="">All Regions</option>
-<option value="Northeast">Northeast</option>
-<option value="Southeast">Southeast</option>
-<option value="Midwest">Midwest</option>
-<option value="Southwest">Southwest</option>
-<option value="West">West</option>
+<option value="">All Chains</option>
 </select>
 </div>
 
@@ -446,15 +441,35 @@ async function loadLeaderboard(){
   }
 }
 
-// Load parks (placeholder — will connect to real rankings endpoint)
+// Load parks with scores for rankings
 async function loadParks(){
   try{
-    var r=await fetch(PARKS_URL);var d=await r.json();
+    var r=await fetch(PARKS_URL+'?scores=1');var d=await r.json();
     var parks=d.parks||[];
-    allParksData=parks.map(function(p,i){
-      // Simulated scores until real audit data populates
-      return{name:p.name,group:p.group||'',audits:0,score:null,ops:null,safe:null,guest:null,facil:null,rideCount:p.rideCount||0,region:p.region||''};
+    allParksData=parks.map(function(p){
+      return{
+        name:p.name,
+        group:p.group||'',
+        audits:p.audits||0,
+        score:p.score||null,
+        ops:p.ops||null,
+        safe:p.safe||null,
+        guest:p.guest||null,
+        facil:p.facil||null,
+        rideCount:p.rideCount||0
+      };
     });
+    // Sort: parks with scores first, then by score desc, then audited parks, then alphabetical
+    allParksData.sort(function(a,b){
+      if(a.score!==null&&b.score===null)return -1;
+      if(a.score===null&&b.score!==null)return 1;
+      if(a.score!==null&&b.score!==null)return b.score-a.score;
+      if(a.audits>0&&b.audits===0)return -1;
+      if(a.audits===0&&b.audits>0)return 1;
+      if(a.audits>0&&b.audits>0)return b.audits-a.audits;
+      return a.name.localeCompare(b.name);
+    });
+    populateGroupFilter();
     renderParks();
   }catch(e){
     document.getElementById('park-grid').innerHTML='<div class="empty"><div class="empty-icon">🏟️</div><h3>Could not load parks</h3><p>Check back shortly.</p></div>';
@@ -464,18 +479,30 @@ async function loadParks(){
 function renderParks(){
   var el=document.getElementById('park-grid');
   var search=(document.getElementById('park-search').value||'').toLowerCase();
-  var region=document.getElementById('park-region').value;
+  var group=document.getElementById('park-region').value;
   var sort=document.getElementById('park-sort').value;
 
   var filtered=allParksData.filter(function(p){
     if(search&&p.name.toLowerCase().indexOf(search)<0)return false;
-    if(region&&p.region!==region)return false;
+    if(group&&p.group!==group)return false;
     return true;
   });
 
   filtered.sort(function(a,b){
-    if(sort==='score-desc')return(b.score||0)-(a.score||0);
-    if(sort==='score-asc')return(a.score||0)-(b.score||0);
+    if(sort==='score-desc'){
+      if(a.score!==null&&b.score===null)return -1;
+      if(a.score===null&&b.score!==null)return 1;
+      if(a.score!==null&&b.score!==null)return b.score-a.score;
+      if(a.audits>0&&b.audits===0)return -1;
+      if(a.audits===0&&b.audits>0)return 1;
+      return b.audits-a.audits;
+    }
+    if(sort==='score-asc'){
+      if(a.score!==null&&b.score===null)return -1;
+      if(a.score===null&&b.score!==null)return 1;
+      if(a.score!==null&&b.score!==null)return a.score-b.score;
+      return a.name.localeCompare(b.name);
+    }
     if(sort==='audits-desc')return(b.audits||0)-(a.audits||0);
     return a.name.localeCompare(b.name);
   });
@@ -518,6 +545,14 @@ function renderParks(){
 }
 function filterParks(){renderParks();}
 function sortParks(){renderParks();}
+function populateGroupFilter(){
+  var sel=document.getElementById('park-region');
+  var groupSet={};
+  allParksData.forEach(function(p){if(p.group&&p.group!=='Independent')groupSet[p.group]=true;});
+  var groups=Object.keys(groupSet).sort();
+  sel.innerHTML='<option value="">All Chains</option><option value="Independent">Independent</option>';
+  groups.forEach(function(g){sel.innerHTML+='<option value="'+g+'">'+g+'</option>';});
+}
 function toggleParkDetail(id){
   var el=document.getElementById(id);
   if(el)el.classList.toggle('show');
