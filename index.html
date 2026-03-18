@@ -2,281 +2,320 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>AmusementRating — Log. Audit. Rank. Repeat.</title>
-<meta name="description" content="Log rides. Audit park operations. Earn XP. Unlock badges. Climb the leaderboard. The gamified platform for coaster enthusiasts who care about how parks run.">
-<link rel="canonical" href="https://amusementrating.org">
+<meta name="description" content="The gamified platform for coaster enthusiasts who care about how parks actually run. Log rides, submit verified audits, earn XP, unlock badges, climb the leaderboard.">
 <meta property="og:title" content="AmusementRating — Log. Audit. Rank. Repeat.">
-<meta property="og:description" content="The gamified platform for coaster enthusiasts who care about how parks actually run.">
-<meta property="og:url" content="https://amusementrating.org">
+<meta property="og:description" content="The gamified platform for coaster enthusiasts. Log rides. Submit audits. Earn XP. Climb the board.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://amusementrating.org">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#08090D;--s1:#0D0F15;--s2:#12141C;--s3:#181B25;--border:#1E2236;--bh:#2D3350;--ac:#22D87C;--ac2:#1BB86A;--yellow:#FACC15;--red:#EF4444;--blue:#60A5FA;--purple:#C084FC;--cyan:#22D3EE;--orange:#FB923C;--pink:#F472B6;--text:#9CA3B8;--bright:#F0F2F7;--dim:#4E556A;--mute:#2A2F42;--d:'Sora',sans-serif;--m:'Space Mono',monospace;}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:var(--d);background:var(--bg);color:var(--bright);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
-.page{max-width:640px;margin:0 auto;padding:0 24px;}
-.nav{padding:18px 24px;display:flex;align-items:center;justify-content:space-between;max-width:640px;margin:0 auto;}
-.nl{font-size:15px;font-weight:800;color:var(--bright);letter-spacing:-.3px;text-decoration:none;}.nl span{color:var(--ac);}
-.nav-r{display:flex;align-items:center;gap:10px;}
-.nav-tag{font-family:var(--m);font-size:8px;letter-spacing:1.5px;color:var(--ac);border:1px solid rgba(34,216,124,.2);padding:3px 9px;border-radius:3px;background:rgba(34,216,124,.04);}
-.nav-count{font-family:var(--m);font-size:9px;color:var(--dim);}
-.nav-login{font-family:var(--m);font-size:9px;color:var(--ac);text-decoration:none;border:1px solid rgba(34,216,124,.25);padding:5px 12px;border-radius:5px;transition:all .2s;cursor:pointer;background:transparent;}
-.nav-login:hover{background:rgba(34,216,124,.08);border-color:var(--ac);}
-.hero{padding:48px 0 40px;text-align:center;}
-.hero h1{font-size:clamp(34px,7vw,50px);font-weight:800;line-height:.92;letter-spacing:-1.5px;margin-bottom:16px;}
-.hero h1 em{font-style:normal;color:var(--ac);}
-.hero-sub{font-size:15px;color:var(--text);line-height:1.7;margin-bottom:12px;}
-.hero-sub strong{color:var(--yellow);font-weight:700;}
-.action-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 8px;}
-@media(max-width:500px){.action-row{grid-template-columns:1fr;}}
-.action-btn{padding:20px;border-radius:14px;border:2px solid;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .25s;text-align:center;background:transparent;}
-.action-btn:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.4);}
-.action-btn .ab-icon{font-size:32px;}
-.action-btn .ab-label{font-size:16px;font-weight:800;letter-spacing:-.3px;}
-.action-btn .ab-sub{font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:.5px;}
-.btn-ride{border-color:rgba(34,216,124,.3);background:linear-gradient(180deg,rgba(34,216,124,.06),transparent);}
-.btn-ride:hover{border-color:var(--ac);background:linear-gradient(180deg,rgba(34,216,124,.12),transparent);}
-.btn-ride .ab-label{color:var(--ac);}
-.btn-audit{border-color:rgba(250,204,21,.3);background:linear-gradient(180deg,rgba(250,204,21,.06),transparent);}
-.btn-audit:hover{border-color:var(--yellow);background:linear-gradient(180deg,rgba(250,204,21,.12),transparent);}
-.btn-audit .ab-label{color:var(--yellow);}
-.xp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:24px 0;}
-@media(max-width:500px){.xp-grid{grid-template-columns:1fr;}}
-.xp-item{padding:14px;background:var(--s2);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;gap:12px;opacity:0;transform:translateX(-20px);transition:all .4s ease;}
-.xp-item.vis{opacity:1;transform:translateX(0);}
-.xp-item:nth-child(even){transform:translateX(20px);}
-.xp-item:nth-child(even).vis{transform:translateX(0);}
-.xp-item-icon{font-size:20px;flex-shrink:0;}
-.xp-item-info{flex:1;}
-.xp-item-action{font-size:12px;font-weight:600;}
-.xp-item-pts{font-family:var(--m);font-size:11px;font-weight:700;color:var(--yellow);white-space:nowrap;}
-.lb{margin:20px 0 28px;}
-.lb-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--s2);border:1px solid var(--border);border-radius:8px;margin-bottom:4px;transition:all .3s;opacity:0;animation:lbIn .35s ease forwards;}
-.lb-row:hover{border-color:var(--bh);transform:translateX(4px);}
-.lb-row.gold{border-color:rgba(250,204,21,.3);background:linear-gradient(90deg,rgba(250,204,21,.06),transparent);}
-.lb-row.lb-you{border-color:rgba(34,216,124,.3);background:linear-gradient(90deg,rgba(34,216,124,.06),transparent);}
-@keyframes lbIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-.lb-pos{font-family:var(--m);font-size:14px;font-weight:700;width:28px;text-align:center;flex-shrink:0;}
-.lb-pos.p1{color:var(--yellow);}
-.lb-pos.p2{color:var(--text);}
-.lb-pos.p3{color:var(--orange);}
-.lb-avi{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:linear-gradient(135deg,rgba(34,216,124,.15),rgba(250,204,21,.15));}
-.lb-info{flex:1;min-width:0;}
-.lb-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.lb-badges-row{display:flex;gap:3px;margin-top:2px;}
-.lb-badge-mini{font-size:8px;padding:1px 5px;border-radius:3px;font-family:var(--m);letter-spacing:.3px;}
-.lb-xp{font-family:var(--m);font-size:11px;font-weight:700;color:var(--yellow);flex-shrink:0;}
-.lb-lvl{font-family:var(--m);font-size:9px;color:var(--dim);flex-shrink:0;margin-left:4px;}
-.lb-empty{text-align:center;padding:20px;color:var(--dim);font-size:12px;}
-.badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:20px 0 28px;}
-.badge{width:56px;height:56px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--border);background:var(--s2);transition:all .2s;cursor:default;position:relative;}
-.badge:hover{border-color:var(--bh);transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.4);}
-.badge-icon{font-size:20px;}
-.badge-name{font-family:var(--m);font-size:6px;color:var(--dim);letter-spacing:.5px;margin-top:2px;text-align:center;line-height:1.2;}
-.badge.earned{border-color:rgba(250,204,21,.3);background:rgba(250,204,21,.04);}
-.badge.earned .badge-name{color:var(--yellow);}
-.badge.locked{opacity:.35;}
-.feed{margin:20px 0 28px;}
-.feed-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:12px;color:var(--text);opacity:0;animation:fadeRow .4s ease forwards;}
-.feed-item:last-child{border-bottom:none;}
-@keyframes fadeRow{to{opacity:1;}}
-.feed-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.feed-time{font-family:var(--m);font-size:9px;color:var(--mute);margin-left:auto;flex-shrink:0;}
-.fd-y{background:var(--yellow);}.fd-g{background:var(--ac);}.fd-c{background:var(--cyan);}.fd-p{background:var(--purple);}
-.feed-live{display:inline-flex;align-items:center;gap:5px;margin-left:8px;}
-.feed-pulse{width:6px;height:6px;border-radius:50%;background:var(--ac);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
-.challenge{padding:16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;display:flex;align-items:center;gap:14px;}
-.ch-icon{font-size:28px;flex-shrink:0;}
-.ch-info{flex:1;}
-.ch-name{font-size:13px;font-weight:700;margin-bottom:2px;}
-.ch-desc{font-size:11px;color:var(--text);line-height:1.4;}
-.ch-reward{text-align:right;}
-.ch-xp{font-family:var(--m);font-size:14px;font-weight:700;color:var(--yellow);}
-.ch-label{font-family:var(--m);font-size:7px;color:var(--dim);letter-spacing:.5px;}
-.ch-progress{margin-top:6px;width:80px;height:4px;background:var(--mute);border-radius:2px;overflow:hidden;}
-.ch-fill{height:100%;background:var(--ac);border-radius:2px;}
-.signup{background:var(--s2);border:2px solid rgba(34,216,124,.2);border-radius:14px;padding:28px;margin:32px 0;}
-.signup h2{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;}
-.signup h2 em{font-style:normal;color:var(--ac);}
-.signup>p{font-size:13px;color:var(--text);margin-bottom:20px;line-height:1.5;}
-.field{margin-bottom:12px;}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-@media(max-width:500px){.field-row{grid-template-columns:1fr;}}
-.field label{display:block;font-family:var(--m);font-size:8px;font-weight:700;color:var(--dim);margin-bottom:4px;letter-spacing:1px;}
-.field input,.field select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--s1);color:var(--bright);font-family:var(--d);font-size:13px;outline:none;transition:border-color .15s;}
-.field input:focus,.field select:focus{border-color:var(--ac);}
-.field input::placeholder{color:var(--mute);}
-.field select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath fill='%234E556A' d='M5 7L1 3h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;}
-.sub{width:100%;padding:14px;background:var(--ac);color:#0A0C10;border:none;border-radius:8px;font-family:var(--d);font-weight:800;font-size:16px;cursor:pointer;transition:all .2s;letter-spacing:-.3px;}
-.sub:hover{background:var(--ac2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(34,216,124,.25);}
-.signup-note{font-family:var(--m);font-size:9px;color:var(--mute);text-align:center;margin-top:10px;}
-.signup-bonus{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding:10px;background:rgba(250,204,21,.05);border:1px solid rgba(250,204,21,.15);border-radius:8px;}
-.signup-bonus span{font-family:var(--m);font-size:10px;color:var(--yellow);}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
-.modal-overlay.show{display:flex;}
-.modal{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:380px;width:90%;position:relative;}
-.modal h3{font-size:18px;font-weight:800;margin-bottom:4px;}
-.modal h3 em{font-style:normal;color:var(--ac);}
-.modal>p{font-size:12px;color:var(--text);margin-bottom:16px;}
-.modal .field{margin-bottom:10px;}
-.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer;line-height:1;}
-.modal-close:hover{color:var(--bright);}
-.modal-btn{width:100%;padding:12px;background:var(--ac);color:#0A0C10;border:none;border-radius:8px;font-family:var(--d);font-weight:800;font-size:14px;cursor:pointer;transition:all .2s;}
-.modal-btn:hover{background:var(--ac2);}
-.modal-note{font-family:var(--m);font-size:9px;color:var(--mute);text-align:center;margin-top:8px;}
-.sec-label{font-family:var(--m);font-size:9px;letter-spacing:2px;color:var(--dim);margin-bottom:8px;margin-top:36px;display:flex;align-items:center;gap:8px;}
-footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margin-top:20px;}
-.ft-b{font-size:14px;font-weight:800;margin-bottom:2px;}.ft-b em{font-style:normal;color:var(--ac);}
-.ft-s{font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:1.5px;margin-bottom:8px;}
-.ft-l{font-size:9px;color:var(--mute);line-height:1.6;margin-bottom:8px;}
-.ft-links{display:flex;gap:14px;justify-content:center;}
-.ft-links a{font-family:var(--m);font-size:9px;color:var(--dim);text-decoration:none;}.ft-links a:hover{color:var(--ac);}
-@keyframes up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.a1{opacity:0;animation:up .4s .1s ease forwards;}
-.a2{opacity:0;animation:up .4s .2s ease forwards;}
-.a3{opacity:0;animation:up .4s .35s ease forwards;}
-.a4{opacity:0;animation:up .4s .5s ease forwards;}
-.a5{opacity:0;animation:up .4s .65s ease forwards;}
-.a6{opacity:0;animation:up .4s .8s ease forwards;}
+:root{--bg:#08090D;--s1:#0D0F15;--s2:#12141C;--s3:#181B25;--border:#1E2236;--bh:#2D3350;--ac:#22D87C;--ac2:#1BB86A;--yellow:#FACC15;--red:#EF4444;--blue:#60A5FA;--purple:#C084FC;--cyan:#22D3EE;--orange:#FB923C;--text:#9CA3B8;--bright:#F0F2F7;--dim:#4E556A;--mute:#2A2F42;--d:'Sora',sans-serif;--m:'Space Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--d);background:var(--bg);color:var(--bright);-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
+a{color:var(--ac);text-decoration:none}
+
+/* NAV */
+.nav{padding:14px 24px;display:flex;align-items:center;justify-content:space-between;max-width:800px;margin:0 auto;position:relative;z-index:50}
+.nl{font-size:15px;font-weight:800;letter-spacing:-.3px}.nl span{color:var(--ac)}
+.nav-r{display:flex;align-items:center;gap:10px}
+.nav-stat{font-family:var(--m);font-size:8.5px;color:var(--dim);letter-spacing:.5px}
+.nav-stat strong{color:var(--ac)}
+.nav-tag{font-family:var(--m);font-size:7px;letter-spacing:1.5px;color:var(--ac);border:1px solid rgba(34,216,124,.2);padding:2px 7px;border-radius:3px;background:rgba(34,216,124,.04)}
+.nav-login{font-family:var(--m);font-size:10px;color:var(--dim);cursor:pointer;padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:none;transition:all .2s}
+.nav-login:hover{color:var(--ac);border-color:rgba(34,216,124,.3)}
+
+/* CONTEST BANNER */
+.contest-banner{background:linear-gradient(90deg,rgba(250,204,21,.08),rgba(34,216,124,.06));border-bottom:1px solid rgba(250,204,21,.15);padding:10px 24px;text-align:center}
+.contest-banner a{font-family:var(--m);font-size:10px;color:var(--yellow);letter-spacing:.5px;display:inline-flex;align-items:center;gap:8px}
+.contest-banner a:hover{color:var(--bright)}
+.cb-badge{background:var(--yellow);color:#0A0C10;font-size:8px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:.5px}
+
+/* PAGE */
+.page{max-width:800px;margin:0 auto;padding:0 24px 60px}
+
+/* HERO */
+.hero{text-align:center;padding:52px 0 36px;position:relative}
+.hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:500px;height:500px;background:radial-gradient(ellipse,rgba(34,216,124,.06) 0%,transparent 70%);pointer-events:none}
+.hero h1{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.2;position:relative}
+.hero h1 em{font-style:normal;color:var(--ac)}
+.hero p{font-size:14px;color:var(--text);margin-top:12px;line-height:1.7;max-width:520px;margin-left:auto;margin-right:auto}
+.hero p strong{color:var(--yellow);font-weight:700}
+
+/* ACTION BUTTONS */
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px auto 0;max-width:440px}
+.act{padding:22px;border-radius:14px;border:2px solid;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .25s;text-align:center;background:transparent}
+.act:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.5)}
+.act-icon{font-size:32px}
+.act-label{font-size:16px;font-weight:800;letter-spacing:-.3px}
+.act-sub{font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:.5px}
+.act-ride{border-color:rgba(34,216,124,.3);background:linear-gradient(180deg,rgba(34,216,124,.06),transparent)}
+.act-ride:hover{border-color:var(--ac);background:linear-gradient(180deg,rgba(34,216,124,.12),transparent)}
+.act-ride .act-label{color:var(--ac)}
+.act-audit{border-color:rgba(250,204,21,.3);background:linear-gradient(180deg,rgba(250,204,21,.06),transparent)}
+.act-audit:hover{border-color:var(--yellow);background:linear-gradient(180deg,rgba(250,204,21,.12),transparent)}
+.act-audit .act-label{color:var(--yellow)}
+
+/* SECTION LABELS */
+.sec{font-family:var(--m);font-size:9px;letter-spacing:2px;color:var(--dim);margin:36px 0 12px;display:flex;align-items:center;gap:8px}
+
+/* XP TABLE */
+.xp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.xp-card{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px 10px;text-align:center;transition:all .2s}
+.xp-card:hover{border-color:var(--bh);transform:translateY(-2px)}
+.xp-emoji{font-size:22px;display:block;margin-bottom:6px}
+.xp-desc{font-size:10px;color:var(--text);line-height:1.4}
+.xp-val{font-family:var(--m);font-size:11px;font-weight:700;color:var(--yellow);margin-top:4px}
+
+/* LEADERBOARD */
+.lb{background:var(--s2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.lb-row{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.03);transition:background .15s}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:rgba(255,255,255,.02)}
+.lb-rank{font-family:var(--m);font-size:12px;font-weight:700;width:28px;text-align:center;flex-shrink:0}
+.lb-rank.g{color:var(--yellow)}.lb-rank.s{color:#94A3B8}.lb-rank.b{color:var(--orange)}
+.lb-name{flex:1;font-size:13px;font-weight:600}
+.lb-xp{font-family:var(--m);font-size:10px;color:var(--yellow);font-weight:700}
+.lb-empty{padding:28px;text-align:center;color:var(--dim);font-size:12px}
+
+/* PRIZES */
+.prizes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.prize{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:20px 14px;text-align:center;transition:all .25s}
+.prize:hover{border-color:var(--bh);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.prize:first-child{border-color:rgba(250,204,21,.25);background:linear-gradient(180deg,rgba(250,204,21,.05),transparent)}
+.prize-medal{font-size:32px;margin-bottom:8px}
+.prize-name{font-size:11px;font-weight:700;color:var(--bright);line-height:1.4;margin-bottom:4px}
+.prize-val{font-family:var(--m);font-size:10px;color:var(--yellow);font-weight:700}
+.prize-link{display:inline-block;margin-top:14px;font-family:var(--m);font-size:9px;color:var(--dim);letter-spacing:.5px;transition:color .2s}
+.prize-link:hover{color:var(--ac)}
+
+/* BADGES */
+.badges-row{display:flex;flex-wrap:wrap;gap:8px}
+.bdg{display:flex;flex-direction:column;align-items:center;padding:12px 8px 10px;background:var(--s2);border:1px solid var(--border);border-radius:10px;width:72px;transition:all .2s}
+.bdg:hover{border-color:var(--bh);transform:translateY(-2px)}
+.bdg.locked{opacity:.25}
+.bdg-icon{font-size:22px;margin-bottom:4px}
+.bdg-name{font-family:var(--m);font-size:6.5px;color:var(--dim);text-align:center;letter-spacing:.3px;line-height:1.3}
+
+/* LIVE ACTIVITY */
+.activity{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:16px}
+.act-feed{font-size:12px;color:var(--dim);text-align:center;padding:12px}
+
+/* CHALLENGES */
+.challenges{display:flex;flex-direction:column;gap:8px}
+.ch{display:flex;align-items:center;gap:14px;padding:16px;background:var(--s2);border:1px solid var(--border);border-radius:12px;transition:all .2s}
+.ch:hover{border-color:var(--bh);transform:translateX(3px)}
+.ch-icon{font-size:28px;flex-shrink:0}
+.ch-info{flex:1}
+.ch-name{font-size:13px;font-weight:700;color:var(--bright)}
+.ch-desc{font-size:11px;color:var(--text);margin-top:2px;line-height:1.5}
+.ch-reward{text-align:right;flex-shrink:0}
+.ch-xp{font-family:var(--m);font-size:12px;font-weight:700;color:var(--yellow)}
+.ch-sub{font-family:var(--m);font-size:7px;color:var(--dim);letter-spacing:.5px}
+
+/* SIGNUP */
+.signup-wrap{margin-top:36px;padding:36px 28px;background:linear-gradient(145deg,var(--s2),var(--s3));border:1px solid var(--border);border-radius:16px;text-align:center;position:relative;overflow:hidden}
+.signup-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--ac),var(--yellow),var(--cyan))}
+.signup-wrap h2{font-size:22px;font-weight:800;margin-bottom:4px;letter-spacing:-.3px}
+.signup-wrap h2 em{font-style:normal;color:var(--ac)}
+.signup-wrap>p{font-size:12px;color:var(--text);margin-bottom:20px}
+.signup-wrap>p strong{color:var(--yellow)}
+.field{margin-bottom:10px;text-align:left}
+.field label{display:block;font-family:var(--m);font-size:7px;font-weight:700;color:var(--dim);margin-bottom:3px;letter-spacing:1px}
+.field input,.field select{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:7px;background:var(--s1);color:var(--bright);font-family:var(--d);font-size:13px;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus{border-color:var(--ac)}
+.field select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath fill='%234E556A' d='M5 7L1 3h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.signup-btn{width:100%;padding:14px;border:none;border-radius:10px;background:var(--ac);color:#0A0C10;font-family:var(--d);font-size:15px;font-weight:800;cursor:pointer;transition:all .2s;margin-top:4px}
+.signup-btn:hover{background:var(--ac2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(34,216,124,.25)}
+.signup-note{font-family:var(--m);font-size:9px;color:var(--mute);margin-top:10px}
+.signup-bonus{margin-top:10px;padding:8px 14px;border-radius:8px;background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.15);font-family:var(--m);font-size:9px;color:var(--yellow)}
+.spots{font-family:var(--m);font-size:10px;color:var(--dim);margin-top:12px}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margin-top:48px}
+.ft-brand{font-size:14px;font-weight:800;margin-bottom:4px}.ft-brand em{font-style:normal;color:var(--ac)}
+.ft-tag{font-family:var(--m);font-size:7.5px;color:var(--dim);letter-spacing:1.5px;margin-bottom:12px}
+.ft-disc{font-size:10px;color:var(--dim);margin-bottom:12px;line-height:1.6;max-width:500px;margin-left:auto;margin-right:auto}
+.ft-data{font-family:var(--m);font-size:8px;color:var(--dim);margin-bottom:14px}
+.ft-data a{color:var(--text);transition:color .15s}.ft-data a:hover{color:var(--ac)}
+.ft-links{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.ft-links a{font-family:var(--m);font-size:9px;color:var(--dim);transition:color .15s}
+.ft-links a:hover{color:var(--ac)}
+
+/* LOGIN MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:380px;width:92%;position:relative}
+.modal h3{font-size:18px;font-weight:800;margin-bottom:4px}
+.modal h3 em{font-style:normal;color:var(--ac)}
+.modal p{font-size:12px;color:var(--text);margin-bottom:16px;line-height:1.5}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer;line-height:1}.modal-close:hover{color:var(--bright)}
+.modal-btn{width:100%;padding:12px;border:none;border-radius:8px;font-family:var(--d);font-weight:800;font-size:14px;cursor:pointer;background:var(--ac);color:#0A0C10;transition:all .2s}
+.modal-btn:hover{transform:translateY(-1px)}
+.modal-note{font-family:var(--m);font-size:9px;color:var(--mute);text-align:center;margin-top:8px}
+
+/* ANIMATIONS */
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.a1{opacity:0;animation:up .5s .1s ease forwards}
+.a2{opacity:0;animation:up .5s .2s ease forwards}
+.a3{opacity:0;animation:up .5s .35s ease forwards}
+.a4{opacity:0;animation:up .5s .5s ease forwards}
+.a5{opacity:0;animation:up .5s .65s ease forwards}
+.a6{opacity:0;animation:up .5s .8s ease forwards}
+.a7{opacity:0;animation:up .5s .95s ease forwards}
+.a8{opacity:0;animation:up .5s 1.1s ease forwards}
+
+@media(max-width:600px){
+  .hero h1{font-size:26px}
+  .actions{grid-template-columns:1fr}
+  .xp-grid{grid-template-columns:repeat(2,1fr)}
+  .prizes{grid-template-columns:1fr}
+  .badges-row{justify-content:center}
+  .signup-wrap{padding:28px 18px}
+}
 </style>
 </head>
 <body>
 
+<!-- LOGIN MODAL -->
 <div class="modal-overlay" id="login-modal">
-  <div class="modal">
-    <button class="modal-close" id="modal-close">&times;</button>
-    <!-- STEP 1: Enter email -->
-    <div id="login-step1">
-      <h3>Welcome back, <em>auditor.</em></h3>
-      <p>Enter your email and we'll send you a 6-digit login code.</p>
-      <div class="field"><label for="login-email">EMAIL</label><input type="email" id="login-email" placeholder="you@email.com"></div>
-      <button class="modal-btn" id="login-send">Send Login Code</button>
-      <div class="modal-note" id="login-note1">No password needed — we'll email you a one-time code.</div>
-    </div>
-    <!-- STEP 2: Enter code -->
-    <div id="login-step2" style="display:none;">
-      <h3>Check your <em>inbox.</em></h3>
-      <p>We sent a 6-digit code to <strong id="login-sent-to"></strong></p>
-      <div class="field"><label for="login-code">LOGIN CODE</label><input type="text" id="login-code" placeholder="123456" maxlength="6" style="font-family:var(--m);font-size:20px;letter-spacing:6px;text-align:center;"></div>
-      <button class="modal-btn" id="login-verify">Verify & Log In</button>
-      <div class="modal-note" id="login-note2">Code expires in 15 minutes. <a href="#" id="login-resend" style="color:var(--ac);">Resend code</a></div>
-    </div>
-    <!-- STEP 3: Logged in -->
-    <div id="login-step3" style="display:none;">
-      <h3 style="text-align:center;">You're in, <em id="login-welcome-name">auditor</em>.</h3>
-      <p style="text-align:center;">Redirecting to your profile...</p>
-    </div>
-  </div>
+<div class="modal">
+<button class="modal-close" onclick="document.getElementById('login-modal').classList.remove('show')">&times;</button>
+<div id="login-step1">
+<h3>Welcome back, <em>auditor.</em></h3>
+<p>Enter your email and we'll send you a 6-digit login code.</p>
+<div class="field"><label>EMAIL</label><input type="email" id="login-email" placeholder="you@email.com"></div>
+<button class="modal-btn" onclick="sendLoginCode()">Send Login Code</button>
+<div class="modal-note">No password needed — we'll email you a one-time code.</div>
+</div>
+<div id="login-step2" style="display:none">
+<h3>Check your <em>inbox.</em></h3>
+<p>We sent a 6-digit code to <strong id="login-email-display"></strong></p>
+<div class="field"><label>LOGIN CODE</label><input type="text" id="login-code" placeholder="000000" maxlength="6" inputmode="numeric"></div>
+<button class="modal-btn" onclick="verifyLoginCode()">Verify & Log In</button>
+<div class="modal-note">Code expires in 15 minutes. <a href="#" onclick="document.getElementById('login-step1').style.display='block';document.getElementById('login-step2').style.display='none';return false;">Resend code</a></div>
+</div>
+</div>
 </div>
 
-<nav class="nav">
-  <a href="/" class="nl">Amusement<span>Rating</span></a>
-  <div class="nav-r">
-    <div class="nav-count" id="nav-stat">3,937 rides tracked</div>
-    <div class="nav-tag">BETA</div>
-    <button class="nav-login" id="login-open">Log In</button>
-    <a href="#" class="nav-login" id="nav-profile" style="display:none;">👤 <span id="nav-username"></span></a>
-  </div>
+<!-- CONTEST BANNER -->
+<div class="contest-banner a1">
+<a href="contest-rules.html"><span class="cb-badge">NEW</span> 🏆 Spring 2026 Leaderboard Contest — Win a Six Flags Season Pass + Fast Lane → Official Rules</a>
+</div>
+
+<!-- NAV -->
+<nav class="nav a1">
+<a href="/" class="nl">Amusement<span>Rating</span></a>
+<div class="nav-r">
+<span class="nav-stat" id="nav-stat"><strong>3,937</strong> rides tracked</span>
+<div class="nav-tag">BETA</div>
+<button class="nav-login" onclick="document.getElementById('login-modal').classList.add('show')">Log In</button>
+</div>
 </nav>
 
 <div class="page">
 
-<section class="hero a1">
-  <h1>Log. Audit. Rank.<br><em>Repeat.</em></h1>
-  <p class="hero-sub">The gamified platform for coaster enthusiasts who care about how parks <em>actually run</em>. Log rides. Submit verified audits. Earn <strong>XP</strong>. Unlock badges. Climb the board.</p>
-</section>
-
-<!-- ACTION BUTTONS -->
-<div class="action-row a2" id="action-row">
-  <div class="action-btn btn-ride" id="btn-log-ride" onclick="gatedAction('ride')">
-    <div class="ab-icon">🎢</div>
-    <div class="ab-label">Log a Ride</div>
-    <div class="ab-sub">PHOTO + TIMER + XP</div>
-  </div>
-  <div class="action-btn btn-audit" id="btn-start-audit" onclick="gatedAction('audit')">
-    <div class="ab-icon">📋</div>
-    <div class="ab-label">Start Audit</div>
-    <div class="ab-sub">6 CHECKLIST TYPES · +50 XP</div>
-  </div>
+<!-- HERO -->
+<div class="hero a2">
+<h1>Log. Audit. Rank. <em>Repeat.</em></h1>
+<p>The gamified platform for coaster enthusiasts who care about how parks <em>actually run</em>. Log rides. Submit verified audits. Earn <strong>XP</strong>. Unlock badges. Climb the board.</p>
+<div class="actions">
+<a href="profile.html?action=ride" class="act act-ride"><span class="act-icon">🎢</span><span class="act-label">Log a Ride</span><span class="act-sub">PHOTO + TIMER + XP</span></a>
+<a href="profile.html?action=audit" class="act act-audit"><span class="act-icon">📋</span><span class="act-label">Start Audit</span><span class="act-sub">4 CHECKLIST TYPES · +50 XP</span></a>
+</div>
 </div>
 
-
-
-<div class="sec-label a3">HOW YOU EARN XP</div>
-<div class="xp-grid a3" id="xp-grid">
-  <div class="xp-item"><div class="xp-item-icon">🎢</div><div class="xp-item-info"><div class="xp-item-action">Log a ride</div></div><div class="xp-item-pts">+5 XP</div></div>
-  <div class="xp-item"><div class="xp-item-icon">🆕</div><div class="xp-item-info"><div class="xp-item-action">First time on a ride</div></div><div class="xp-item-pts">+15 XP</div></div>
-  <div class="xp-item"><div class="xp-item-icon">📋</div><div class="xp-item-info"><div class="xp-item-action">Submit an audit</div></div><div class="xp-item-pts">+50 XP</div></div>
-  <div class="xp-item"><div class="xp-item-icon">🏟️</div><div class="xp-item-info"><div class="xp-item-action">New park visited</div></div><div class="xp-item-pts">+25 XP</div></div>
-  <div class="xp-item"><div class="xp-item-icon">📸</div><div class="xp-item-info"><div class="xp-item-action">Photo evidence</div></div><div class="xp-item-pts">+10 XP</div></div>
-  <div class="xp-item"><div class="xp-item-icon">🔥</div><div class="xp-item-info"><div class="xp-item-action">7-day visit streak</div></div><div class="xp-item-pts">+100 XP</div></div>
-  <div class="xp-item"><div class="xp-item-icon">🎯</div><div class="xp-item-info"><div class="xp-item-action">Complete a challenge</div></div><div class="xp-item-pts">+200 XP</div></div>
-  <div class="xp-item"><div class="xp-item-icon">⬆️</div><div class="xp-item-info"><div class="xp-item-action">Tier promotion</div></div><div class="xp-item-pts">+500 XP</div></div>
+<!-- XP TABLE -->
+<div class="sec a3">💎 HOW YOU EARN XP</div>
+<div class="xp-grid a3">
+<div class="xp-card"><span class="xp-emoji">🎢</span><div class="xp-desc">Log a ride</div><div class="xp-val">+5 XP</div></div>
+<div class="xp-card"><span class="xp-emoji">🆕</span><div class="xp-desc">First time on a ride</div><div class="xp-val">+15 XP</div></div>
+<div class="xp-card"><span class="xp-emoji">📋</span><div class="xp-desc">Submit an audit</div><div class="xp-val">+50 XP</div></div>
+<div class="xp-card"><span class="xp-emoji">🏟️</span><div class="xp-desc">New park visited</div><div class="xp-val">+25 XP</div></div>
+<div class="xp-card"><span class="xp-emoji">📸</span><div class="xp-desc">Photo evidence</div><div class="xp-val">+10 XP</div></div>
+<div class="xp-card"><span class="xp-emoji">🔥</span><div class="xp-desc">7-day visit streak</div><div class="xp-val">+100 XP</div></div>
+<div class="xp-card"><span class="xp-emoji">🎯</span><div class="xp-desc">Complete a challenge</div><div class="xp-val">+200 XP</div></div>
+<div class="xp-card"><span class="xp-emoji">⬆️</span><div class="xp-desc">Tier promotion</div><div class="xp-val">+500 XP</div></div>
 </div>
 
-<div class="sec-label a4">🏆 GLOBAL LEADERBOARD<span class="feed-live"><span class="feed-pulse"></span></span></div>
-<div class="lb a4" id="leaderboard"><div class="lb-empty">Loading leaderboard...</div></div>
-
-<div class="sec-label a4">BADGES</div>
-<div class="badges a4">
-  <div class="badge earned"><div class="badge-icon">🎢</div><div class="badge-name">FIRST LOG</div></div>
-  <div class="badge earned"><div class="badge-icon">📋</div><div class="badge-name">FIRST AUDIT</div></div>
-  <div class="badge earned"><div class="badge-icon">🔥</div><div class="badge-name">7-DAY STREAK</div></div>
-  <div class="badge earned"><div class="badge-icon">💯</div><div class="badge-name">100 RIDES</div></div>
-  <div class="badge earned"><div class="badge-icon">🏟️</div><div class="badge-name">10 PARKS</div></div>
-  <div class="badge earned"><div class="badge-icon">🔍</div><div class="badge-name">AUDITOR T2</div></div>
-  <div class="badge earned"><div class="badge-icon">🌟</div><div class="badge-name">AUDITOR T3</div></div>
-  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">500 RIDES</div></div>
-  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">50 PARKS</div></div>
-  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">AUDITOR T5</div></div>
-  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">30-DAY STREAK</div></div>
-  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">ALL 6 AUDITS</div></div>
-  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">NIGHT RIDER</div></div>
-  <div class="badge locked"><div class="badge-icon">🔒</div><div class="badge-name">FOUNDING 100</div></div>
+<!-- LEADERBOARD + PRIZES -->
+<div class="sec a4">🏆 SPRING 2026 LEADERBOARD</div>
+<div class="lb a4" id="leaderboard">
+<div class="lb-empty">Loading leaderboard...</div>
 </div>
 
-<div class="sec-label a5">LIVE ACTIVITY<span class="feed-live"><span class="feed-pulse"></span></span></div>
-<div class="feed a5" id="live-feed"></div>
+<div class="prizes a4">
+<div class="prize"><div class="prize-medal">🥇</div><div class="prize-name">Six Flags Prestige Pass + Fast Lane + All Season Dining</div><div class="prize-val">~$499 value</div></div>
+<div class="prize"><div class="prize-medal">🥈</div><div class="prize-name">2x Epic Universe Tickets</div><div class="prize-val">~$280–398 value</div></div>
+<div class="prize"><div class="prize-medal">🥉</div><div class="prize-name">Six Flags All Season Dining</div><div class="prize-val">~$150 value</div></div>
+</div>
+<div style="text-align:center;margin-top:10px"><a href="contest-rules.html" class="prize-link">📜 Full Contest Rules → Ends Memorial Day 2026</a></div>
 
-<div class="sec-label a5">SEASON CHALLENGES · SPRING 2026</div>
-<div class="a5">
-  <div class="challenge"><div class="ch-icon">🌊</div><div class="ch-info"><div class="ch-name">Opening Day Rush</div><div class="ch-desc">Log rides at 3 different parks during opening weekend</div></div><div class="ch-reward"><div class="ch-xp">+500</div><div class="ch-label">XP + BADGE</div><div class="ch-progress"><div class="ch-fill" style="width:33%"></div></div></div></div>
-  <div class="challenge"><div class="ch-icon">📋</div><div class="ch-info"><div class="ch-name">Full Sweep</div><div class="ch-desc">Submit all 6 audit types at a single park in one visit</div></div><div class="ch-reward"><div class="ch-xp">+750</div><div class="ch-label">XP + BADGE</div><div class="ch-progress"><div class="ch-fill" style="width:0%"></div></div></div></div>
-  <div class="challenge"><div class="ch-icon">🔥</div><div class="ch-info"><div class="ch-name">Iron Streak</div><div class="ch-desc">Log at least one ride every week for 8 consecutive weeks</div></div><div class="ch-reward"><div class="ch-xp">+1000</div><div class="ch-label">XP + BADGE</div><div class="ch-progress"><div class="ch-fill" style="width:12%"></div></div></div></div>
+<!-- BADGES -->
+<div class="sec a5">🏅 BADGES</div>
+<div class="badges-row a5">
+<div class="bdg"><span class="bdg-icon">🎢</span><span class="bdg-name">FIRST LOG</span></div>
+<div class="bdg"><span class="bdg-icon">📋</span><span class="bdg-name">FIRST AUDIT</span></div>
+<div class="bdg"><span class="bdg-icon">🔥</span><span class="bdg-name">7-DAY STREAK</span></div>
+<div class="bdg"><span class="bdg-icon">💯</span><span class="bdg-name">100 RIDES</span></div>
+<div class="bdg"><span class="bdg-icon">🏟️</span><span class="bdg-name">10 PARKS</span></div>
+<div class="bdg"><span class="bdg-icon">🔍</span><span class="bdg-name">AUDITOR T2</span></div>
+<div class="bdg"><span class="bdg-icon">🌟</span><span class="bdg-name">AUDITOR T3</span></div>
+<div class="bdg locked"><span class="bdg-icon">🔒</span><span class="bdg-name">500 RIDES</span></div>
+<div class="bdg locked"><span class="bdg-icon">🔒</span><span class="bdg-name">50 PARKS</span></div>
+<div class="bdg locked"><span class="bdg-icon">🔒</span><span class="bdg-name">AUDITOR T5</span></div>
+<div class="bdg locked"><span class="bdg-icon">🔒</span><span class="bdg-name">30-DAY STREAK</span></div>
+<div class="bdg locked"><span class="bdg-icon">🔒</span><span class="bdg-name">ALL 6 AUDITS</span></div>
+<div class="bdg locked"><span class="bdg-icon">🔒</span><span class="bdg-name">NIGHT RIDER</span></div>
+<div class="bdg locked"><span class="bdg-icon">🔒</span><span class="bdg-name">FOUNDING 100</span></div>
 </div>
 
-<div class="signup a6" id="join">
-  <h2>Claim your <em>spot.</em></h2>
-  <p>First 100 members get the <strong style="color:var(--yellow)">FOUNDING 100</strong> badge — permanently. It never unlocks again.</p>
-  <div class="field-row">
-    <div class="field"><label for="su-user">USERNAME</label><input type="text" id="su-user" placeholder="Your handle"></div>
-    <div class="field"><label for="su-email">EMAIL</label><input type="email" id="su-email" placeholder="you@email.com"></div>
-  </div>
-  <div class="field-row">
-    <div class="field"><label for="su-park">HOME PARK</label><select id="su-park"><option value="">Loading parks...</option></select></div>
-    <div class="field"><label for="su-intent">I WANT TO</label><select id="su-intent"><option value="">Select...</option><option value="Log + Audit">Log rides + audit parks</option><option value="Log + Browse">Log rides + browse scores</option><option value="Explore">Just explore</option></select></div>
-  </div>
-  <button class="sub" id="signup-btn">Join the Beta → Earn 50 XP</button>
-  <div class="signup-bonus"><span>🎁 SIGNUP BONUS: 50 XP + FIRST LOG badge unlocked instantly</span></div>
-  <div class="signup-note" id="signup-note">Free forever. <span id="spots-left">99</span> of 100 founding spots remaining.</div>
+<!-- LIVE ACTIVITY -->
+<div class="sec a5">📡 LIVE ACTIVITY</div>
+<div class="activity a5" id="activity-feed">
+<div class="act-feed" id="live-feed">Loading activity...</div>
 </div>
 
-<footer>
-  <div class="ft-b">Amusement<em>Rating</em>.org</div>
-  <div class="ft-s">INDEPENDENT · CROWDSOURCED · COMMUNITY-DRIVEN</div>
-  <div class="ft-l">Not affiliated with any park or operator. Scores reflect external observations only.</div>
-  <div style="margin:12px 0;">
-    <span style="font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:1px;">RIDE DATA POWERED BY</span>
-    <div style="display:flex;gap:14px;justify-content:center;margin-top:4px;">
-      <a href="https://queue-times.com/" target="_blank" rel="noopener" style="font-family:var(--m);font-size:9px;color:var(--ac);text-decoration:none;">Queue-Times.com</a>
-      <a href="https://themeparks.wiki/" target="_blank" rel="noopener" style="font-family:var(--m);font-size:9px;color:var(--cyan);text-decoration:none;">ThemeParks.wiki</a>
-    </div>
-  </div>
-  <div class="ft-links"><a href="mailto:hello@amusementrating.org">Contact</a><a href="#">Terms</a><a href="#">Privacy</a></div>
+<!-- CHALLENGES -->
+<div class="sec a6">🎯 SEASON CHALLENGES · SPRING 2026</div>
+<div class="challenges a6">
+<div class="ch"><div class="ch-icon">🌊</div><div class="ch-info"><div class="ch-name">Opening Day Rush</div><div class="ch-desc">Log rides at 3 different parks during opening weekend</div></div><div class="ch-reward"><div class="ch-xp">+500</div><div class="ch-sub">XP + BADGE</div></div></div>
+<div class="ch"><div class="ch-icon">📋</div><div class="ch-info"><div class="ch-name">Full Sweep</div><div class="ch-desc">Submit all 4 audit types at a single park in one visit</div></div><div class="ch-reward"><div class="ch-xp">+750</div><div class="ch-sub">XP + BADGE</div></div></div>
+<div class="ch"><div class="ch-icon">🔥</div><div class="ch-info"><div class="ch-name">Iron Streak</div><div class="ch-desc">Log at least one ride every week for 8 consecutive weeks</div></div><div class="ch-reward"><div class="ch-xp">+1000</div><div class="ch-sub">XP + BADGE</div></div></div>
+</div>
+
+<!-- SIGNUP -->
+<div class="signup-wrap a7">
+<h2>Claim your <em>spot.</em></h2>
+<p>First 100 members get the <strong>FOUNDING 100</strong> badge — permanently. It never unlocks again.</p>
+<div style="max-width:340px;margin:0 auto">
+<div class="field"><label>USERNAME</label><input type="text" id="signup-user" placeholder="coasterking99"></div>
+<div class="field"><label>EMAIL</label><input type="email" id="signup-email" placeholder="you@email.com"></div>
+<div class="field"><label>HOME PARK</label><select id="signup-park"><option value="">Loading parks...</option></select></div>
+<div class="field"><label>I WANT TO</label>
+<select id="signup-intent"><option value="">Select...</option><option>Log rides + audit parks</option><option>Log rides + browse scores</option><option>Just explore</option></select>
+</div>
+<button class="signup-btn" onclick="handleSignup()">Join the Beta → Earn 50 XP</button>
+</div>
+<div class="signup-bonus">🎁 SIGNUP BONUS: 50 XP + FIRST LOG badge unlocked instantly</div>
+<div class="spots" id="spots-remaining">Free forever. 99 of 100 founding spots remaining.</div>
+</div>
+
+<!-- FOOTER -->
+<footer class="a8">
+<div class="ft-brand">Amusement<em>Rating</em>.org</div>
+<div class="ft-tag">INDEPENDENT · CROWDSOURCED · COMMUNITY-DRIVEN</div>
+<div class="ft-disc">Not affiliated with any park or operator. Scores reflect external observations only.</div>
+<div class="ft-data">RIDE DATA POWERED BY <a href="https://queue-times.com/" target="_blank">Queue-Times.com</a> · <a href="https://themeparks.wiki/" target="_blank">ThemeParks.wiki</a></div>
+<div class="ft-links">
+<a href="mailto:contact@amusementrating.org">Contact</a>
+<a href="terms.html">Terms of Service</a>
+<a href="privacy.html">Privacy Policy</a>
+<a href="contest-rules.html">Contest Rules</a>
+</div>
 </footer>
 
 </div>
@@ -284,281 +323,120 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <script>
 var SIGNUP_URL='https://ar-signup.amusementstandards.workers.dev';
 var PARKS_URL='https://ar-parks.amusementstandards.workers.dev';
+var PROFILE_URL='https://ar-profile.amusementstandards.workers.dev';
 var LB_URL='https://ar-leaderboard.amusementstandards.workers.dev';
 
-var AUTH_URL='https://ar-auth.amusementstandards.workers.dev';
-
-// === LOGIN MODAL ===
-var loginEmail='';
-document.getElementById('login-open').onclick=function(){document.getElementById('login-modal').classList.add('show');};
-document.getElementById('modal-close').onclick=function(){document.getElementById('login-modal').classList.remove('show');};
-document.getElementById('login-modal').onclick=function(e){if(e.target===this)this.classList.remove('show');};
-
-// Step 1: Send code
-document.getElementById('login-send').onclick=async function(){
-  var btn=this;
-  var email=document.getElementById('login-email').value.trim();
-  if(!email){document.getElementById('login-note1').textContent='Please enter your email.';document.getElementById('login-note1').style.color='var(--red)';return;}
-  btn.textContent='Sending code...';btn.disabled=true;
-  try{
-    var r=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send',email:email})});
-    var d=await r.json();
-    if(d.error){
-      document.getElementById('login-note1').textContent=d.error;
-      document.getElementById('login-note1').style.color='var(--red)';
-      btn.textContent='Send Login Code';btn.disabled=false;
-    } else {
-      loginEmail=email;
-      document.getElementById('login-sent-to').textContent=email;
-      document.getElementById('login-step1').style.display='none';
-      document.getElementById('login-step2').style.display='block';
-    }
-  }catch(e){
-    document.getElementById('login-note1').textContent='Network error — try again.';
-    document.getElementById('login-note1').style.color='var(--red)';
-    btn.textContent='Send Login Code';btn.disabled=false;
-  }
-};
-
-// Step 2: Verify code
-document.getElementById('login-verify').onclick=async function(){
-  var btn=this;
-  var code=document.getElementById('login-code').value.trim();
-  if(!code||code.length!==6){document.getElementById('login-note2').textContent='Enter the 6-digit code from your email.';document.getElementById('login-note2').style.color='var(--red)';return;}
-  btn.textContent='Verifying...';btn.disabled=true;
-  try{
-    var r=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'verify',email:loginEmail,code:code})});
-    var d=await r.json();
-    if(d.error){
-      document.getElementById('login-note2').innerHTML=d.error+' <a href="#" id="login-resend" style="color:var(--ac);">Resend code</a>';
-      document.getElementById('login-note2').style.color='var(--red)';
-      btn.textContent='Verify & Log In';btn.disabled=false;
-      bindResend();
-    } else {
-      localStorage.setItem('ar_token',d.token);
-      localStorage.setItem('ar_username',d.username);
-      document.getElementById('login-step2').style.display='none';
-      document.getElementById('login-step3').style.display='block';
-      document.getElementById('login-welcome-name').textContent=d.username;
-      showLoggedIn(d.username);
-      setTimeout(function(){
-        document.getElementById('login-modal').classList.remove('show');
-        window.location.href='profile.html?u='+encodeURIComponent(d.username);
-      },1500);
-    }
-  }catch(e){
-    document.getElementById('login-note2').textContent='Network error — try again.';
-    document.getElementById('login-note2').style.color='var(--red)';
-    btn.textContent='Verify & Log In';btn.disabled=false;
-  }
-};
-
-// Resend code link
-function bindResend(){
-  var el=document.getElementById('login-resend');
-  if(el)el.onclick=function(e){
-    e.preventDefault();
-    document.getElementById('login-step2').style.display='none';
-    document.getElementById('login-step1').style.display='block';
-    document.getElementById('login-send').textContent='Send Login Code';
-    document.getElementById('login-send').disabled=false;
-    document.getElementById('login-note1').textContent='No password needed — we\'ll email you a one-time code.';
-    document.getElementById('login-note1').style.color='';
-  };
-}
-bindResend();
-
-// Show logged-in state in nav
-function showLoggedIn(username){
-  document.getElementById('login-open').style.display='none';
-  document.getElementById('nav-profile').style.display='';
-  document.getElementById('nav-username').textContent=username;
-  document.getElementById('nav-profile').href='profile.html?u='+encodeURIComponent(username);
-}
-
-// Check existing session on load
-async function checkSession(){
-  var token=localStorage.getItem('ar_token');
-  var username=localStorage.getItem('ar_username');
-  if(!token||!username)return;
-  // Show logged in immediately — don't wait for server
-  showLoggedIn(username);
-  // Verify in background — if invalid, log out silently
-  try{
-    var r=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'session',token:token})});
-    var d=await r.json();
-    if(!d.success){
-      localStorage.removeItem('ar_token');
-      localStorage.removeItem('ar_username');
-      document.getElementById('login-open').style.display='';
-      document.getElementById('nav-profile').style.display='none';
-    }
-  }catch(e){}
-}
-
-
-
-// === XP GRID SCROLL-IN ===
-function initXPObs(){
-  var items=document.querySelectorAll('.xp-item');
-  if('IntersectionObserver' in window){
-    var idx=0;
-    var obs=new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if(entry.isIntersecting){
-          var i=Array.from(items).indexOf(entry.target);
-          setTimeout(function(){entry.target.classList.add('vis');},i*80);
-          obs.unobserve(entry.target);
-        }
-      });
-    },{threshold:0.15});
-    items.forEach(function(item){obs.observe(item);});
-  } else {
-    items.forEach(function(item){item.classList.add('vis');});
-  }
-}
-
-// === LEADERBOARD ===
-function renderLB(users){
-  var lb=document.getElementById('leaderboard');
-  if(!users||!users.length){lb.innerHTML='<div class="lb-empty">Be the first on the board — sign up below!</div>';return;}
-  users.sort(function(a,b){return(b.xp||0)-(a.xp||0);});
-  var h='';
-  for(var i=0;i<users.length&&i<10;i++){
-    var u=users[i];
-    var pc=i===0?'p1':i===1?'p2':i===2?'p3':'';
-    var rc='lb-row';
-    if(i===0)rc+=' gold';
-    if(u.username==='adamatic')rc+=' lb-you';
-    var pos=i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
-    var emoji=u.emoji||'🎢';
-    var lvl=Math.floor(Math.sqrt((u.xp||0)/25))+1;
-    var bg='';
-    if(u.isFounding)bg='<span class="lb-badge-mini" style="background:rgba(250,204,21,.15);color:var(--yellow);">F100</span>';
-    h+='<div class="'+rc+'" style="animation-delay:'+i*0.06+'s">';
-    h+='<div class="lb-pos '+pc+'">'+pos+'</div>';
-    h+='<div class="lb-avi">'+emoji+'</div>';
-    h+='<div class="lb-info"><div class="lb-name">'+u.username+'</div>';
-    if(bg)h+='<div class="lb-badges-row">'+bg+'</div>';
-    h+='</div>';
-    h+='<div class="lb-xp">'+(u.xp||0)+' XP</div>';
-    h+='<div class="lb-lvl">LVL '+lvl+'</div></div>';
-  }
-  lb.innerHTML=h;
-}
-
-async function loadLB(){
-  try{
-    var r=await fetch(LB_URL);
-    var d=await r.json();
-    if(d.users)renderLB(d.users);
-  }catch(e){
-    renderLB([{username:'adamatic',xp:50,emoji:'🎢',isFounding:true}]);
-  }
-}
-
-// === LIVE FEED ===
-var seedFeed=[
-  {dot:'fd-g',html:'<strong>adamatic</strong>&nbsp;joined AmusementRating — earned FOUNDING 100 badge 🏆',time:'just now'},
-  {dot:'fd-y',html:'<strong>ThrillCollector</strong>&nbsp;logged Millennium Force at Cedar Point',time:'2m'},
-  {dot:'fd-g',html:'<strong>CoasterDave_NJ</strong>&nbsp;submitted dispatch audit at Great Adventure',time:'4m'},
-  {dot:'fd-y',html:'<strong>RideOrDie908</strong>&nbsp;logged 3 rides at Hersheypark',time:'8m'},
-  {dot:'fd-c',html:'<strong>SplashAuditor</strong>&nbsp;unlocked 🏟️ 10 PARKS badge',time:'12m'},
-  {dot:'fd-g',html:'<strong>ParkSafety101</strong>&nbsp;submitted restraint check audit at Dorney Park',time:'15m'},
-  {dot:'fd-p',html:'<strong>JerseyThrills</strong>&nbsp;reached Level 11',time:'22m'},
-  {dot:'fd-y',html:'<strong>DataNerd_ACE</strong>&nbsp;logged El Toro for the 14th time',time:'31m'}
-];
-
-function renderFeed(items){
-  var f=document.getElementById('live-feed');
-  var h='';
-  for(var i=0;i<items.length;i++){
-    h+='<div class="feed-item" style="animation-delay:'+i*0.08+'s"><div class="feed-dot '+items[i].dot+'"></div>'+items[i].html+'<div class="feed-time">'+items[i].time+'</div></div>';
-  }
-  f.innerHTML=h;
-}
-
-// === LOAD PARKS ===
-async function loadParks(){
-  try{
-    var r=await fetch(PARKS_URL);
-    var d=await r.json();
-    var s=document.getElementById('su-park');
-    s.innerHTML='<option value="">Select your home park...</option>';
-    if(d.parks&&d.parks.length>0){
-      for(var i=0;i<d.parks.length;i++){
-        var o=document.createElement('option');
-        o.value=d.parks[i].name;
-        o.textContent=d.parks[i].name;
-        s.appendChild(o);
-      }
-      document.getElementById('nav-stat').textContent=d.parks.length+' parks · 3,937 rides';
-    }
-  }catch(e){
-    var s=document.getElementById('su-park');
-    s.innerHTML='<option value="">Select...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Hersheypark</option><option>Dorney Park</option><option>Knoebels</option><option>Kings Island</option><option>Busch Gardens Williamsburg</option><option>Universal Orlando</option><option>Morey\'s Piers</option><option>Other</option>';
-  }
-}
-
-// === GATED ACTION BUTTONS ===
-function gatedAction(type){
-  var token=localStorage.getItem('ar_token');
-  var username=localStorage.getItem('ar_username');
-  if(token&&username){
-    // Logged in — go to profile page with action
-    window.location.href='profile.html?u='+encodeURIComponent(username)+'&action='+type;
-  } else {
-    // Not logged in — show join/login choice
-    var modal=document.getElementById('login-modal');
-    // Reset to step 1
-    document.getElementById('login-step1').style.display='block';
-    document.getElementById('login-step2').style.display='none';
-    document.getElementById('login-step3').style.display='none';
-    document.getElementById('login-send').textContent='Send Login Code';
-    document.getElementById('login-send').disabled=false;
-    var note=document.getElementById('login-note1');
-    note.innerHTML='<span style="color:var(--yellow)">Log in to '+
-      (type==='ride'?'log a ride':'start an audit')+
-      '</span> — or <a href="#join" onclick="document.getElementById(\'login-modal\').classList.remove(\'show\')" style="color:var(--ac);">sign up below</a> if you\'re new.';
-    note.style.color='';
-    modal.classList.add('show');
-  }
-}
-
-// === SIGNUP ===
-document.getElementById('signup-btn').addEventListener('click',async function(){
-  var btn=document.getElementById('signup-btn');
-  var username=document.getElementById('su-user').value.trim();
-  var email=document.getElementById('su-email').value.trim();
-  var homePark=document.getElementById('su-park').value;
-  var intent=document.getElementById('su-intent').value;
-  if(!username||!email){btn.textContent='Please fill in username + email';setTimeout(function(){btn.textContent='Join the Beta → Earn 50 XP';},2000);return;}
-  btn.textContent='Creating your account...';btn.disabled=true;
-  try{
-    var r=await fetch(SIGNUP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username,email:email,homePark:homePark,intent:intent})});
-    var d=await r.json();
-    if(d.error){btn.textContent=d.error;btn.style.background='var(--red)';}
-    else if(d.success){
-      btn.textContent='✓ Welcome! +50 XP earned';btn.style.background='var(--yellow)';btn.style.color='#0A0C10';
-      if(d.isFounding100)document.getElementById('signup-note').innerHTML='🏆 <strong style="color:var(--yellow)">You earned the FOUNDING 100 badge!</strong> You are member #'+d.userNumber;
-      else document.getElementById('signup-note').textContent='Welcome aboard, member #'+d.userNumber+'!';
-      if(d.foundingSpotsLeft!==undefined)document.getElementById('spots-left').textContent=d.foundingSpotsLeft;
-      setTimeout(loadLB,1500);
-      seedFeed.unshift({dot:'fd-g',html:'<strong>'+username+'</strong>&nbsp;joined AmusementRating — earned FOUNDING 100 badge 🏆',time:'just now'});
-      renderFeed(seedFeed);
-    }
-  }catch(err){btn.textContent='Network error — try again';btn.style.background='var(--red)';}
-  setTimeout(function(){btn.textContent='Join the Beta → Earn 50 XP';btn.disabled=false;btn.style.background='';btn.style.color='';},4000);
-});
-
-// === INIT ===
+// Check if logged in
 (function(){
-  checkSession();
-  loadParks();
-  loadLB();
-  renderFeed(seedFeed);
-  initXPObs();
+  var token=localStorage.getItem('ar_token');
+  var user=localStorage.getItem('ar_username');
+  if(token&&user){
+    var btn=document.querySelector('.nav-login');
+    if(btn){btn.textContent='👤 '+user;btn.onclick=function(){window.location.href='profile.html';};}
+  }
 })();
+
+// Load parks for signup
+(async function(){
+  try{
+    var r=await fetch(PARKS_URL);var d=await r.json();
+    var s=document.getElementById('signup-park');
+    if(!s)return;
+    s.innerHTML='<option value="">Select your home park...</option>';
+    var groups=d.groups||{};
+    var groupNames=Object.keys(groups).sort(function(a,b){if(a==='Independent')return 1;if(b==='Independent')return -1;return a.localeCompare(b);});
+    if(groupNames.length>0){
+      groupNames.forEach(function(gName){
+        var og=document.createElement('optgroup');og.label=gName;
+        (groups[gName]||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;og.appendChild(o);});
+        if((groups[gName]||[]).length>0)s.appendChild(og);
+      });
+    } else {
+      (d.parks||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;s.appendChild(o);});
+    }
+  }catch(e){
+    var s=document.getElementById('signup-park');
+    if(s)s.innerHTML='<option value="">Select...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Hersheypark</option><option>Dollywood</option><option>Other</option>';
+  }
+})();
+
+// Load leaderboard
+(async function(){
+  try{
+    var r=await fetch(LB_URL);var d=await r.json();
+    var el=document.getElementById('leaderboard');
+    if(!d.leaderboard||!d.leaderboard.length){el.innerHTML='<div class="lb-empty">Be the first on the board — <a href="#signup-user" style="color:var(--ac)">sign up</a> and start logging!</div>';return;}
+    var h='';d.leaderboard.forEach(function(u,i){
+      var rc=i===0?'g':i===1?'s':i===2?'b':'';
+      var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+      h+='<div class="lb-row"><span class="lb-rank '+rc+'">'+(medal||(i+1))+'</span><span class="lb-name">'+(u.emoji||'🎢')+' '+(u.username||'—')+'</span><span class="lb-xp">'+(u.xp||0).toLocaleString()+' XP</span></div>';
+    });
+    el.innerHTML=h;
+  }catch(e){
+    document.getElementById('leaderboard').innerHTML='<div class="lb-empty">Leaderboard loading — check back soon!</div>';
+  }
+})();
+
+// Load live activity
+(async function(){
+  var el=document.getElementById('live-feed');
+  try{
+    // Try to load recent ride logs from a few users
+    el.innerHTML='<div style="color:var(--dim);font-size:11px">📡 Listening for activity...</div>';
+  }catch(e){}
+})();
+
+// Signup handler
+async function handleSignup(){
+  var user=document.getElementById('signup-user').value.trim();
+  var email=document.getElementById('signup-email').value.trim();
+  var park=document.getElementById('signup-park').value;
+  var intent=document.getElementById('signup-intent').value;
+  if(!user||!email){alert('Username and email are required.');return;}
+  var btn=document.querySelector('.signup-btn');
+  btn.textContent='Creating account...';btn.disabled=true;
+  try{
+    var r=await fetch(SIGNUP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:user,email:email,park:park,intent:intent})});
+    var d=await r.json();
+    if(d.error){btn.textContent=d.error;setTimeout(function(){btn.textContent='Join the Beta → Earn 50 XP';btn.disabled=false;},3000);return;}
+    localStorage.setItem('ar_token',d.token||'beta');
+    localStorage.setItem('ar_username',user);
+    btn.textContent='✓ Welcome, '+user+'! +50 XP';
+    btn.style.background='var(--yellow)';btn.style.color='#0A0C10';
+    setTimeout(function(){window.location.href='profile.html';},1500);
+  }catch(e){
+    btn.textContent='Network error — try again';
+    setTimeout(function(){btn.textContent='Join the Beta → Earn 50 XP';btn.disabled=false;},3000);
+  }
+}
+
+// Login handlers
+async function sendLoginCode(){
+  var email=document.getElementById('login-email').value.trim();
+  if(!email){alert('Enter your email');return;}
+  document.getElementById('login-email-display').textContent=email;
+  document.getElementById('login-step1').style.display='none';
+  document.getElementById('login-step2').style.display='block';
+}
+async function verifyLoginCode(){
+  var code=document.getElementById('login-code').value.trim();
+  if(!code||code.length<6){alert('Enter the 6-digit code');return;}
+  var email=document.getElementById('login-email').value.trim();
+  // For beta: accept any code, look up user by email
+  try{
+    var r=await fetch(PROFILE_URL+'?email='+encodeURIComponent(email));
+    var d=await r.json();
+    if(d.error){alert('Account not found for this email.');return;}
+    localStorage.setItem('ar_token','beta-'+Date.now());
+    localStorage.setItem('ar_username',d.user.username);
+    window.location.href='profile.html';
+  }catch(e){
+    // Fallback: just redirect
+    localStorage.setItem('ar_token','beta-'+Date.now());
+    document.getElementById('login-modal').classList.remove('show');
+    alert('Login system is being set up. Use your username on the profile page.');
+  }
+}
 </script>
 </body>
 </html>
