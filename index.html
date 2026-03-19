@@ -260,8 +260,8 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <h1>Log. Audit. Rank. <em>Repeat.</em></h1>
 <p>The gamified platform for coaster enthusiasts who care about how parks <em>actually run</em>. Log rides. Submit verified audits. Earn <strong>XP</strong>. Unlock badges. Climb the board.</p>
 <div class="actions">
-<a href="profile.html?action=ride" class="act act-ride"><span class="act-icon">🎢</span><span class="act-label">Log a Ride</span><span class="act-sub">+5 XP</span></a>
-<a href="#" class="act act-audit" onclick="document.getElementById('audit-modal').classList.add('show');return false;"><span class="act-icon">📋</span><span class="act-label">Start Audit</span><span class="act-sub">+50 XP</span></a>
+<a href="#" class="act act-ride" onclick="authGate('ride');return false;"><span class="act-icon">🎢</span><span class="act-label">Log a Ride</span><span class="act-sub">+5 XP</span></a>
+<a href="#" class="act act-audit" onclick="authGate('audit');return false;"><span class="act-icon">📋</span><span class="act-label">Start Audit</span><span class="act-sub">+50 XP</span></a>
 </div>
 </div>
 
@@ -353,7 +353,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <div class="ft-disc">Not affiliated with any park or operator. Scores reflect external observations only.</div>
 <div class="ft-data">RIDE DATA POWERED BY <a href="https://queue-times.com/" target="_blank">Queue-Times.com</a> · <a href="https://themeparks.wiki/" target="_blank">ThemeParks.wiki</a></div>
 <div class="ft-links">
-<a href="mailto:contact@amusementrating.org">Contact</a>
+<a href="/cdn-cgi/l/email-protection#660509081207051226070b1315030b0308121407120f080148091401">Contact</a>
 <a href="how-it-works.html">How Your Data Works</a>
 <a href="terms.html">Terms of Service</a>
 <a href="privacy.html">Privacy Policy</a>
@@ -363,7 +363,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // =====================================================================
 // CONFIG
 // =====================================================================
@@ -398,10 +398,12 @@ function timeAgo(ts) {
 // =====================================================================
 // SESSION CHECK
 // =====================================================================
+var isLoggedIn = false;
 (function () {
   var token = localStorage.getItem('ar_token');
   var user = localStorage.getItem('ar_username');
   if (token && user) {
+    isLoggedIn = true;
     var btn = document.getElementById('nav-login-btn');
     if (btn) {
       btn.textContent = '👤 ' + user;
@@ -411,6 +413,24 @@ function timeAgo(ts) {
     if (rankLink) rankLink.style.display = 'inline-block';
   }
 })();
+
+// =====================================================================
+// AUTH GATE — force login/signup before ride log or audit
+// =====================================================================
+var pendingAction = null;
+
+function authGate(action) {
+  if (isLoggedIn) {
+    if (action === 'ride') {
+      window.location.href = 'profile.html?action=ride';
+    } else if (action === 'audit') {
+      document.getElementById('audit-modal').classList.add('show');
+    }
+  } else {
+    pendingAction = action;
+    document.getElementById('login-modal').classList.add('show');
+  }
+}
 
 // =====================================================================
 // LOAD PARKS — populates signup, audit modal, AND gets live ride count
@@ -618,7 +638,13 @@ async function handleSignup() {
     localStorage.setItem('ar_username', user);
     btn.textContent = '✓ Welcome, ' + user + '! +50 XP';
     btn.style.background = 'var(--yellow)'; btn.style.color = '#0A0C10';
-    setTimeout(function () { window.location.href = 'profile.html'; }, 1500);
+    setTimeout(function () {
+      if (pendingAction === 'ride') {
+        window.location.href = 'profile.html?action=ride';
+      } else {
+        window.location.href = 'profile.html';
+      }
+    }, 1500);
   } catch (e) {
     btn.textContent = 'Network error — try again';
     setTimeout(function () { btn.textContent = 'Join the Beta → Earn 50 XP'; btn.disabled = false; }, 3000);
@@ -656,7 +682,15 @@ async function handleLogin() {
     localStorage.setItem('ar_username', d.username || username);
     btn.textContent = '✓ Welcome back, ' + (d.username || username) + '!';
     btn.style.background = 'var(--yellow)'; btn.style.color = '#0A0C10';
-    setTimeout(function () { window.location.href = 'profile.html'; }, 1000);
+    setTimeout(function () {
+      if (pendingAction === 'ride') {
+        window.location.href = 'profile.html?action=ride';
+      } else if (pendingAction === 'audit') {
+        window.location.href = 'profile.html';
+      } else {
+        window.location.href = 'profile.html';
+      }
+    }, 1000);
   } catch (e) {
     note.textContent = 'Network error — try again.';
     note.style.color = 'var(--red)';
@@ -762,9 +796,4 @@ function auditGo() {
   var p = new URLSearchParams();
   p.set('rideId', amSelected.id);
   p.set('rideName', amSelected.name);
-  p.set('rideType', amSelected.rideType);
-  p.set('park', document.getElementById('am-park').value);
-  window.location.href = form + '?' + p.toString();
-}
-
-// ================================
+  p.set('rideType', amSelected.ri
