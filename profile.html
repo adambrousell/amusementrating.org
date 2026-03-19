@@ -354,15 +354,15 @@ async function loadAllParks(){
   }catch(e){['ride-park','audit-park'].forEach(function(id){var s=document.getElementById(id);if(!s)return;s.innerHTML='<option value="">Select...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Hersheypark</option><option>Other</option>';});}
 }
 
-var categoryIcons={"Roller Coaster":"🎢","Flat Ride":"🎡","Water Ride":"🌊","Play Structure":"🧒","Other":"🎪"};
+var categoryIcons={"Coaster":"🎢","Roller Coaster":"🎢","Flat Ride":"🎡","Water":"💧","Water Ride":"💧","Aquatic":"🏊","Play Structure":"🧒","Other":"🎪"};
 document.getElementById('ride-park').onchange=async function(){
   var sel=document.getElementById('ride-ride');var parkName=this.value;
   if(!parkName){sel.innerHTML='<option>Select a park first</option>';sel.disabled=true;return;}
   sel.innerHTML='<option>Loading rides...</option>';sel.disabled=true;
   try{var r=await fetch(RIDES_URL+'?park='+encodeURIComponent(parkName));var d=await r.json();rideData.parkId=d.parkId||null;
     sel.innerHTML='<option value="">Select ride...</option>';
-    var order=d.categoryOrder||["Roller Coaster","Flat Ride","Water Ride","Play Structure","Other"];var groups=d.groups||{};
-    if(Object.keys(groups).length>0){order.forEach(function(cat){var ridesInCat=groups[cat];if(!ridesInCat||!ridesInCat.length)return;var icon=categoryIcons[cat]||'🎪';var og=document.createElement('optgroup');og.label=icon+' '+cat+' ('+ridesInCat.length+')';ridesInCat.forEach(function(ride){var o=document.createElement('option');o.value=ride.id;o.textContent=ride.name;o.setAttribute('data-name',ride.name);o.setAttribute('data-category',cat);og.appendChild(o);});sel.appendChild(og);});}
+    var order=d.categoryOrder||["Coaster","Roller Coaster","Flat Ride","Water","Water Ride","Aquatic","Play Structure","Other"];var groups=d.groups||{};
+    if(Object.keys(groups).length>0){order.forEach(function(cat){var ridesInCat=groups[cat];if(!ridesInCat||!ridesInCat.length)return;var icon=categoryIcons[cat]||'🎪';var og=document.createElement('optgroup');og.label=icon+' '+cat+' ('+ridesInCat.length+')';ridesInCat.forEach(function(ride){var o=document.createElement('option');o.value=ride.id;o.textContent=ride.name;o.setAttribute('data-name',ride.name);o.setAttribute('data-category',ride.rideType||cat);og.appendChild(o);});sel.appendChild(og);});}
     else if(d.rides&&d.rides.length>0){d.rides.forEach(function(ride){var o=document.createElement('option');o.value=ride.id;o.textContent=ride.name;o.setAttribute('data-name',ride.name);sel.appendChild(o);});}
     else{sel.innerHTML='<option value="">No rides found for this park</option>';}
     sel.disabled=false;
@@ -391,7 +391,7 @@ async function submitRideLog(){
   }catch(e){btn.textContent='Network error — try again';setTimeout(function(){btn.textContent='Submit Ride Log → Earn XP';btn.disabled=false;},3000);}
 }
 
-var auditCategoryMap={"Roller Coaster":{page:"coaster-audit.html",icon:"🎢",label:"Roller Coaster — Restraints, Dispatch, Track"},"Flat Ride":{page:"flatride-audit.html",icon:"🎡",label:"Flat Ride — Loading, Cycle, Operator"},"Water Ride":{page:"water-audit.html",icon:"🌊",label:"Water Ride — Lifeguard, Flow, Containment"},"Play Structure":{page:"play-audit.html",icon:"🧒",label:"Play Structure — Surface, Barriers, Supervision"}};
+var auditCategoryMap={"Coaster":{page:"coaster-audit.html",icon:"🎢",label:"Coaster — Restraints, Dispatch, Track"},"Roller Coaster":{page:"coaster-audit.html",icon:"🎢",label:"Coaster — Restraints, Dispatch, Track"},"Flat Ride":{page:"flatride-audit.html",icon:"🎡",label:"Flat Ride — Loading, Cycle, Operator"},"Water":{page:"water-audit.html",icon:"💧",label:"Water — Slide, Flow, Containment"},"Water Ride":{page:"water-audit.html",icon:"💧",label:"Water — Slide, Flow, Containment"},"Aquatic":{page:"aquatic-audit.html",icon:"🏊",label:"Aquatic — Lifeguard, Pool, Safety"},"Play Structure":{page:"play-audit.html",icon:"🧒",label:"Play Structure — Surface, Barriers, Supervision"}};
 var auditRideData={};
 
 document.getElementById('audit-park').onchange=async function(){
@@ -400,8 +400,8 @@ document.getElementById('audit-park').onchange=async function(){
   if(!parkName){sel.innerHTML='<option>Select a park first</option>';sel.disabled=true;return;}
   sel.innerHTML='<option>Loading rides...</option>';sel.disabled=true;
   try{var r=await fetch(RIDES_URL+'?park='+encodeURIComponent(parkName));var d=await r.json();auditRideData.parkId=d.parkId||null;
-    sel.innerHTML='<option value="">Select ride to audit...</option>';var order=d.categoryOrder||["Roller Coaster","Flat Ride","Water Ride","Play Structure","Other"];var groups=d.groups||{};
-    if(Object.keys(groups).length>0){order.forEach(function(cat){var ridesInCat=groups[cat];if(!ridesInCat||!ridesInCat.length)return;var icon=categoryIcons[cat]||'🎪';var og=document.createElement('optgroup');og.label=icon+' '+cat+' ('+ridesInCat.length+')';ridesInCat.forEach(function(ride){var o=document.createElement('option');o.value=ride.id;o.textContent=ride.name;o.setAttribute('data-name',ride.name);o.setAttribute('data-category',cat);og.appendChild(o);});sel.appendChild(og);});}
+    sel.innerHTML='<option value="">Select ride to audit...</option>';var order=d.categoryOrder||["Coaster","Roller Coaster","Flat Ride","Water","Water Ride","Aquatic","Play Structure","Other"];var groups=d.groups||{};
+    if(Object.keys(groups).length>0){order.forEach(function(cat){var ridesInCat=groups[cat];if(!ridesInCat||!ridesInCat.length)return;var icon=categoryIcons[cat]||'🎪';var og=document.createElement('optgroup');og.label=icon+' '+cat+' ('+ridesInCat.length+')';ridesInCat.forEach(function(ride){var o=document.createElement('option');o.value=ride.id;o.textContent=ride.name;o.setAttribute('data-name',ride.name);o.setAttribute('data-category',ride.rideType||cat);og.appendChild(o);});sel.appendChild(og);});}
     else if(d.rides&&d.rides.length>0){d.rides.forEach(function(ride){var o=document.createElement('option');o.value=ride.id;o.textContent=ride.name;o.setAttribute('data-name',ride.name);o.setAttribute('data-category',ride.type||'Other');sel.appendChild(o);});}
     else{sel.innerHTML='<option value="">No rides found for this park</option>';}
     sel.disabled=false;
