@@ -401,12 +401,12 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 <a href="terms.html" style="font-family:var(--m);font-size:9px;color:var(--dim);transition:color .15s">Terms of Service</a>
 <a href="privacy.html" style="font-family:var(--m);font-size:9px;color:var(--dim);transition:color .15s">Privacy Policy</a>
 <a href="contest-rules.html" style="font-family:var(--m);font-size:9px;color:var(--dim);transition:color .15s">Contest Rules</a>
-<a href="mailto:contact@amusementrating.org" style="font-family:var(--m);font-size:9px;color:var(--dim);transition:color .15s">Contact</a>
+<a href="/cdn-cgi/l/email-protection#30535f5e4451534470515d4543555d555e44425144595e571e5f4257" style="font-family:var(--m);font-size:9px;color:var(--dim);transition:color .15s">Contact</a>
 </div>
 </footer>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // =====================================================================
 // CONFIG
 // =====================================================================
@@ -663,6 +663,8 @@ async function loadProfile() {
 // =====================================================================
 var allParks = [];
 var categoryIcons = { "Roller Coaster": "🎢", "Flat Ride": "🎡", "Water Ride": "🌊", "Play Structure": "🧒", "Other": "🎪" };
+var _parksResolve;
+var parksReady = new Promise(function (resolve) { _parksResolve = resolve; });
 
 async function loadAllParks() {
   try {
@@ -710,6 +712,7 @@ async function loadAllParks() {
       s.innerHTML = '<option value="">Failed to load parks — check connection</option>';
     });
   }
+  _parksResolve();
 }
 
 // =====================================================================
@@ -1068,21 +1071,18 @@ async function importCSV() {
 
 // =====================================================================
 // AUTO-OPEN ACTION FROM HOMEPAGE (?action=ride or ?action=audit)
+// Waits for parks to finish loading before opening modal
 // =====================================================================
-(function () {
+(async function () {
   var action = new URLSearchParams(window.location.search).get('action');
+  if (!action) return;
+  // Wait for parks to load first
+  await parksReady;
   if (action === 'ride') {
-    setTimeout(openRideModal, 600);
+    openRideModal();
   } else if (action === 'audit') {
-    setTimeout(function () { document.getElementById('audit-modal').classList.add('show'); }, 600);
+    document.getElementById('audit-modal').classList.add('show');
   }
 })();
 
-// =====================================================================
-// INIT
-// =====================================================================
-loadAllParks();
-loadProfile();
-</script>
-</body>
-</html>
+// ==================================================
