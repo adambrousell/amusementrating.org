@@ -356,7 +356,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <div class="ft-disc">Not affiliated with any park or operator. Scores reflect external observations only.</div>
 <div class="ft-data">RIDE DATA POWERED BY <a href="https://queue-times.com/" target="_blank">Queue-Times.com</a> · <a href="https://themeparks.wiki/" target="_blank">ThemeParks.wiki</a></div>
 <div class="ft-links">
-<a href="mailto:contact@amusementrating.org">Contact</a>
+<a href="/cdn-cgi/l/email-protection#9dfef2f3e9fcfee9ddfcf0e8eef8f0f8f3e9effce9f4f3fab3f2effa">Contact</a>
 <a href="how-it-works.html">How Your Data Works</a>
 <a href="terms.html">Terms of Service</a>
 <a href="privacy.html">Privacy Policy</a>
@@ -366,7 +366,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // =====================================================================
 // CONFIG
 // =====================================================================
@@ -537,7 +537,7 @@ async function fetchRideCount() {
 })();
 
 // =====================================================================
-// LIVE ACTIVITY FEED
+// LIVE ACTIVITY FEED — rides, audits, badges, XP events
 // =====================================================================
 (async function loadActivity() {
   var el = document.getElementById('live-feed');
@@ -551,19 +551,33 @@ async function fetchRideCount() {
     }
     el.innerHTML = d.feed.map(function (item) {
       var body = '';
-      var emoji = item.emoji || '🎢';
+      var emoji = item.emoji || '⚡';
+      var xpTag = item.xp ? '<span style="font-family:var(--m);font-size:9px;color:var(--yellow);margin-left:6px">+' + item.xp + ' XP</span>' : '';
+
       if (item.type === 'ride') {
         body = '<strong>' + esc(item.username) + '</strong> logged '
           + '<span class="feed-ride">' + esc(item.rideName) + '</span>'
           + (item.parkName ? ' <span class="feed-park">at ' + esc(item.parkName) + '</span>' : '')
-          + (item.hasPhoto ? '<span class="feed-photo-tag">📸 PHOTO</span>' : '');
+          + (item.hasPhoto ? '<span class="feed-photo-tag">📸 PHOTO</span>' : '')
+          + xpTag;
       } else if (item.type === 'audit') {
         body = '<strong>' + esc(item.username) + '</strong> submitted a '
-          + '<span class="feed-audit-type">' + esc(item.auditType) + '</span> audit'
-          + (item.parkName ? ' <span class="feed-park">at ' + esc(item.parkName) + '</span>' : '');
+          + '<span class="feed-audit-type">' + esc(item.auditType || 'General') + '</span> audit'
+          + (item.rideName ? ' on <span class="feed-ride">' + esc(item.rideName) + '</span>' : '')
+          + (item.parkName ? ' <span class="feed-park">at ' + esc(item.parkName) + '</span>' : '')
+          + xpTag;
+      } else if (item.type === 'badge') {
+        body = '<strong>' + esc(item.username) + '</strong> unlocked '
+          + '<span style="color:var(--yellow);font-weight:700">' + esc(item.badgeName || item.text || 'a badge') + '</span>'
+          + xpTag;
+      } else if (item.type === 'xp') {
+        body = '<strong>' + esc(item.username) + '</strong> '
+          + '<span style="color:var(--text)">' + esc(item.text || 'earned XP') + '</span>'
+          + xpTag;
       } else {
-        body = '<strong>' + esc(item.username) + '</strong> ' + esc(item.text || 'did something');
+        body = '<strong>' + esc(item.username) + '</strong> ' + esc(item.text || 'did something') + xpTag;
       }
+
       return '<div class="feed-item">'
         + '<span class="feed-emoji">' + emoji + '</span>'
         + '<div class="feed-body">' + body + '</div>'
@@ -735,10 +749,4 @@ function auditGo() {
   window.location.href = form + '?' + p.toString();
 }
 
-// =====================================================================
-// INIT
-// =====================================================================
-loadParks();
-</script>
-</body>
-</html>
+// ================================
