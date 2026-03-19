@@ -225,7 +225,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <h3>Check your <em>inbox.</em></h3>
 <p>We sent a 6-digit code to <strong id="login-email-display"></strong></p>
 <div class="field"><label>LOGIN CODE</label><input type="text" id="login-code" placeholder="000000" maxlength="6" inputmode="numeric"></div>
-<button class="modal-btn" onclick="verifyLoginCode()">Verify & Log In</button>
+<button class="modal-btn" onclick="verifyLoginCode()">Verify &amp; Log In</button>
 <div class="modal-note">Code expires in 15 minutes. <a href="#" onclick="document.getElementById('login-step1').style.display='block';document.getElementById('login-step2').style.display='none';return false;">Resend code</a></div>
 </div>
 </div>
@@ -255,7 +255,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <a href="/" class="nl">Amusement<span>Rating</span></a>
 <div class="nav-r">
 <a href="rankings.html" class="nav-login" id="nav-rankings" style="display:none">🏆 Rankings</a>
-<span class="nav-stat" id="nav-stat"><strong>3,937</strong> rides tracked</span>
+<span class="nav-stat" id="nav-stat"><strong>—</strong> rides tracked</span>
 <div class="nav-tag">BETA</div>
 <button class="nav-login" id="nav-login-btn" onclick="document.getElementById('login-modal').classList.add('show')">Log In</button>
 </div>
@@ -356,7 +356,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <div class="ft-disc">Not affiliated with any park or operator. Scores reflect external observations only.</div>
 <div class="ft-data">RIDE DATA POWERED BY <a href="https://queue-times.com/" target="_blank">Queue-Times.com</a> · <a href="https://themeparks.wiki/" target="_blank">ThemeParks.wiki</a></div>
 <div class="ft-links">
-<a href="/cdn-cgi/l/email-protection#f2919d9c86939186b2939f8781979f979c868093869b9c95dc9d8095">Contact</a>
+<a href="mailto:contact@amusementrating.org">Contact</a>
 <a href="how-it-works.html">How Your Data Works</a>
 <a href="terms.html">Terms of Service</a>
 <a href="privacy.html">Privacy Policy</a>
@@ -366,281 +366,379 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-var SIGNUP_URL='https://ar-signup.amusementstandards.workers.dev';
-var PARKS_URL='https://ar-parks.amusementstandards.workers.dev';
-var PROFILE_URL='https://ar-profile.amusementstandards.workers.dev';
-var LB_URL='https://ar-leaderboard.amusementstandards.workers.dev';
-var ACTIVITY_URL='https://ar-activity.amusementstandards.workers.dev';
+<script>
+// =====================================================================
+// CONFIG
+// =====================================================================
+var SIGNUP_URL  = 'https://ar-signup.amusementstandards.workers.dev';
+var PARKS_URL   = 'https://ar-parks.amusementstandards.workers.dev';
+var PROFILE_URL = 'https://ar-profile.amusementstandards.workers.dev';
+var LB_URL      = 'https://ar-leaderboard.amusementstandards.workers.dev';
+var ACTIVITY_URL= 'https://ar-activity.amusementstandards.workers.dev';
+var RIDES_URL   = 'https://ar-rides.amusementstandards.workers.dev';
 
-// Check if logged in
-(function(){
-  var token=localStorage.getItem('ar_token');
-  var user=localStorage.getItem('ar_username');
-  if(token&&user){
-    var btn=document.getElementById('nav-login-btn');
-    if(btn){btn.textContent='👤 '+user;btn.onclick=function(){window.location.href='profile.html';};}
-    var rankLink=document.getElementById('nav-rankings');
-    if(rankLink)rankLink.style.display='inline-block';
-  }
-})();
+// =====================================================================
+// UTILS
+// =====================================================================
+function esc(s) {
+  if (!s) return '';
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
 
-// Load parks for signup
-(async function(){
-  try{
-    var r=await fetch(PARKS_URL);var d=await r.json();
-    var s=document.getElementById('signup-park');
-    if(!s)return;
-    s.innerHTML='<option value="">Select your home park...</option>';
-    var groups=d.groups||{};
-    var groupNames=Object.keys(groups).sort(function(a,b){if(a==='Independent')return 1;if(b==='Independent')return -1;return a.localeCompare(b);});
-    if(groupNames.length>0){
-      groupNames.forEach(function(gName){
-        var og=document.createElement('optgroup');og.label=gName;
-        (groups[gName]||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;og.appendChild(o);});
-        if((groups[gName]||[]).length>0)s.appendChild(og);
-      });
-    } else {
-      (d.parks||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;s.appendChild(o);});
+function timeAgo(ts) {
+  if (!ts) return '';
+  var diff = Math.floor((Date.now() - new Date(ts).getTime()) / 1000);
+  if (diff < 0) return 'just now';
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+  return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// =====================================================================
+// SESSION CHECK
+// =====================================================================
+(function () {
+  var token = localStorage.getItem('ar_token');
+  var user = localStorage.getItem('ar_username');
+  if (token && user) {
+    var btn = document.getElementById('nav-login-btn');
+    if (btn) {
+      btn.textContent = '👤 ' + user;
+      btn.onclick = function () { window.location.href = 'profile.html'; };
     }
-  }catch(e){
-    var s=document.getElementById('signup-park');
-    if(s)s.innerHTML='<option value="">Select...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Hersheypark</option><option>Dollywood</option><option>Other</option>';
+    var rankLink = document.getElementById('nav-rankings');
+    if (rankLink) rankLink.style.display = 'inline-block';
   }
 })();
 
-// Load leaderboard
-(async function(){
-  try{
-    var r=await fetch(LB_URL);var d=await r.json();
-    var el=document.getElementById('leaderboard');
-    if(!d.leaderboard||!d.leaderboard.length){el.innerHTML='<div class="lb-empty">Be the first on the board — <a href="#signup-user" style="color:var(--ac)">sign up</a> and start logging!</div>';return;}
-    var h='';d.leaderboard.forEach(function(u,i){
-      var rc=i===0?'g':i===1?'s':i===2?'b':'';
-      var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
-      h+='<div class="lb-row"><span class="lb-rank '+rc+'">'+(medal||(i+1))+'</span><span class="lb-name">'+(u.emoji||'🎢')+' '+(u.username||'—')+'</span><span class="lb-xp">'+(u.xp||0).toLocaleString()+' XP</span></div>';
+// =====================================================================
+// LOAD PARKS — populates signup, audit modal, AND gets live ride count
+// =====================================================================
+var cachedParksData = null;
+
+async function loadParks() {
+  try {
+    var r = await fetch(PARKS_URL);
+    var d = await r.json();
+    cachedParksData = d;
+
+    // --- Live ride count for nav stat ---
+    var totalRides = 0;
+    if (d.totalRides) {
+      // If the worker returns a totalRides field, use it directly
+      totalRides = d.totalRides;
+    } else if (d.parks && d.parks.length > 0) {
+      // Sum up rideCount from each park if available
+      d.parks.forEach(function (p) {
+        totalRides += (p.rideCount || 0);
+      });
+    }
+    var navStat = document.getElementById('nav-stat');
+    if (totalRides > 0) {
+      navStat.innerHTML = '<strong>' + totalRides.toLocaleString() + '</strong> rides tracked';
+    } else {
+      // Fallback: fetch ride count from rides endpoint
+      fetchRideCount();
+    }
+
+    // --- Populate signup park select ---
+    populateParkSelect(document.getElementById('signup-park'), d, 'Select your home park...');
+
+    // --- Populate audit park select ---
+    populateParkSelect(document.getElementById('am-park'), d, 'Select park...');
+
+  } catch (e) {
+    console.error('Failed to load parks:', e);
+    var s = document.getElementById('signup-park');
+    if (s) s.innerHTML = '<option value="">Select...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Hersheypark</option><option>Dollywood</option><option>Other</option>';
+    var am = document.getElementById('am-park');
+    if (am) am.innerHTML = '<option value="">Error loading parks</option>';
+    // Still try to get ride count
+    fetchRideCount();
+  }
+}
+
+function populateParkSelect(selectEl, data, placeholder) {
+  if (!selectEl) return;
+  selectEl.innerHTML = '<option value="">' + placeholder + '</option>';
+  var groups = data.groups || {};
+  var groupNames = Object.keys(groups).sort(function (a, b) {
+    if (a === 'Independent') return 1;
+    if (b === 'Independent') return -1;
+    return a.localeCompare(b);
+  });
+  if (groupNames.length > 0) {
+    groupNames.forEach(function (gName) {
+      var og = document.createElement('optgroup');
+      og.label = gName;
+      (groups[gName] || []).forEach(function (p) {
+        var o = document.createElement('option');
+        o.value = p.name;
+        o.textContent = p.name;
+        og.appendChild(o);
+      });
+      if ((groups[gName] || []).length > 0) selectEl.appendChild(og);
     });
-    el.innerHTML=h;
-  }catch(e){
-    document.getElementById('leaderboard').innerHTML='<div class="lb-empty">Leaderboard loading — check back soon!</div>';
+  } else {
+    (data.parks || []).forEach(function (p) {
+      var o = document.createElement('option');
+      o.value = p.name;
+      o.textContent = p.name;
+      selectEl.appendChild(o);
+    });
   }
-})();
+}
 
-// ── Live Activity Feed ──────────────────────────────────────────
-(async function loadActivity(){
-  var el=document.getElementById('live-feed');
-  el.innerHTML='<div style="color:var(--dim);font-size:11px;padding:12px;text-align:center"><span class="feed-dot"></span> Loading activity...</div>';
-  try{
-    var r=await fetch(ACTIVITY_URL);
-    var d=await r.json();
-    if(!d.feed||!d.feed.length){
-      el.innerHTML='<div class="feed-empty">No activity yet — be the first! <a href="#signup-user" style="color:var(--ac)">Sign up</a> and start logging.</div>';
+// Fallback ride count — query the rides endpoint for total
+async function fetchRideCount() {
+  try {
+    var r = await fetch(RIDES_URL + '?count=true');
+    var d = await r.json();
+    var count = d.totalRides || d.count || 0;
+    if (count > 0) {
+      document.getElementById('nav-stat').innerHTML = '<strong>' + count.toLocaleString() + '</strong> rides tracked';
+    }
+  } catch (e) {
+    // Silent fail — nav stat stays as "—"
+    console.error('Failed to fetch ride count:', e);
+  }
+}
+
+// =====================================================================
+// LOAD LEADERBOARD
+// =====================================================================
+(async function () {
+  try {
+    var r = await fetch(LB_URL);
+    var d = await r.json();
+    var el = document.getElementById('leaderboard');
+    if (!d.leaderboard || !d.leaderboard.length) {
+      el.innerHTML = '<div class="lb-empty">Be the first on the board — <a href="#signup-user" style="color:var(--ac)">sign up</a> and start logging!</div>';
       return;
     }
-    el.innerHTML=d.feed.map(function(item){
-      var body='';
-      var emoji=item.emoji||'🎢';
-      if(item.type==='ride'){
-        body='<strong>'+esc(item.username)+'</strong> logged '
-            +'<span class="feed-ride">'+esc(item.rideName)+'</span>'
-            +(item.parkName?' <span class="feed-park">at '+esc(item.parkName)+'</span>':'')
-            +(item.hasPhoto?'<span class="feed-photo-tag">📸 PHOTO</span>':'');
-      }else if(item.type==='audit'){
-        body='<strong>'+esc(item.username)+'</strong> submitted a '
-            +'<span class="feed-audit-type">'+esc(item.auditType)+'</span> audit'
-            +(item.parkName?' <span class="feed-park">at '+esc(item.parkName)+'</span>':'');
-      }else{
-        body='<strong>'+esc(item.username)+'</strong> '+esc(item.text||'did something');
-      }
-      return '<div class="feed-item">'
-            +'<span class="feed-emoji">'+emoji+'</span>'
-            +'<div class="feed-body">'+body+'</div>'
-            +'<span class="feed-time">'+timeAgo(item.time)+'</span>'
-            +'</div>';
-    }).join('');
-    // Auto-refresh every 30s
-    setTimeout(loadActivity,30000);
-  }catch(e){
-    el.innerHTML='<div class="feed-empty">Activity feed loading — check back soon!</div>';
-    setTimeout(loadActivity,60000);
+    var h = '';
+    d.leaderboard.forEach(function (u, i) {
+      var rc = i === 0 ? 'g' : i === 1 ? 's' : i === 2 ? 'b' : '';
+      var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+      h += '<div class="lb-row">';
+      h += '<span class="lb-rank ' + rc + '">' + (medal || (i + 1)) + '</span>';
+      h += '<span class="lb-name">' + (u.emoji || '🎢') + ' ' + esc(u.username || '—') + '</span>';
+      h += '<span class="lb-xp">' + (u.xp || 0).toLocaleString() + ' XP</span>';
+      h += '</div>';
+    });
+    el.innerHTML = h;
+  } catch (e) {
+    document.getElementById('leaderboard').innerHTML = '<div class="lb-empty">Leaderboard loading — check back soon!</div>';
   }
 })();
 
-function esc(s){if(!s)return '';var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-function timeAgo(ts){
-  if(!ts)return '';
-  var diff=Math.floor((Date.now()-new Date(ts).getTime())/1000);
-  if(diff<60)return 'just now';
-  if(diff<3600)return Math.floor(diff/60)+'m ago';
-  if(diff<86400)return Math.floor(diff/3600)+'h ago';
-  if(diff<604800)return Math.floor(diff/86400)+'d ago';
-  return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric'});
-}
+// =====================================================================
+// LIVE ACTIVITY FEED
+// =====================================================================
+(async function loadActivity() {
+  var el = document.getElementById('live-feed');
+  el.innerHTML = '<div style="color:var(--dim);font-size:11px;padding:12px;text-align:center"><span class="feed-dot"></span> Loading activity...</div>';
+  try {
+    var r = await fetch(ACTIVITY_URL);
+    var d = await r.json();
+    if (!d.feed || !d.feed.length) {
+      el.innerHTML = '<div class="feed-empty">No activity yet — be the first! <a href="#signup-user" style="color:var(--ac)">Sign up</a> and start logging.</div>';
+      return;
+    }
+    el.innerHTML = d.feed.map(function (item) {
+      var body = '';
+      var emoji = item.emoji || '🎢';
+      if (item.type === 'ride') {
+        body = '<strong>' + esc(item.username) + '</strong> logged '
+          + '<span class="feed-ride">' + esc(item.rideName) + '</span>'
+          + (item.parkName ? ' <span class="feed-park">at ' + esc(item.parkName) + '</span>' : '')
+          + (item.hasPhoto ? '<span class="feed-photo-tag">📸 PHOTO</span>' : '');
+      } else if (item.type === 'audit') {
+        body = '<strong>' + esc(item.username) + '</strong> submitted a '
+          + '<span class="feed-audit-type">' + esc(item.auditType) + '</span> audit'
+          + (item.parkName ? ' <span class="feed-park">at ' + esc(item.parkName) + '</span>' : '');
+      } else {
+        body = '<strong>' + esc(item.username) + '</strong> ' + esc(item.text || 'did something');
+      }
+      return '<div class="feed-item">'
+        + '<span class="feed-emoji">' + emoji + '</span>'
+        + '<div class="feed-body">' + body + '</div>'
+        + '<span class="feed-time">' + timeAgo(item.time) + '</span>'
+        + '</div>';
+    }).join('');
+    setTimeout(loadActivity, 30000);
+  } catch (e) {
+    el.innerHTML = '<div class="feed-empty">Activity feed loading — check back soon!</div>';
+    setTimeout(loadActivity, 60000);
+  }
+})();
 
-// Signup handler
-async function handleSignup(){
-  var user=document.getElementById('signup-user').value.trim();
-  var email=document.getElementById('signup-email').value.trim();
-  var park=document.getElementById('signup-park').value;
-  var intent=document.getElementById('signup-intent').value;
-  if(!user||!email){alert('Username and email are required.');return;}
-  var btn=document.querySelector('.signup-btn');
-  btn.textContent='Creating account...';btn.disabled=true;
-  try{
-    var r=await fetch(SIGNUP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:user,email:email,park:park,intent:intent})});
-    var d=await r.json();
-    if(d.error){btn.textContent=d.error;setTimeout(function(){btn.textContent='Join the Beta → Earn 50 XP';btn.disabled=false;},3000);return;}
-    localStorage.setItem('ar_token',d.token||'beta');
-    localStorage.setItem('ar_username',user);
-    btn.textContent='✓ Welcome, '+user+'! +50 XP';
-    btn.style.background='var(--yellow)';btn.style.color='#0A0C10';
-    setTimeout(function(){window.location.href='profile.html';},1500);
-  }catch(e){
-    btn.textContent='Network error — try again';
-    setTimeout(function(){btn.textContent='Join the Beta → Earn 50 XP';btn.disabled=false;},3000);
+// =====================================================================
+// SIGNUP
+// =====================================================================
+async function handleSignup() {
+  var user = document.getElementById('signup-user').value.trim();
+  var email = document.getElementById('signup-email').value.trim();
+  var park = document.getElementById('signup-park').value;
+  var intent = document.getElementById('signup-intent').value;
+  if (!user || !email) { alert('Username and email are required.'); return; }
+  var btn = document.querySelector('.signup-btn');
+  btn.textContent = 'Creating account...'; btn.disabled = true;
+  try {
+    var r = await fetch(SIGNUP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: user, email: email, park: park, intent: intent })
+    });
+    var d = await r.json();
+    if (d.error) {
+      btn.textContent = d.error;
+      setTimeout(function () { btn.textContent = 'Join the Beta → Earn 50 XP'; btn.disabled = false; }, 3000);
+      return;
+    }
+    localStorage.setItem('ar_token', d.token || 'beta');
+    localStorage.setItem('ar_username', user);
+    btn.textContent = '✓ Welcome, ' + user + '! +50 XP';
+    btn.style.background = 'var(--yellow)'; btn.style.color = '#0A0C10';
+    setTimeout(function () { window.location.href = 'profile.html'; }, 1500);
+  } catch (e) {
+    btn.textContent = 'Network error — try again';
+    setTimeout(function () { btn.textContent = 'Join the Beta → Earn 50 XP'; btn.disabled = false; }, 3000);
   }
 }
 
-// Login handlers
-async function sendLoginCode(){
-  var email=document.getElementById('login-email').value.trim();
-  if(!email){alert('Enter your email');return;}
-  document.getElementById('login-email-display').textContent=email;
-  document.getElementById('login-step1').style.display='none';
-  document.getElementById('login-step2').style.display='block';
+// =====================================================================
+// LOGIN
+// =====================================================================
+async function sendLoginCode() {
+  var email = document.getElementById('login-email').value.trim();
+  if (!email) { alert('Enter your email'); return; }
+  document.getElementById('login-email-display').textContent = email;
+  document.getElementById('login-step1').style.display = 'none';
+  document.getElementById('login-step2').style.display = 'block';
 }
-async function verifyLoginCode(){
-  var code=document.getElementById('login-code').value.trim();
-  if(!code||code.length<6){alert('Enter the 6-digit code');return;}
-  var email=document.getElementById('login-email').value.trim();
-  try{
-    var r=await fetch(PROFILE_URL+'?email='+encodeURIComponent(email));
-    var d=await r.json();
-    if(d.error){alert('Account not found for this email.');return;}
-    localStorage.setItem('ar_token','beta-'+Date.now());
-    localStorage.setItem('ar_username',d.user.username);
-    window.location.href='profile.html';
-  }catch(e){
-    localStorage.setItem('ar_token','beta-'+Date.now());
+
+async function verifyLoginCode() {
+  var code = document.getElementById('login-code').value.trim();
+  if (!code || code.length < 6) { alert('Enter the 6-digit code'); return; }
+  var email = document.getElementById('login-email').value.trim();
+  try {
+    var r = await fetch(PROFILE_URL + '?email=' + encodeURIComponent(email));
+    var d = await r.json();
+    if (d.error) { alert('Account not found for this email.'); return; }
+    localStorage.setItem('ar_token', 'beta-' + Date.now());
+    localStorage.setItem('ar_username', d.user.username);
+    window.location.href = 'profile.html';
+  } catch (e) {
+    localStorage.setItem('ar_token', 'beta-' + Date.now());
     document.getElementById('login-modal').classList.remove('show');
     alert('Login system is being set up. Use your username on the profile page.');
   }
 }
 
-// ── Audit Modal ─────────────────────────────────────────────────
-var AUDIT_FORMS={
-  'Coaster':'coaster-audit.html',
-  'Flat Ride':'flatride-audit.html',
-  'Water':'water-audit.html',
-  'Aquatic':'aquatic-audit.html',
-  'Play Structure':'play-audit.html'
+// =====================================================================
+// AUDIT MODAL
+// =====================================================================
+var AUDIT_FORMS = {
+  'Coaster': 'coaster-audit.html',
+  'Flat Ride': 'flatride-audit.html',
+  'Water': 'water-audit.html',
+  'Aquatic': 'aquatic-audit.html',
+  'Play Structure': 'play-audit.html'
 };
-var AUDIT_CSS={'Coaster':'t-coaster','Flat Ride':'t-flat','Water':'t-water','Aquatic':'t-aquatic','Play Structure':'t-play'};
-var AUDIT_EMOJI={'Coaster':'🎢','Flat Ride':'🎡','Water':'💧','Aquatic':'🏊','Play Structure':'🏗️'};
-var amRides=[],amSelected=null;
+var AUDIT_CSS = { 'Coaster': 't-coaster', 'Flat Ride': 't-flat', 'Water': 't-water', 'Aquatic': 't-aquatic', 'Play Structure': 't-play' };
+var AUDIT_EMOJI = { 'Coaster': '🎢', 'Flat Ride': '🎡', 'Water': '💧', 'Aquatic': '🏊', 'Play Structure': '🏗️' };
+var amRides = [], amSelected = null;
 
-// Load parks into audit modal (reuse the same fetch)
-(async function(){
-  try{
-    var r=await fetch(PARKS_URL);var d=await r.json();
-    var s=document.getElementById('am-park');
-    if(!s)return;
-    s.innerHTML='<option value="">Select park...</option>';
-    var groups=d.groups||{};
-    var gn=Object.keys(groups).sort(function(a,b){if(a==='Independent')return 1;if(b==='Independent')return -1;return a.localeCompare(b);});
-    if(gn.length>0){
-      gn.forEach(function(g){
-        var og=document.createElement('optgroup');og.label=g;
-        (groups[g]||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;og.appendChild(o);});
-        if((groups[g]||[]).length)s.appendChild(og);
-      });
-    } else {
-      (d.parks||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;s.appendChild(o);});
-    }
-  }catch(e){
-    var s=document.getElementById('am-park');
-    if(s)s.innerHTML='<option value="">Error loading parks</option>';
-  }
-})();
+async function auditParkChanged() {
+  var parkSel = document.getElementById('am-park');
+  var rideSel = document.getElementById('am-ride');
+  var btn = document.getElementById('am-go');
+  amSelected = null;
+  document.getElementById('am-type-badge').innerHTML = '';
+  btn.disabled = true; btn.textContent = 'Select a ride to start';
+  document.getElementById('am-ride-count').textContent = '';
 
-async function auditParkChanged(){
-  var parkSel=document.getElementById('am-park');
-  var rideSel=document.getElementById('am-ride');
-  var btn=document.getElementById('am-go');
-  amSelected=null;
-  document.getElementById('am-type-badge').innerHTML='';
-  btn.disabled=true;btn.textContent='Select a ride to start';
-  document.getElementById('am-ride-count').textContent='';
-
-  if(!parkSel.value){
-    rideSel.innerHTML='<option value="">Select a park first...</option>';
-    rideSel.disabled=true;return;
+  if (!parkSel.value) {
+    rideSel.innerHTML = '<option value="">Select a park first...</option>';
+    rideSel.disabled = true;
+    return;
   }
 
-  rideSel.innerHTML='<option value="">Loading rides...</option>';
-  rideSel.disabled=true;
+  rideSel.innerHTML = '<option value="">Loading rides...</option>';
+  rideSel.disabled = true;
 
-  try{
-    var r=await fetch(PARKS_URL+'?parkName='+encodeURIComponent(parkSel.value));
-    var d=await r.json();
-    amRides=d.rides||[];
-    if(!amRides.length){
-      rideSel.innerHTML='<option value="">No rides found</option>';return;
+  try {
+    var r = await fetch(PARKS_URL + '?parkName=' + encodeURIComponent(parkSel.value));
+    var d = await r.json();
+    amRides = d.rides || [];
+    if (!amRides.length) {
+      rideSel.innerHTML = '<option value="">No rides found</option>';
+      return;
     }
-    // Group by type
-    var grouped={};
-    amRides.forEach(function(ride){
-      var t=ride.rideType||'Unclassified';
-      if(!grouped[t])grouped[t]=[];
+    var grouped = {};
+    amRides.forEach(function (ride) {
+      var t = ride.rideType || 'Unclassified';
+      if (!grouped[t]) grouped[t] = [];
       grouped[t].push(ride);
     });
-    var html='<option value="">Select a ride...</option>';
-    ['Coaster','Flat Ride','Water','Aquatic','Play Structure','Unclassified'].forEach(function(type){
-      if(!grouped[type]||!grouped[type].length)return;
-      html+='<optgroup label="'+esc(type)+' ('+grouped[type].length+')">';
-      grouped[type].forEach(function(ride){
-        html+='<option value="'+esc(ride.id)+'">'+esc(ride.name)+(ride.land?' — '+esc(ride.land):'')+'</option>';
+    var html = '<option value="">Select a ride...</option>';
+    ['Coaster', 'Flat Ride', 'Water', 'Aquatic', 'Play Structure', 'Unclassified'].forEach(function (type) {
+      if (!grouped[type] || !grouped[type].length) return;
+      html += '<optgroup label="' + esc(type) + ' (' + grouped[type].length + ')">';
+      grouped[type].forEach(function (ride) {
+        html += '<option value="' + esc(ride.id) + '">' + esc(ride.name) + (ride.land ? ' — ' + esc(ride.land) : '') + '</option>';
       });
-      html+='</optgroup>';
+      html += '</optgroup>';
     });
-    rideSel.innerHTML=html;
-    rideSel.disabled=false;
-    document.getElementById('am-ride-count').textContent=amRides.length+' rides at this park';
-  }catch(e){
-    rideSel.innerHTML='<option value="">Error loading rides</option>';
+    rideSel.innerHTML = html;
+    rideSel.disabled = false;
+    document.getElementById('am-ride-count').textContent = amRides.length + ' rides at this park';
+  } catch (e) {
+    rideSel.innerHTML = '<option value="">Error loading rides</option>';
   }
 }
 
-function auditRideChanged(){
-  var rideSel=document.getElementById('am-ride');
-  var btn=document.getElementById('am-go');
-  var badge=document.getElementById('am-type-badge');
-  if(!rideSel.value){
-    amSelected=null;btn.disabled=true;btn.textContent='Select a ride to start';badge.innerHTML='';return;
+function auditRideChanged() {
+  var rideSel = document.getElementById('am-ride');
+  var btn = document.getElementById('am-go');
+  var badge = document.getElementById('am-type-badge');
+  if (!rideSel.value) {
+    amSelected = null; btn.disabled = true; btn.textContent = 'Select a ride to start'; badge.innerHTML = '';
+    return;
   }
-  amSelected=amRides.find(function(r){return r.id===rideSel.value;});
-  if(amSelected&&amSelected.rideType&&AUDIT_FORMS[amSelected.rideType]){
-    var t=amSelected.rideType;
-    badge.innerHTML='<span class="at-tag '+(AUDIT_CSS[t]||'t-none')+'">'+(AUDIT_EMOJI[t]||'📋')+' '+esc(t).toUpperCase()+' AUDIT</span>';
-    btn.disabled=false;
-    btn.textContent='Start '+t+' Audit → +50 XP';
-  }else{
-    badge.innerHTML='<span class="at-tag t-none">⚠️ No audit form for this type</span>';
-    btn.disabled=true;btn.textContent='No audit form available';
+  amSelected = amRides.find(function (r) { return r.id === rideSel.value; });
+  if (amSelected && amSelected.rideType && AUDIT_FORMS[amSelected.rideType]) {
+    var t = amSelected.rideType;
+    badge.innerHTML = '<span class="at-tag ' + (AUDIT_CSS[t] || 't-none') + '">' + (AUDIT_EMOJI[t] || '📋') + ' ' + esc(t).toUpperCase() + ' AUDIT</span>';
+    btn.disabled = false;
+    btn.textContent = 'Start ' + t + ' Audit → +50 XP';
+  } else {
+    badge.innerHTML = '<span class="at-tag t-none">⚠️ No audit form for this type</span>';
+    btn.disabled = true; btn.textContent = 'No audit form available';
   }
 }
 
-function auditGo(){
-  if(!amSelected||!amSelected.rideType)return;
-  var form=AUDIT_FORMS[amSelected.rideType];
-  if(!form)return;
-  var p=new URLSearchParams();
-  p.set('rideId',amSelected.id);
-  p.set('rideName',amSelected.name);
-  p.set('rideType',amSelected.rideType);
-  p.set('park',document.getElementById('am-park').value);
-  window.location.href=form+'?'+p.toString();
+function auditGo() {
+  if (!amSelected || !amSelected.rideType) return;
+  var form = AUDIT_FORMS[amSelected.rideType];
+  if (!form) return;
+  var p = new URLSearchParams();
+  p.set('rideId', amSelected.id);
+  p.set('rideName', amSelected.name);
+  p.set('rideType', amSelected.rideType);
+  p.set('park', document.getElementById('am-park').value);
+  window.location.href = form + '?' + p.toString();
 }
+
+// =====================================================================
+// INIT
+// =====================================================================
+loadParks();
 </script>
 </body>
 </html>
