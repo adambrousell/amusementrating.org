@@ -214,20 +214,12 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <div class="modal-overlay" id="login-modal">
 <div class="modal">
 <button class="modal-close" onclick="document.getElementById('login-modal').classList.remove('show')">&times;</button>
-<div id="login-step1">
 <h3>Welcome back, <em>auditor.</em></h3>
-<p>Enter your email and we'll send you a 6-digit login code.</p>
-<div class="field"><label>EMAIL</label><input type="email" id="login-email" placeholder="you@email.com"></div>
-<button class="modal-btn" onclick="sendLoginCode()">Send Login Code</button>
-<div class="modal-note">No password needed — we'll email you a one-time code.</div>
-</div>
-<div id="login-step2" style="display:none">
-<h3>Check your <em>inbox.</em></h3>
-<p>We sent a 6-digit code to <strong id="login-email-display"></strong></p>
-<div class="field"><label>LOGIN CODE</label><input type="text" id="login-code" placeholder="000000" maxlength="6" inputmode="numeric"></div>
-<button class="modal-btn" onclick="verifyLoginCode()">Verify &amp; Log In</button>
-<div class="modal-note">Code expires in 15 minutes. <a href="#" onclick="document.getElementById('login-step1').style.display='block';document.getElementById('login-step2').style.display='none';return false;">Resend code</a></div>
-</div>
+<p>Log in with your username and password.</p>
+<div class="field"><label>USERNAME</label><input type="text" id="login-username" placeholder="your username" autocomplete="username"></div>
+<div class="field"><label>PASSWORD</label><input type="password" id="login-password" placeholder="your password" autocomplete="current-password"></div>
+<button class="modal-btn" id="login-btn" onclick="handleLogin()">Log In</button>
+<div class="modal-note" id="login-note">No account? Scroll down to sign up.</div>
 </div>
 </div>
 
@@ -337,8 +329,9 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <h2>Claim your <em>spot.</em></h2>
 <p>First 100 members get the <strong>FOUNDING 100</strong> badge — permanently. It never unlocks again.</p>
 <div style="max-width:340px;margin:0 auto">
-<div class="field"><label>USERNAME</label><input type="text" id="signup-user" placeholder="coasterking99"></div>
-<div class="field"><label>EMAIL</label><input type="email" id="signup-email" placeholder="you@email.com"></div>
+<div class="field"><label>USERNAME</label><input type="text" id="signup-user" placeholder="coasterking99" autocomplete="username"></div>
+<div class="field"><label>EMAIL</label><input type="email" id="signup-email" placeholder="you@email.com" autocomplete="email"></div>
+<div class="field"><label>PASSWORD</label><input type="password" id="signup-password" placeholder="6+ characters" autocomplete="new-password"></div>
 <div class="field"><label>HOME PARK</label><select id="signup-park"><option value="">Loading parks...</option></select></div>
 <div class="field"><label>I WANT TO</label>
 <select id="signup-intent"><option value="">Select...</option><option>Log rides + audit parks</option><option>Log rides + browse scores</option><option>Just explore</option></select>
@@ -597,16 +590,18 @@ async function fetchRideCount() {
 async function handleSignup() {
   var user = document.getElementById('signup-user').value.trim();
   var email = document.getElementById('signup-email').value.trim();
+  var password = document.getElementById('signup-password').value;
   var park = document.getElementById('signup-park').value;
   var intent = document.getElementById('signup-intent').value;
   if (!user || !email) { alert('Username and email are required.'); return; }
+  if (!password || password.length < 6) { alert('Password must be at least 6 characters.'); return; }
   var btn = document.querySelector('.signup-btn');
   btn.textContent = 'Creating account...'; btn.disabled = true;
   try {
     var r = await fetch(SIGNUP_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: user, email: email, park: park, intent: intent })
+      body: JSON.stringify({ username: user, email: email, password: password, park: park, intent: intent })
     });
     var d = await r.json();
     if (d.error) {
@@ -628,31 +623,49 @@ async function handleSignup() {
 // =====================================================================
 // LOGIN
 // =====================================================================
-async function sendLoginCode() {
-  var email = document.getElementById('login-email').value.trim();
-  if (!email) { alert('Enter your email'); return; }
-  document.getElementById('login-email-display').textContent = email;
-  document.getElementById('login-step1').style.display = 'none';
-  document.getElementById('login-step2').style.display = 'block';
-}
+async function handleLogin() {
+  var username = document.getElementById('login-username').value.trim();
+  var password = document.getElementById('login-password').value;
+  var btn = document.getElementById('login-btn');
+  var note = document.getElementById('login-note');
 
-async function verifyLoginCode() {
-  var code = document.getElementById('login-code').value.trim();
-  if (!code || code.length < 6) { alert('Enter the 6-digit code'); return; }
-  var email = document.getElementById('login-email').value.trim();
+  if (!username || !password) { note.textContent = 'Enter your username and password.'; note.style.color = 'var(--red)'; return; }
+
+  btn.textContent = 'Logging in...'; btn.disabled = true;
+  note.textContent = ''; note.style.color = '';
+
   try {
-    var r = await fetch(PROFILE_URL + '?email=' + encodeURIComponent(email));
+    var r = await fetch(SIGNUP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'login', username: username, password: password })
+    });
     var d = await r.json();
-    if (d.error) { alert('Account not found for this email.'); return; }
-    localStorage.setItem('ar_token', 'beta-' + Date.now());
-    localStorage.setItem('ar_username', d.user.username);
-    window.location.href = 'profile.html';
+    if (d.error) {
+      note.textContent = d.error;
+      note.style.color = 'var(--red)';
+      btn.textContent = 'Log In'; btn.disabled = false;
+      return;
+    }
+    localStorage.setItem('ar_token', d.token || 'beta');
+    localStorage.setItem('ar_username', d.username || username);
+    btn.textContent = '✓ Welcome back, ' + (d.username || username) + '!';
+    btn.style.background = 'var(--yellow)'; btn.style.color = '#0A0C10';
+    setTimeout(function () { window.location.href = 'profile.html'; }, 1000);
   } catch (e) {
-    localStorage.setItem('ar_token', 'beta-' + Date.now());
-    document.getElementById('login-modal').classList.remove('show');
-    alert('Login system is being set up. Use your username on the profile page.');
+    note.textContent = 'Network error — try again.';
+    note.style.color = 'var(--red)';
+    btn.textContent = 'Log In'; btn.disabled = false;
   }
 }
+
+// Allow Enter key on login fields
+document.getElementById('login-password').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') handleLogin();
+});
+document.getElementById('login-username').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') document.getElementById('login-password').focus();
+});
 
 // =====================================================================
 // AUDIT MODAL
