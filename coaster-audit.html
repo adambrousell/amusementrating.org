@@ -90,7 +90,7 @@ function setScore(k,v){scores[k]=(scores[k]===v)?null:v;render();}
 function setData(k,v){dataCapture[k]=(dataCapture[k]===v)?null:v;render();}
 function pickOpt(k,idx){var opt=null;PHASES.forEach(function(p){if(p.data)p.data.forEach(function(d){if(d.k===k&&d.opts)opt=d.opts[idx];});});setData(k,opt);}
 function setPhoto(k,v){photos[k]=v;render();}
-function captGPS(field){var now=new Date();var ts=now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});meta[field+'Time']=ts+' · GPS pending';render();if(navigator.geolocation){navigator.geolocation.getCurrentPosition(function(pos){meta[field+'Time']=ts+' · '+pos.coords.latitude.toFixed(4)+'°, '+pos.coords.longitude.toFixed(4)+'°';render();},function(){meta[field+'Time']=ts+' · GPS unavailable';render();},{timeout:5000});}}
+function captGPS(field){var now=new Date();var ts=now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});meta[field+'Time']=ts+' · GPS pending';render();if(navigator.geolocation){navigator.geolocation.getCurrentPosition(function(pos){meta[field+'Time']=ts+' · '+pos.coords.latitude.toFixed(4)+'°, '+pos.coords.longitude.toFixed(4)+'°';meta[field+'Lat']=pos.coords.latitude;meta[field+'Lng']=pos.coords.longitude;render();},function(){meta[field+'Time']=ts+' · GPS unavailable';render();},{timeout:5000});}}
 
 function bdg(p){return'<span class="bdg bdg-'+p+'">'+P[p].l+'</span>';}
 function counted(){var total=0,scored=0;PHASES.forEach(function(p,pi){p.items.forEach(function(_,ii){total++;if(scores[pi+'-'+ii]!=null)scored++;});});return{total:total,scored:scored,pct:total?Math.round(scored/total*100):0};}
@@ -249,7 +249,8 @@ function showSubmit(){
   PHASES.forEach(function(ph,pi){ph.items.forEach(function(it,ii){var k=pi+'-'+ii;var v=scores[k];if(v!=null){items.push({phase:ph.n,observation:it.t,pillar:it.p,score:v,note:notes[k]||null});pv[it.p].push(v);}});});
   var pillarAvg={};Object.keys(pv).forEach(function(p){var arr=pv[p];pillarAvg[p]=arr.length?+(arr.reduce(function(a,b){return a+b;},0)/arr.length).toFixed(2):null;});
   var xp=xpCalc();
-  var payload={audit_id:'AR-'+CHECKLIST_ID.toUpperCase()+'-'+Date.now().toString(36).toUpperCase(),checklist:CHECKLIST_TITLE,ride:rideName||CHECKLIST_TITLE,park:meta.park,auditor:meta.auditor,gps_start:meta.startTime||null,gps_end:meta.endTime||null,pillars:pillarAvg,scored:c.scored,total:c.total,pct:c.pct,data_capture:dataCapture,xp_earned:xp.total,items:items};
+  var isMobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  var payload={audit_id:'AR-'+CHECKLIST_ID.toUpperCase()+'-'+Date.now().toString(36).toUpperCase(),checklist:CHECKLIST_TITLE,ride:rideName||CHECKLIST_TITLE,park:meta.park,auditor:meta.auditor,gps_start:meta.startTime||null,gps_end:meta.endTime||null,gps_lat:meta.startLat||null,gps_lng:meta.startLng||null,source:isMobile?'mobile':'desktop',pillars:pillarAvg,scored:c.scored,total:c.total,pct:c.pct,data_capture:dataCapture,xp_earned:xp.total,items:items};
   var j=JSON.stringify(payload,null,2);
 
   // XP breakdown HTML
