@@ -80,18 +80,14 @@ a{color:var(--ac);text-decoration:none}
 .bdg-icon{font-size:22px;margin-bottom:4px}
 .bdg-name{font-family:var(--m);font-size:6.5px;color:var(--dim);text-align:center;letter-spacing:.3px;line-height:1.3}
 .activity{background:var(--s2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.act-feed{font-size:12px;color:var(--dim);text-align:center;padding:12px}
-.feed-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.03);font-size:12px;line-height:1.5;transition:background .15s}
+.feed-item{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.03);font-size:12px;line-height:1.5;transition:background .15s}
 .feed-item:last-child{border-bottom:none}
 .feed-item:hover{background:rgba(255,255,255,.02)}
 .feed-emoji{font-size:16px;flex-shrink:0;margin-top:1px}
-.feed-body{flex:1;color:var(--text)}
+.feed-body{flex:1;color:var(--text);min-width:0}
 .feed-body strong{color:var(--bright);font-weight:600}
-.feed-body .feed-ride{color:var(--ac);font-weight:600}
-.feed-body .feed-audit-type{color:var(--yellow);font-weight:600}
-.feed-body .feed-park{color:var(--dim)}
-.feed-time{font-family:var(--m);font-size:9px;color:var(--mute);flex-shrink:0;margin-top:2px}
-.feed-photo-tag{font-family:var(--m);font-size:8px;color:var(--cyan);margin-left:4px}
+.feed-detail{font-family:var(--m);font-size:9px;color:var(--dim);margin-top:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.feed-time{font-family:var(--m);font-size:9px;color:var(--mute);flex-shrink:0;margin-top:2px;white-space:nowrap}
 .feed-empty{padding:28px;text-align:center;color:var(--dim);font-size:12px}
 .feed-dot{display:inline-block;width:6px;height:6px;background:var(--ac);border-radius:50%;margin-right:6px;animation:pulse-dot 2s ease-in-out infinite}
 @keyframes pulse-dot{0%,100%{opacity:.3}50%{opacity:1}}
@@ -166,16 +162,6 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 </style>
 </head>
 <body>
-<script>
-function showAuthTab(tab){
-  document.getElementById('auth-signup').style.display=tab==='signup'?'block':'none';
-  document.getElementById('auth-login').style.display=tab==='login'?'block':'none';
-  document.getElementById('tab-signup').style.color=tab==='signup'?'var(--ac)':'var(--dim)';
-  document.getElementById('tab-signup').style.borderBottom=tab==='signup'?'2px solid var(--ac)':'2px solid transparent';
-  document.getElementById('tab-login').style.color=tab==='login'?'var(--ac)':'var(--dim)';
-  document.getElementById('tab-login').style.borderBottom=tab==='login'?'2px solid var(--ac)':'2px solid transparent';
-}
-</script>
 <div class="modal-overlay" id="login-modal">
 <div class="modal">
 <button class="modal-close" onclick="document.getElementById('login-modal').classList.remove('show')">&times;</button>
@@ -223,7 +209,7 @@ function showAuthTab(tab){
 <div class="nav-r">
 <a href="rankings.html" class="nav-login">🏆 Rankings</a>
 <a href="trip-planner.html" class="nav-login">📅 Trip Planner</a>
-<span class="nav-stat" id="nav-stat"><strong>3,937</strong> rides tracked</span>
+<span class="nav-stat" id="nav-stat"><strong>—</strong> rides tracked</span>
 <div class="nav-tag">BETA</div>
 <button class="nav-login" id="nav-login-btn" onclick="document.getElementById('login-modal').classList.add('show')">Log In</button>
 </div>
@@ -274,7 +260,7 @@ function showAuthTab(tab){
 <div class="bdg locked"><span class="bdg-icon">🔒</span><span class="bdg-name">FOUNDING 100</span></div>
 </div>
 <div class="sec a5">📡 LIVE ACTIVITY</div>
-<div class="activity a5" id="activity-feed"><div class="act-feed" id="live-feed">Loading activity...</div></div>
+<div class="activity a5" id="activity-feed"><div id="live-feed" style="padding:12px;text-align:center;color:var(--dim);font-size:11px"><span class="feed-dot"></span> Loading activity...</div></div>
 <div class="sec a6">🎯 SEASON CHALLENGES · SPRING 2026</div>
 <div class="challenges a6">
 <div class="ch"><div class="ch-icon">🌊</div><div class="ch-info"><div class="ch-name">Opening Day Rush</div><div class="ch-desc">Log rides at 3 different parks during opening weekend</div></div><div class="ch-reward"><div class="ch-xp">+500</div><div class="ch-sub">XP + BADGE</div></div></div>
@@ -294,7 +280,7 @@ function showAuthTab(tab){
 <button class="signup-btn" onclick="handleSignup()">Join the Beta → Earn 50 XP</button>
 </div>
 <div class="signup-bonus">🎁 SIGNUP BONUS: 50 XP + FIRST LOG badge unlocked instantly</div>
-<div class="spots" id="spots-remaining">Free forever. 99 of 100 founding spots remaining.</div>
+<div class="spots" id="spots-remaining">Free forever. Loading founding spots...</div>
 </div>
 <footer class="a8">
 <div class="ft-brand">Amusement<em>Rating</em>.org</div>
@@ -317,6 +303,7 @@ var PROFILE_URL='https://ar-profile.amusementstandards.workers.dev';
 var LB_URL='https://ar-leaderboard.amusementstandards.workers.dev';
 var ACTIVITY_URL='https://ar-activity.amusementstandards.workers.dev';
 
+// ═══ AUTH STATE ═══
 (function(){
   var token=localStorage.getItem('ar_token');
   var user=localStorage.getItem('ar_username');
@@ -326,9 +313,31 @@ var ACTIVITY_URL='https://ar-activity.amusementstandards.workers.dev';
   }
 })();
 
+// ═══ HELPERS ═══
+function esc(s){if(!s)return '';var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function timeAgo(ts){
+  if(!ts)return '';
+  var diff=Math.floor((Date.now()-new Date(ts).getTime())/1000);
+  if(diff<60)return 'just now';
+  if(diff<3600)return Math.floor(diff/60)+'m ago';
+  if(diff<86400)return Math.floor(diff/3600)+'h ago';
+  if(diff<604800)return Math.floor(diff/86400)+'d ago';
+  return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+function showAuthTab(tab){
+  document.getElementById('auth-signup').style.display=tab==='signup'?'block':'none';
+  document.getElementById('auth-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('tab-signup').style.color=tab==='signup'?'var(--ac)':'var(--dim)';
+  document.getElementById('tab-signup').style.borderBottom=tab==='signup'?'2px solid var(--ac)':'2px solid transparent';
+  document.getElementById('tab-login').style.color=tab==='login'?'var(--ac)':'var(--dim)';
+  document.getElementById('tab-login').style.borderBottom=tab==='login'?'2px solid var(--ac)':'2px solid transparent';
+}
+
+// ═══ PARKS LOADER (unified — populates signup, modal signup, audit modal) ═══
 (async function(){
   try{
     var r=await fetch(PARKS_URL);var d=await r.json();
+    var rideCount=0;
     ['signup-park','modal-signup-park','am-park'].forEach(function(id){
       var s=document.getElementById(id);
       if(!s)return;
@@ -339,13 +348,14 @@ var ACTIVITY_URL='https://ar-activity.amusementstandards.workers.dev';
       if(groupNames.length>0){
         groupNames.forEach(function(gName){
           var og=document.createElement('optgroup');og.label=gName;
-          (groups[gName]||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;og.appendChild(o);});
+          (groups[gName]||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;og.appendChild(o);if(p.rideCount)rideCount+=p.rideCount;});
           if((groups[gName]||[]).length>0)s.appendChild(og);
         });
       }else{
-        (d.parks||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;s.appendChild(o);});
+        (d.parks||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;s.appendChild(o);if(p.rideCount)rideCount+=p.rideCount;});
       }
     });
+    if(rideCount>0){var ns=document.getElementById('nav-stat');if(ns)ns.innerHTML='<strong>'+rideCount.toLocaleString()+'</strong> rides tracked';}
   }catch(e){
     ['signup-park','modal-signup-park','am-park'].forEach(function(id){
       var s=document.getElementById(id);
@@ -354,6 +364,7 @@ var ACTIVITY_URL='https://ar-activity.amusementstandards.workers.dev';
   }
 })();
 
+// ═══ LEADERBOARD ═══
 (async function(){
   try{
     var r=await fetch(LB_URL);var d=await r.json();
@@ -370,9 +381,9 @@ var ACTIVITY_URL='https://ar-activity.amusementstandards.workers.dev';
   }
 })();
 
+// ═══ LIVE ACTIVITY FEED — RICH RENDERING ═══
 (async function loadActivity(){
   var el=document.getElementById('live-feed');
-  el.innerHTML='<div style="color:var(--dim);font-size:11px;padding:12px;text-align:center"><span class="feed-dot"></span> Loading activity...</div>';
   try{
     var r=await fetch(ACTIVITY_URL);
     var d=await r.json();
@@ -380,45 +391,72 @@ var ACTIVITY_URL='https://ar-activity.amusementstandards.workers.dev';
       el.innerHTML='<div class="feed-empty">No activity yet — be the first! <a href="#signup-user" style="color:var(--ac)">Sign up</a> and start logging.</div>';
       return;
     }
-    el.innerHTML=d.feed.map(function(item){
+    var h='';
+    d.feed.slice(0,15).forEach(function(item){
+      var ago=timeAgo(item.time);
       var body='';
-      var emoji=item.emoji||'🎢';
-      if(item.type==='ride'){
-        body='<strong>'+esc(item.username)+'</strong> logged '
-            +'<span class="feed-ride">'+esc(item.rideName)+'</span>'
-            +(item.parkName?' <span class="feed-park">at '+esc(item.parkName)+'</span>':'')
-            +(item.hasPhoto?'<span class="feed-photo-tag">📸 PHOTO</span>':'');
-      }else if(item.type==='audit'){
-        body='<strong>'+esc(item.username)+'</strong> submitted a '
-            +'<span class="feed-audit-type">'+esc(item.auditType)+'</span> audit'
-            +(item.parkName?' <span class="feed-park">at '+esc(item.parkName)+'</span>':'');
-      }else{
-        body='<strong>'+esc(item.username)+'</strong> '+esc(item.text||'did something');
+      var detail='';
+
+      if(item.type==='audit'){
+        body='<strong>'+esc(item.username)+'</strong> submitted a <span style="color:var(--yellow);font-weight:700">'+esc(item.auditType)+'</span> audit';
+        if(item.rideName)body+=' on <strong>'+esc(item.rideName)+'</strong>';
+        if(item.parkName)body+=' at '+esc(item.parkName);
+        var parts=[];
+        if(item.score)parts.push('<span style="color:'+(item.score>=4?'var(--ac)':item.score>=3?'var(--yellow)':'var(--red)')+';font-weight:700">'+item.score.toFixed(1)+'</span> composite');
+        if(item.xp)parts.push('<span style="color:var(--yellow)">⚡ '+item.xp+' XP</span>');
+        if(parts.length)detail='<div class="feed-detail">'+parts.join(' · ')+'</div>';
+
+      }else if(item.type==='badge'){
+        body='<strong>'+esc(item.username)+'</strong> earned <span style="color:var(--yellow);font-weight:700">'+esc(item.badgeName)+'</span>';
+        detail='<div class="feed-detail"><span style="color:var(--yellow)">⚡ +'+(item.xp||10)+' XP</span></div>';
+
+      }else if(item.type==='ride'){
+        body='<strong>'+esc(item.username)+'</strong> logged <span style="color:var(--ac);font-weight:700">'+esc(item.rideName)+'</span>';
+        if(item.parkName)body+=' at '+esc(item.parkName);
+        var rp=[];
+        if(item.hasPhoto)rp.push('<span style="color:var(--cyan)">📸</span>');
+        rp.push('<span style="color:var(--yellow)">⚡ '+(item.xp||5)+' XP</span>');
+        detail='<div class="feed-detail">'+rp.join(' · ')+'</div>';
+
+      }else if(item.type==='xp'){
+        body='<strong>'+esc(item.username)+'</strong> '+esc(item.text||'earned XP');
+        if(item.xp)detail='<div class="feed-detail"><span style="color:var(--yellow)">⚡ +'+item.xp+' XP</span></div>';
       }
-      return '<div class="feed-item">'
-            +'<span class="feed-emoji">'+emoji+'</span>'
-            +'<div class="feed-body">'+body+'</div>'
-            +'<span class="feed-time">'+timeAgo(item.time)+'</span>'
-            +'</div>';
-    }).join('');
-    setTimeout(loadActivity,30000);
+
+      if(!body)return;
+      h+='<div class="feed-item">';
+      h+='<span class="feed-emoji">'+(item.emoji||'⚡')+'</span>';
+      h+='<div class="feed-body">'+body+detail+'</div>';
+      h+='<span class="feed-time">'+ago+'</span>';
+      h+='</div>';
+    });
+    el.innerHTML=h;
+    setTimeout(loadActivity,60000);
   }catch(e){
     el.innerHTML='<div class="feed-empty">Activity feed loading — check back soon!</div>';
     setTimeout(loadActivity,60000);
   }
 })();
 
-function esc(s){if(!s)return '';var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-function timeAgo(ts){
-  if(!ts)return '';
-  var diff=Math.floor((Date.now()-new Date(ts).getTime())/1000);
-  if(diff<60)return 'just now';
-  if(diff<3600)return Math.floor(diff/60)+'m ago';
-  if(diff<86400)return Math.floor(diff/3600)+'h ago';
-  if(diff<604800)return Math.floor(diff/86400)+'d ago';
-  return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric'});
-}
+// ═══ DYNAMIC FOUNDING SPOTS ═══
+(async function(){
+  var el=document.getElementById('spots-remaining');
+  try{
+    var r=await fetch(SIGNUP_URL+'?action=spots');
+    var d=await r.json();
+    var count=d.count||d.spots||d.total||0;
+    var remaining=Math.max(100-count,0);
+    if(remaining>0){
+      el.textContent='Free forever. '+remaining+' of 100 founding spots remaining.';
+    }else{
+      el.textContent='Free forever. All founding spots claimed!';
+    }
+  }catch(e){
+    el.textContent='Free forever. Limited founding spots remaining.';
+  }
+})();
 
+// ═══ SIGNUP ═══
 async function handleSignup(){
   var user=document.getElementById('signup-user').value.trim();
   var email=document.getElementById('signup-email').value.trim();
@@ -442,15 +480,7 @@ async function handleSignup(){
   }
 }
 
-function showAuthTab(tab){
-  document.getElementById('auth-signup').style.display=tab==='signup'?'block':'none';
-  document.getElementById('auth-login').style.display=tab==='login'?'block':'none';
-  document.getElementById('tab-signup').style.color=tab==='signup'?'var(--ac)':'var(--dim)';
-  document.getElementById('tab-signup').style.borderBottom=tab==='signup'?'2px solid var(--ac)':'2px solid transparent';
-  document.getElementById('tab-login').style.color=tab==='login'?'var(--ac)':'var(--dim)';
-  document.getElementById('tab-login').style.borderBottom=tab==='login'?'2px solid var(--ac)':'2px solid transparent';
-}
-
+// ═══ MODAL AUTH ═══
 async function handleModalSignup(){
   var user=document.getElementById('modal-signup-user').value.trim();
   var email=document.getElementById('modal-signup-email').value.trim();
@@ -487,7 +517,6 @@ async function handleModalLogin(){
     var r=await fetch(SIGNUP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',username:user,password:pass})});
     var d=await r.json();
     if(d.error){
-      // Fallback: try profile lookup by username (worker may not support login action yet)
       try{
         var pr=await fetch(PROFILE_URL+'?u='+encodeURIComponent(user));
         var pd=await pr.json();
@@ -508,7 +537,6 @@ async function handleModalLogin(){
     btn.style.background='var(--yellow)';btn.style.color='#0A0C10';
     setTimeout(function(){window.location.href='profile.html';},1000);
   }catch(e){
-    // Network error on signup worker — try profile fallback
     try{
       var pr=await fetch(PROFILE_URL+'?u='+encodeURIComponent(user));
       var pd=await pr.json();
@@ -530,12 +558,11 @@ document.getElementById('modal-login-pass').addEventListener('keydown',function(
 document.getElementById('modal-login-user').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('modal-login-pass').focus();});
 document.getElementById('modal-signup-pass').addEventListener('keydown',function(e){if(e.key==='Enter')handleModalSignup();});
 
+// ═══ AUDIT MODAL ═══
 var AUDIT_FORMS={'Coaster':'coaster-audit.html','Flat Ride':'flatride-audit.html','Water':'water-audit.html','Aquatic':'aquatic-audit.html','Play Structure':'play-audit.html'};
 var AUDIT_CSS={'Coaster':'t-coaster','Flat Ride':'t-flat','Water':'t-water','Aquatic':'t-aquatic','Play Structure':'t-play'};
 var AUDIT_EMOJI={'Coaster':'🎢','Flat Ride':'🎡','Water':'💧','Aquatic':'🏊','Play Structure':'🏗️'};
 var amRides=[],amSelected=null;
-
-// am-park is populated by the unified parks loader above
 
 async function auditParkChanged(){
   var parkSel=document.getElementById('am-park');
