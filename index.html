@@ -166,6 +166,16 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 </style>
 </head>
 <body>
+<script>
+function showAuthTab(tab){
+  document.getElementById('auth-signup').style.display=tab==='signup'?'block':'none';
+  document.getElementById('auth-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('tab-signup').style.color=tab==='signup'?'var(--ac)':'var(--dim)';
+  document.getElementById('tab-signup').style.borderBottom=tab==='signup'?'2px solid var(--ac)':'2px solid transparent';
+  document.getElementById('tab-login').style.color=tab==='login'?'var(--ac)':'var(--dim)';
+  document.getElementById('tab-login').style.borderBottom=tab==='login'?'2px solid var(--ac)':'2px solid transparent';
+}
+</script>
 <div class="modal-overlay" id="login-modal">
 <div class="modal">
 <button class="modal-close" onclick="document.getElementById('login-modal').classList.remove('show')">&times;</button>
@@ -536,8 +546,25 @@ function auditRideChanged(){
   amSelected=amRides.find(function(r){return r.id===rideSel.value;});
   if(amSelected&&amSelected.rideType&&AUDIT_FORMS[amSelected.rideType]){
     var t=amSelected.rideType;
-    badge.innerHTML='<span class="at-tag '+(AUDIT_CSS[t]||'t-none')+'">'+(AUDIT_EMOJI[t]||'📋')+' '+esc(t).toUpperCase()+' AUDIT</span>';
+    badge.innerHTML='<span class="at-tag '+(AUDIT_CSS[t]||'t-non    badge.innerHTML='<span class="at-tag '+(AUDIT_CSS[t]||'t-none')+'">'+(AUDIT_EMOJI[t]||'📋')+' '+esc(t).toUpperCase()+' AUDIT</span>';
     btn.disabled=false;btn.textContent='Start '+t+' Audit → +50 XP';
   }else{
     badge.innerHTML='<span class="at-tag t-none">⚠️ No audit form for this type</span>';
-    btn.disabled=true;btn.textContent='No audit form availab
+    btn.disabled=true;btn.textContent='No audit form available';
+  }
+}
+
+function auditGo(){
+  if(!amSelected||!amSelected.rideType)return;
+  var form=AUDIT_FORMS[amSelected.rideType];
+  if(!form)return;
+  var p=new URLSearchParams();
+  p.set('rideId',amSelected.id);
+  p.set('rideName',amSelected.name);
+  p.set('rideType',amSelected.rideType);
+  p.set('park',document.getElementById('am-park').value);
+  window.location.href=form+'?'+p.toString();
+}
+</script>
+</body>
+</html>
