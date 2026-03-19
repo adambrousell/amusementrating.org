@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<!-- CSP: allow fonts from Google, data from our own worker only, no inline scripts (hash added at build) -->
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self';
+           script-src 'self' 'unsafe-inline';
+           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+           font-src https://fonts.gstatic.com;
+           connect-src 'self' https://ar-live.amusementrating.workers.dev https://live.amusementrating.org;
+           img-src 'self' data:;
+           frame-ancestors 'none';">
+<title>Trip Planner — AmusementRating.org</title>
+<!-- SEO -->
+<meta name="description" content="Find theme parks and water parks open on your travel dates. Filter by safety score, audit count, and live wait times powered by Queue-Times.com.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://amusementrating.org/trip-planner">
+<meta property="og:title" content="Trip Planner — AmusementRating.org">
+<meta property="og:description" content="Find parks open on your dates, filtered by verified safety scores and live ride wait times.">
+<meta property="og:type" content="website">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #22D87C;
+  --green-dark: #17a85e;
+  --ink: #0E1117;
+  --ink-2: #1e2530;
+  --paper: #F5F2EC;
+  --paper-2: #EDE9E0;
+  --paper-3: #E3DECE;
+  --rule: rgba(14,17,23,0.12);
+  --rule-strong: rgba(14,17,23,0.25);
+  --muted: #7A7567;
+  --orange: #D4501A;
+  --blue: #1A5FA8;
+  --amber: #C4820A;
+  --red: #C42A2A;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --mono: 'DM Mono', monospace;
+  --sans: 'Outfit', sans-serif;
+}
+
+html, body {
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  overflow: hidden;
+}
+
+/* ── MASTHEAD ─────────────────────────────────────────────────── */
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  height: 56px;
+  border-bottom: 2px solid var(--ink);
+  background: var(--paper);
+  position: relative;
+  z-index: 20;
+}
+
+.masthead-left {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.wordmark {
+  font-family: var(--serif);
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.wordmark em {
+  font-style: italic;
+  color: var(--green-dark);
+}
+
+.edition-tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-left: 1px solid var(--rule-strong);
+  padding-left: 16px;
+}
+
+.masthead-nav {
+  display: flex;
+  gap: 0;
+}
+
+.masthead-nav a {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0 18px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s;
+}
+
+.masthead-nav a:hover { color: var(--ink); }
+.masthead-nav a.active { color: var(--ink); border-bottom-color: var(--green); }
+
+.masthead-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-sign {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-sign:hover { background: var(--ink-2); }
+
+/* ── PAGE SHELL ───────────────────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  height: calc(100vh - 56px);
+}
+
+/* ── SIDEBAR ──────────────────────────────────────────────────── */
+.sidebar {
+  border-right: 1px solid var(--rule-strong);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 80px;
+}
+
+.sidebar-scroll::-webkit-scrollbar { width: 3px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--rule-strong); }
+
+.sidebar-kicker {
+  padding: 20px 24px 14px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.kicker-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--green-dark);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.kicker-label::before {
+  content: '';
+  width: 18px;
+  height: 2px;
+  background: var(--green);
+  display: block;
+}
+
+.kicker-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.kicker-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+/* filter block */
+.fblock {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.flabel {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* Date inputs */
+.date-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.date-wrap label {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 3px;
+}
+
+.date-wrap input[type=date] {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule-strong);
+  color: var(--ink);
+  padding: 8px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+  appearance: none;
+}
+
+.date-wrap input[type=date]:focus { border-color: var(--green); }
+
+/* Calendar strip */
+.cal-row {
+  display: flex;
+  gap: 3px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+.cal-row::-webkit-scrollbar { display: none; }
+
+.cal-cell {
+  flex-shrink: 0;
+  width: 36px;
+  padding: 5px 0;
+  text-align: center;
+  border: 1px solid var(--rule);
+  cursor: pointer;
+  transition: all 0.12s;
+  user-select: none;
+  background: var(--paper-2);
+}
+
+.cal-cell:hover { border-color: var(--green); }
+
+.cal-cell.sel {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.cal-cell.sel .cal-d, .cal-cell.sel .cal-n { color: var(--paper); }
+.cal-cell.sel .cal-n { color: var(--green); }
+
+.cal-d {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.cal-n {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-top: 1px;
+}
+
+/* State chips */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  padding: 4px 9px;
+  border: 1px solid var(--rule-strong);
+  cursor: pointer;
+  color: var(--muted);
+  background: var(--paper-2);
+  transition: all 0.12s;
+  user-select: none;
+}
+
+.chip:hover { color: var(--ink); border-color: var(--ink); }
+
+.chip.on {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+/* Type toggles */
+.type-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.type-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  border: 1px solid var(--rule);
+  cursor: pointer;
+  background: var(--paper-2);
+  transition: all 0.12s;
+  user-select: none;
+}
+
+.type-row:hover { border-color: var(--rule-strong); }
+.type-row.on { border-color: var(--ink); background: var(--paper); }
+
+.type-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.type-pip {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+}
+
+.type-check {
+  width: 16px; height: 16px;
+  border: 1px solid var(--rule-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  transition: all 0.12s;
+  flex-shrink: 0;
+}
+
+.type-row.on .type-check {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+/* Score sliders */
+.slider-list { display: flex; flex-direction: column; gap: 10px; }
+
+.slider-row {}
+
+.slider-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.slider-name {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.slider-val {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 2px;
+  outline: none;
+  cursor: pointer;
+  border-radius: 1px;
+}
+
+input[type=range].ops  { background: linear-gradient(to right, var(--orange) 0%, var(--orange) var(--pct, 60%), var(--rule-strong) var(--pct, 60%)); }
+input[type=range].safe { background: linear-gradient(to right, var(--blue)   0%, var(--blue)   var(--pct, 70%), var(--rule-strong) var(--pct, 70%)); }
+input[type=range].gst  { background: linear-gradient(to right, var(--green)  0%, var(--green)  var(--pct, 60%), var(--rule-strong) var(--pct, 60%)); }
+input[type=range].fac  { background: linear-gradient(to right, var(--amber)  0%, var(--amber)  var(--pct, 50%), var(--rule-strong) var(--pct, 50%)); }
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+/* Sidebar footer */
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 300px;
+  padding: 16px 24px;
+  background: var(--paper);
+  border-top: 2px solid var(--ink);
+  border-right: 1px solid var(--rule-strong);
+  z-index: 5;
+}
+
+.btn-search {
+  width: 100%;
+  background: var(--green);
+  color: var(--ink);
+  border: none;
+  padding: 13px 20px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.15s;
+}
+
+.btn-search:hover { background: #1fc972; }
+
+.match-note {
+  text-align: center;
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.match-note strong { color: var(--ink); }
+
+/* ── MAIN CONTENT ─────────────────────────────────────────────── */
+.content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+/* Results header bar */
+.results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  height: 48px;
+  border-bottom: 1px solid var(--rule-strong);
+  flex-shrink: 0;
+}
+
+.results-headline {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.results-headline h2 {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+
+.count-pill {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--green);
+  color: var(--ink);
+  padding: 3px 9px;
+}
+
+.sort-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.sort-select {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  background: transparent;
+  border: 1px solid var(--rule-strong);
+  color: var(--ink);
+  padding: 4px 8px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* ── LIVE TICKER ──────────────────────────────────────────────── */
+.live-ticker {
+  height: 32px;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.ticker-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green);
+  padding: 0 16px;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255,255,255,0.12);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.live-dot {
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: blink 1.4s ease infinite;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.ticker-track-wrap {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.ticker-track {
+  display: flex;
+  gap: 0;
+  animation: ticker 28s linear infinite;
+  white-space: nowrap;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: rgba(245,242,236,0.7);
+  padding: 0 28px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.ticker-item span {
+  font-weight: 500;
+  color: var(--paper);
+}
+
+.ticker-item.hi span { color: var(--green); }
+.ticker-item.lo span { color: #f87171; }
+
+/* ── PARK CARDS AREA ──────────────────────────────────────────── */
+.cards-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 36px 40px;
+}
+
+.cards-area::-webkit-scrollbar { width: 4px; }
+.cards-area::-webkit-scrollbar-thumb { background: var(--rule-strong); }
+
+/* Section divider */
+.section-rule {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.section-rule-line {
+  flex: 1;
+  height: 1px;
+  background: var(--rule-strong);
+}
+
+.section-rule-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Grid */
+.park-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  margin-bottom: 1px;
+}
+
+/* ── PARK CARD ────────────────────────────────────────────────── */
+.pcard {
+  background: var(--paper);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+  animation: fadeUp 0.35s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pcard:nth-child(1) { animation-delay: .04s }
+.pcard:nth-child(2) { animation-delay: .08s }
+.pcard:nth-child(3) { animation-delay: .12s }
+.pcard:nth-child(4) { animation-delay: .16s }
+.pcard:nth-child(5) { animation-delay: .20s }
+.pcard:nth-child(6) { animation-delay: .24s }
+
+.pcard:hover { background: var(--paper-2); }
+
+/* Card top strip */
+.pcard-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 18px 20px 0;
+}
+
+.pcard-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pcard-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.badge-type {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border: 1px solid;
+}
+
+.badge-type.theme { color: var(--orange); border-color: var(--orange); }
+.badge-type.water { color: var(--blue);   border-color: var(--blue); }
+.badge-type.fec   { color: var(--amber);  border-color: var(--amber); }
+
+.badge-state {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  border: 1px solid var(--rule-strong);
+  padding: 2px 7px;
+}
+
+.pcard-name {
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* Score hero */
+.score-hero {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.score-big {
+  font-family: var(--serif);
+  font-size: 56px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-style: italic;
+}
+
+.score-big.strong { color: var(--green-dark); }
+.score-big.good   { color: var(--blue); }
+.score-big.watch  { color: var(--amber); }
+.score-big.crit   { color: var(--red); }
+
+.score-band {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: -2px;
+  text-align: right;
+}
+
+.score-band.strong { color: var(--green-dark); }
+.score-band.good   { color: var(--blue); }
+.score-band.watch  { color: var(--amber); }
+.score-band.crit   { color: var(--red); }
+
+/* Divider */
+.pcard-rule {
+  height: 1px;
+  background: var(--rule);
+  margin: 14px 20px 0;
+}
+
+/* Hours section */
+.pcard-hours {
+  padding: 12px 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hours-label {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hours-grid {
+  display: flex;
+  gap: 2px;
+}
+
+.hday {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 2px 4px;
+  border: 1px solid var(--rule);
+  background: var(--paper-2);
+  min-width: 0;
+}
+
+.hday.open-day { background: var(--paper); border-color: var(--rule-strong); }
+.hday.highlight { background: var(--ink); border-color: var(--ink); }
+.hday.highlight .hday-name { color: rgba(245,242,236,0.6); }
+.hday.highlight .hday-hrs  { color: var(--green); }
+
+.hday-name {
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.hday-hrs {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  text-align: center;
+  padding: 0 1px;
+}
+
+.hday.closed-day .hday-hrs { color: var(--muted); font-weight: 300; }
+
+/* Live data row */
+.pcard-live {
+  padding: 10px 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--green-dark);
+  background: rgba(34,216,124,0.1);
+  border: 1px solid rgba(34,216,124,0.3);
+  padding: 3px 8px;
+}
+
+.live-badge .dot {
+  width: 5px; height: 5px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: blink 1.4s ease infinite;
+}
+
+.live-stat {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.live-stat strong { color: var(--ink); font-weight: 500; }
+
+/* Pillar row */
+.pcard-pillars {
+  padding: 12px 20px 18px;
+  display: flex;
+  gap: 0;
+  margin-top: 2px;
+}
+
+.pillar-cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  border-right: 1px solid var(--rule);
+}
+
+.pillar-cell:last-child { border-right: none; }
+
+.pillar-label {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.pillar-num {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-style: italic;
+}
+
+.pillar-bar-wrap {
+  width: 100%;
+  padding: 0 10px;
+}
+
+.pillar-bar-bg {
+  height: 2px;
+  background: var(--rule-strong);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.pillar-bar-fill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.7s cubic-bezier(.4,0,.2,1);
+}
+
+/* Audit count footer */
+.pcard-footer {
+  padding: 0 20px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.audit-note {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+.btn-detail {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: none;
+  border: 1px solid var(--rule-strong);
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.btn-detail:hover {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+/* Empty state */
+.empty {
+  padding: 80px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.empty-glyph {
+  font-family: var(--serif);
+  font-size: 64px;
+  font-style: italic;
+  color: var(--rule-strong);
+  line-height: 1;
+}
+
+.empty h3 {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.empty p {
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 280px;
+  line-height: 1.6;
+}
+
+/* Crowd glyph */
+.crowd-glyph {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.crowd-bar {
+  width: 4px;
+  border-radius: 1px;
+}
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-left">
+    <div class="wordmark">Amusement<em>Rating</em>.org</div>
+    <div class="edition-tag">Trip Planner · Live Data</div>
+  </div>
+  <nav class="masthead-nav">
+    <a href="#">Leaderboard</a>
+    <a href="#">Parks</a>
+    <a href="#" class="active">Trip Planner</a>
+    <a href="#">Submit Audit</a>
+  </nav>
+  <div class="masthead-right">
+    <button class="btn-sign">Sign In</button>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-scroll">
+
+      <div class="sidebar-kicker">
+        <div class="kicker-label">Plan Your Visit</div>
+        <div class="kicker-title">Find Parks<br><em>Open on Your Dates</em></div>
+        <div class="kicker-sub">Filtered by audit scores &amp; live status</div>
+      </div>
+
+      <!-- Calendar strip -->
+      <div class="fblock">
+        <span class="flabel">Quick Date Select</span>
+        <div class="cal-row" id="calRow"></div>
+      </div>
+
+      <!-- Date range -->
+      <div class="fblock">
+        <span class="flabel">Date Range</span>
+        <div class="date-pair">
+          <div class="date-wrap">
+            <label>From</label>
+            <input type="date" id="dateFrom" value="2026-06-28">
+          </div>
+          <div class="date-wrap">
+            <label>To</label>
+            <input type="date" id="dateTo" value="2026-07-04">
+          </div>
+        </div>
+      </div>
+
+      <!-- State filter -->
+      <div class="fblock">
+        <span class="flabel">States</span>
+        <div class="chips" id="stateChips"></div>
+      </div>
+
+      <!-- Park types -->
+      <div class="fblock">
+        <span class="flabel">Park Type</span>
+        <div class="type-list">
+          <div class="type-row on" data-type="theme" onclick="toggleType(this)">
+            <div class="type-name">
+              <span class="type-pip" style="background:var(--orange)"></span>
+              Theme / Amusement
+            </div>
+            <div class="type-check">✓</div>
+          </div>
+          <div class="type-row on" data-type="water" onclick="toggleType(this)">
+            <div class="type-name">
+              <span class="type-pip" style="background:var(--blue)"></span>
+              Water Park
+            </div>
+            <div class="type-check">✓</div>
+          </div>
+          <div class="type-row" data-type="fec" onclick="toggleType(this)">
+            <div class="type-name">
+              <span class="type-pip" style="background:var(--amber)"></span>
+              FEC / Entertainment
+            </div>
+            <div class="type-check"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score sliders -->
+      <div class="fblock">
+        <span class="flabel">Minimum Pillar Scores</span>
+        <div class="slider-list">
+          <div class="slider-row">
+            <div class="slider-head">
+              <span class="slider-name" style="color:var(--orange)">OPS</span>
+              <span class="slider-val" id="opsVal">60</span>
+            </div>
+            <input type="range" class="ops" min="0" max="100" value="60"
+              style="--pct:60%" oninput="slideUpdate('ops',this)">
+          </div>
+          <div class="slider-row">
+            <div class="slider-head">
+              <span class="slider-name" style="color:var(--blue)">SAFE</span>
+              <span class="slider-val" id="safeVal">70</span>
+            </div>
+            <input type="range" class="safe" min="0" max="100" value="70"
+              style="--pct:70%" oninput="slideUpdate('safe',this)">
+          </div>
+          <div class="slider-row">
+            <div class="slider-head">
+              <span class="slider-name" style="color:var(--green-dark)">GUEST</span>
+              <span class="slider-val" id="gstVal">60</span>
+            </div>
+            <input type="range" class="gst" min="0" max="100" value="60"
+              style="--pct:60%" oninput="slideUpdate('gst',this)">
+          </div>
+          <div class="slider-row">
+            <div class="slider-head">
+              <span class="slider-name" style="color:var(--amber)">FACIL</span>
+              <span class="slider-val" id="facVal">50</span>
+            </div>
+            <input type="range" class="fac" min="0" max="100" value="50"
+              style="--pct:50%" oninput="slideUpdate('fac',this)">
+          </div>
+        </div>
+      </div>
+
+      <!-- Audit count -->
+      <div class="fblock">
+        <span class="flabel">Min. Verified Audits</span>
+        <div class="slider-row">
+          <div class="slider-head">
+            <span style="font-size:11px;color:var(--muted)">Audit threshold</span>
+            <span class="slider-val" id="audVal">10</span>
+          </div>
+          <input type="range" class="gst" min="1" max="50" value="10"
+            style="--pct:20%" oninput="slideAudit(this)">
+        </div>
+      </div>
+
+    </div><!-- /sidebar-scroll -->
+
+    <div class="sidebar-footer">
+      <button class="btn-search" onclick="runSearch()">
+        Find Parks &nbsp;→
+      </button>
+      <div class="match-note"><strong id="matchN">12</strong> parks match</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="content">
+
+    <!-- Live ticker -->
+    <div class="live-ticker">
+      <div class="ticker-label"><div class="live-dot"></div> Live</div>
+      <div class="ticker-track-wrap">
+        <div class="ticker-track" id="tickerTrack"></div>
+      </div>
+    </div>
+
+    <!-- Results bar -->
+    <div class="results-bar">
+      <div class="results-headline">
+        <h2>Parks Open During Your Trip</h2>
+        <span class="count-pill" id="countPill">12 Matches</span>
+      </div>
+      <div class="sort-row">
+        <span>Sort</span>
+        <select class="sort-select" onchange="sortChange(this.value)">
+          <option value="score">Overall Score</option>
+          <option value="safe">Safety Score</option>
+          <option value="name">Name A–Z</option>
+          <option value="audits">Most Audited</option>
+          <option value="wait">Shortest Waits</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards-area">
+      <div class="section-rule">
+        <div class="section-rule-line"></div>
+        <div class="section-rule-label">Matching Parks</div>
+        <div class="section-rule-line"></div>
+      </div>
+      <div class="park-grid" id="parkGrid"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────
+// Use custom domain in production; workers.dev as fallback during deploy
+const WORKER_URL     = 'https://live.amusementrating.org';
+const WORKER_FALLBACK = 'https://ar-live.amusementrating.workers.dev';
+const REFRESH_MS     = 5 * 60 * 1000; // re-poll every 5 min
+
+// ── PARK REGISTRY ─────────────────────────────────────────────────
+// qtId: Queue-Times park ID. null = independent park (no live data available).
+const PARKS = [
+  { qtId: 37,   name: 'Six Flags Great Adventure', state: 'NJ', type: 'theme', audits: 47,
+    sc: {ops:82,safe:79,gst:74,fac:71},
+    hrs: {M:'10a–8p',T:'10a–8p',W:'10a–9p',Th:'10a–9p',F:'10a–10p',Sa:'9a–11p',Su:'10a–10p'} },
+
+  { qtId: 50,   name: 'Cedar Point', state: 'OH', type: 'theme', audits: 63,
+    sc: {ops:88,safe:85,gst:81,fac:79},
+    hrs: {M:'—',T:'—',W:'11a–9p',Th:'11a–9p',F:'11a–10p',Sa:'10a–11p',Su:'10a–10p'} },
+
+  { qtId: 15,   name: 'Hersheypark', state: 'PA', type: 'theme', audits: 38,
+    sc: {ops:76,safe:81,gst:78,fac:73},
+    hrs: {M:'10a–8p',T:'10a–8p',W:'10a–8p',Th:'10a–9p',F:'10a–10p',Sa:'10a–11p',Su:'10a–10p'} },
+
+  { qtId: 23,   name: 'Busch Gardens Williamsburg', state: 'VA', type: 'theme', audits: 55,
+    sc: {ops:91,safe:89,gst:86,fac:84},
+    hrs: {M:'10a–7p',T:'10a–7p',W:'10a–7p',Th:'10a–8p',F:'10a–10p',Sa:'9a–10p',Su:'10a–9p'} },
+
+  { qtId: 69,   name: 'Dorney Park', state: 'PA', type: 'theme', audits: 22,
+    sc: {ops:68,safe:72,gst:65,fac:61},
+    hrs: {M:'—',T:'—',W:'—',Th:'11a–8p',F:'11a–9p',Sa:'10a–10p',Su:'10a–8p'} },
+
+  { qtId: null, name: "Kalahari Resorts PA", state: 'PA', type: 'water', audits: 29,
+    sc: {ops:74,safe:77,gst:80,fac:75},
+    hrs: {M:'10a–7p',T:'10a–7p',W:'10a–7p',Th:'10a–7p',F:'10a–9p',Sa:'9a–9p',Su:'9a–8p'} },
+
+  { qtId: null, name: "Morey's Piers", state: 'NJ', type: 'theme', audits: 31,
+    sc: {ops:71,safe:68,gst:76,fac:64},
+    hrs: {M:'12p–10p',T:'12p–10p',W:'12p–10p',Th:'12p–10p',F:'12p–11p',Sa:'11a–12a',Su:'11a–11p'} },
+
+  { qtId: 55,   name: 'Dollywood', state: 'TN', type: 'theme', audits: 36,
+    sc: {ops:86,safe:84,gst:88,fac:80},
+    hrs: {M:'10a–8p',T:'10a–8p',W:'10a–8p',Th:'10a–9p',F:'10a–9p',Sa:'9a–10p',Su:'10a–8p'} },
+
+  { qtId: null, name: "Sahara Sam's Oasis", state: 'NJ', type: 'water', audits: 15,
+    sc: {ops:63,safe:69,gst:71,fac:58},
+    hrs: {M:'—',T:'—',W:'—',Th:'—',F:'11a–7p',Sa:'10a–8p',Su:'10a–7p'} },
+
+  { qtId: 312,  name: 'Kennywood', state: 'PA', type: 'theme', audits: 19,
+    sc: {ops:66,safe:70,gst:73,fac:60},
+    hrs: {M:'—',T:'—',W:'—',Th:'—',F:'12p–10p',Sa:'11a–11p',Su:'11a–10p'} },
+
+  { qtId: 10,   name: 'Silver Dollar City', state: 'MO', type: 'theme', audits: 28,
+    sc: {ops:79,safe:82,gst:83,fac:74},
+    hrs: {M:'9a–7p',T:'9a–7p',W:'9a–7p',Th:'9a–7p',F:'9a–8p',Sa:'9a–9p',Su:'9a–7p'} },
+
+  { qtId: 44,   name: 'Six Flags Hurricane Harbor NJ', state: 'NJ', type: 'water', audits: 14,
+    sc: {ops:65,safe:68,gst:63,fac:60},
+    hrs: {M:'—',T:'—',W:'—',Th:'—',F:'11a–7p',Sa:'10a–8p',Su:'10a–7p'} },
+];
+
+const STATES = ['NJ','NY','PA','OH','VA','IN','TN','MO','NH','FL','TX','CA'];
+
+// ── APP STATE ─────────────────────────────────────────────────────
+let activeStates = new Set(STATES);
+let activeTypes  = new Set(['theme','water']);
+let minSc   = {ops:60, safe:70, gst:60, fac:50};
+let minAud  = 10;
+let sortBy  = 'score';
+let shown   = [];
+
+// live data store: keyed by qtId string
+let liveData  = {};
+let liveState = 'loading'; // 'loading' | 'live' | 'error'
+let lastFetch = null;
+let refreshTimer = null;
+
+// ── BOOT ─────────────────────────────────────────────────────────
+
+async function init() {
+  buildCal();
+  buildStates();
+  renderSkeletons();
+  await fetchLiveData();
+  runSearch();
+  scheduleLiveRefresh();
+}
+
+// ── LIVE DATA FETCH ───────────────────────────────────────────────
+
+async function fetchLiveData() {
+  const qtIds = PARKS.filter(p => p.qtId !== null).map(p => p.qtId);
+  const idStr = qtIds.join(',');
+
+  setTickerLoading();
+
+  try {
+    // Try primary URL, fall back to workers.dev on network error
+    let res;
+    try {
+      res = await fetch(`${WORKER_URL}/live/batch?ids=${idStr}`, {
+        signal: AbortSignal.timeout(8000),
+        credentials: 'omit', // never send cookies to the worker
+      });
+    } catch {
+      res = await fetch(`${WORKER_FALLBACK}/live/batch?ids=${idStr}`, {
+        signal: AbortSignal.timeout(8000),
+        credentials: 'omit',
+      });
+    }
+
+    if (!res.ok) throw new Error(`Worker returned ${res.status}`);
+
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || 'Worker error');
+
+    // Merge into liveData store
+    Object.entries(json.data.parks).forEach(([id, d]) => {
+      if (!d.error) liveData[id] = d;
+    });
+
+    liveState = 'live';
+    lastFetch = new Date();
+    updateTicker();
+    refreshStatusBar();
+
+  } catch (err) {
+    console.warn('Live fetch failed:', err.message);
+    liveState = 'error';
+    setTickerError();
+  }
+}
+
+function scheduleLiveRefresh() {
+  if (refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(async () => {
+    await fetchLiveData();
+    renderCards(shown); // re-render cards with fresh data
+  }, REFRESH_MS);
+}
+
+// ── LIVE DATA HELPERS ─────────────────────────────────────────────
+
+function getLive(park) {
+  if (park.qtId === null) return null;
+  return liveData[String(park.qtId)] || null;
+}
+
+function refreshStatusBar() {
+  if (!lastFetch) return;
+  const mins = Math.round((Date.now() - lastFetch) / 60000);
+  const label = mins < 1 ? 'just now' : `${mins}m ago`;
+  const el = document.getElementById('liveStatusLabel');
+  if (el) el.textContent = `Queue-Times · updated ${label}`;
+}
+
+// ── TICKER ────────────────────────────────────────────────────────
+
+function setTickerLoading() {
+  const track = document.getElementById('tickerTrack');
+  track.innerHTML = '';
+  const el = document.createElement('div');
+  el.className = 'ticker-item';
+  el.innerHTML = 'Fetching live data from Queue-Times.com…';
+  track.appendChild(el);
+  track.style.animation = 'none';
+}
+
+function setTickerError() {
+  const track = document.getElementById('tickerTrack');
+  track.innerHTML = '';
+  const el = document.createElement('div');
+  el.className = 'ticker-item lo';
+  el.innerHTML = 'Live data unavailable — showing last known status &nbsp;<span>Retrying in 5 min</span>';
+  track.appendChild(el);
+  track.style.animation = 'none';
+}
+
+function updateTicker() {
+  const items = [];
+
+  // Build ticker from live data
+  PARKS.forEach(p => {
+    const d = getLive(p);
+    if (!d) return;
+    const shortName = p.name.replace('Six Flags ', 'SF ').replace(' Williamsburg','').replace(' Resorts PA','');
+    if (d.isOpen) {
+      const cls = d.avgWait < 20 ? 'hi' : d.avgWait > 45 ? 'lo' : '';
+      items.push({ text: shortName, val: `${d.ridesOpen}/${d.ridesTotal} rides · ${d.avgWait}m avg wait`, cls });
+    } else {
+      items.push({ text: shortName, val: 'Not currently operating', cls: 'lo' });
+    }
+  });
+
+  // Add attribution item
+  items.push({ text: 'Powered by Queue-Times.com', val: 'Live · updates every 5 min', cls: '' });
+
+  const doubled = [...items, ...items];
+  const track   = document.getElementById('tickerTrack');
+  track.innerHTML = '';
+  track.style.animation = '';
+
+  doubled.forEach(item => {
+    const el = document.createElement('div');
+    el.className = `ticker-item ${item.cls}`;
+    el.innerHTML = `${item.text}&nbsp;&nbsp;<span>${item.val}</span>`;
+    track.appendChild(el);
+  });
+}
+
+// ── CAL + STATES ──────────────────────────────────────────────────
+
+function buildCal() {
+  const row  = document.getElementById('calRow');
+  const days = ['SU','MO','TU','WE','TH','FR','SA'];
+  const base = new Date();
+  base.setHours(0,0,0,0);
+
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(base);
+    d.setDate(base.getDate() + i);
+    const el = document.createElement('div');
+    el.className = 'cal-cell' + (i < 7 ? ' sel' : '');
+    el.innerHTML = `<div class="cal-d">${days[d.getDay()]}</div><div class="cal-n">${d.getDate()}</div>`;
+    el.onclick = () => el.classList.toggle('sel');
+    row.appendChild(el);
+  }
+}
+
+function buildStates() {
+  const wrap = document.getElementById('stateChips');
+  STATES.forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'chip on';
+    el.textContent = s;
+    el.onclick = () => {
+      el.classList.toggle('on');
+      activeStates.has(s) ? activeStates.delete(s) : activeStates.add(s);
+      updateCount();
+    };
+    wrap.appendChild(el);
+  });
+}
+
+// ── CONTROLS ─────────────────────────────────────────────────────
+
+function toggleType(el) {
+  el.classList.toggle('on');
+  const t   = el.dataset.type;
+  const chk = el.querySelector('.type-check');
+  if (activeTypes.has(t)) { activeTypes.delete(t); chk.textContent = ''; }
+  else { activeTypes.add(t); chk.textContent = '✓'; }
+  updateCount();
+}
+
+function slideUpdate(key, input) {
+  const v = parseInt(input.value);
+  minSc[key] = v;
+  document.getElementById(key + 'Val').textContent = v;
+  input.style.setProperty('--pct', v + '%');
+  updateCount();
+}
+
+function slideAudit(input) {
+  const v = parseInt(input.value);
+  minAud = v;
+  document.getElementById('audVal').textContent = v;
+  input.style.setProperty('--pct', (v / 50 * 100) + '%');
+  updateCount();
+}
+
+function sortChange(v) { sortBy = v; renderCards(shown); }
+
+function getFiltered() {
+  return PARKS.filter(p =>
+    activeStates.has(p.state) &&
+    activeTypes.has(p.type) &&
+    p.audits >= minAud &&
+    p.sc.ops  >= minSc.ops &&
+    p.sc.safe >= minSc.safe &&
+    p.sc.gst  >= minSc.gst &&
+    p.sc.fac  >= minSc.fac
+  );
+}
+
+function updateCount() {
+  document.getElementById('matchN').textContent = getFiltered().length;
+}
+
+// ── SEARCH + SORT ─────────────────────────────────────────────────
+
+function runSearch() {
+  let list = getFiltered();
+
+  list.sort((a, b) => {
+    if (sortBy === 'score')  return ov(b) - ov(a);
+    if (sortBy === 'safe')   return b.sc.safe - a.sc.safe;
+    if (sortBy === 'name')   return a.name.localeCompare(b.name);
+    if (sortBy === 'audits') return b.audits - a.audits;
+    if (sortBy === 'wait') {
+      const wa = getLive(a)?.avgWait ?? 999;
+      const wb = getLive(b)?.avgWait ?? 999;
+      return wa - wb;
+    }
+    return 0;
+  });
+
+  shown = list;
+  document.getElementById('countPill').textContent = list.length + ' Matches';
+  document.getElementById('matchN').textContent = list.length;
+  renderCards(list);
+}
+
+// ── SCORING ───────────────────────────────────────────────────────
+
+function ov(p) { return Math.round((p.sc.ops + p.sc.safe + p.sc.gst + p.sc.fac) / 4); }
+
+function band(n) {
+  if (n >= 80) return { lbl: 'Strong', cls: 'strong' };
+  if (n >= 65) return { lbl: 'Good',   cls: 'good' };
+  if (n >= 50) return { lbl: 'Watch',  cls: 'watch' };
+  return { lbl: 'Critical', cls: 'crit' };
+}
+
+const PCOLS = {
+  ops:  { color: 'var(--orange)', label: 'OPS' },
+  safe: { color: 'var(--blue)',   label: 'SAFE' },
+  gst:  { color: 'var(--green)',  label: 'GUEST' },
+  fac:  { color: 'var(--amber)',  label: 'FACIL' },
+};
+
+const DAY_KEYS  = ['M','T','W','Th','F','Sa','Su'];
+const DAY_NAMES = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+const HIGHLIGHT = new Set(['F','Sa','Su']);
+
+// ── SKELETON RENDER ───────────────────────────────────────────────
+
+function renderSkeletons() {
+  const grid = document.getElementById('parkGrid');
+  grid.style.display = 'grid';
+  grid.innerHTML = Array(6).fill(0).map(() => `
+    <div class="pcard" style="pointer-events:none">
+      <div class="pcard-top">
+        <div class="pcard-meta">
+          <div style="height:14px;width:80px;background:var(--rule-strong);margin-bottom:8px;border-radius:2px"></div>
+          <div style="height:22px;width:180px;background:var(--rule-strong);border-radius:2px"></div>
+        </div>
+        <div style="height:56px;width:56px;background:var(--rule-strong);border-radius:2px"></div>
+      </div>
+      <div class="pcard-rule"></div>
+      <div style="padding:14px 20px">
+        <div style="height:10px;width:120px;background:var(--rule);margin-bottom:8px;border-radius:2px"></div>
+        <div style="height:42px;background:var(--rule);border-radius:2px"></div>
+      </div>
+      <div style="padding:10px 20px 18px">
+        <div style="height:40px;background:var(--rule);border-radius:2px"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── CARD RENDER ───────────────────────────────────────────────────
+
+function renderCards(list) {
+  const grid = document.getElementById('parkGrid');
+  grid.innerHTML = '';
+
+  if (!list.length) {
+    grid.style.display = 'block';
+    grid.innerHTML = `<div class="empty">
+      <div class="empty-glyph">✦</div>
+      <h3>No parks found</h3>
+      <p>Try relaxing your score thresholds, selecting more states, or adjusting park types.</p>
+    </div>`;
+    return;
+  }
+
+  grid.style.display = 'grid';
+
+  list.forEach((p, idx) => {
+    const score = ov(p);
+    const b     = band(score);
+    const d     = getLive(p); // live data or null
+    const typeLabel = { theme: 'Theme Park', water: 'Water Park', fec: 'FEC' }[p.type];
+
+    // ── Hours row ──
+    const hoursHTML = DAY_KEYS.map((k, i) => {
+      const h      = p.hrs[k] || '—';
+      const closed = h === '—';
+      const hl     = HIGHLIGHT.has(k) && !closed;
+      return `<div class="hday ${closed ? 'closed-day' : hl ? 'highlight' : 'open-day'}">
+        <div class="hday-name">${DAY_NAMES[i]}</div>
+        <div class="hday-hrs">${h}</div>
+      </div>`;
+    }).join('');
+
+    // ── Live row ──
+    let liveHTML;
+    if (d === null) {
+      // Independent park — no Queue-Times data
+      liveHTML = `<div class="live-stat" style="color:var(--muted);font-style:italic;font-size:11px">
+        Live wait data not available for this park
+      </div>`;
+    } else if (!d) {
+      // qtId exists but data hasn't loaded yet
+      liveHTML = `<div class="live-stat" style="color:var(--muted)">
+        <span style="opacity:.5">Loading live data…</span>
+      </div>`;
+    } else if (d.isOpen) {
+      const pctBar = `<div style="display:inline-block;width:60px;height:3px;background:var(--rule-strong);vertical-align:middle;margin:0 6px;border-radius:1px;overflow:hidden">
+        <div style="height:100%;width:${d.pctOperating}%;background:var(--green);border-radius:1px"></div>
+      </div>`;
+      liveHTML = `
+        <div class="live-badge"><div class="dot"></div>Live</div>
+        <div class="live-stat">
+          <strong>${d.ridesOpen}/${d.ridesTotal}</strong> rides
+          ${pctBar}
+          <span style="color:var(--muted);font-size:9px">${d.pctOperating}%</span>
+        </div>
+        <div class="live-stat" style="margin-left:auto">
+          Top wait <strong style="color:${d.topWait > 45 ? 'var(--red)' : d.topWait > 20 ? 'var(--amber)' : 'var(--green-dark)'}">${d.topWait}m</strong>
+          &nbsp;·&nbsp; avg <strong>${d.avgWait}m</strong>
+        </div>`;
+    } else {
+      liveHTML = `<div class="live-stat" style="color:var(--muted);font-style:italic">
+        Park not currently operating
+      </div>`;
+    }
+
+    // ── Top waits tooltip data ──
+    let topWaitsHTML = '';
+    if (d?.topWaits?.length) {
+      topWaitsHTML = `<div class="top-waits">
+        ${d.topWaits.slice(0,3).map(w =>
+          `<div class="tw-row">
+            <span class="tw-name">${w.name}</span>
+            <span class="tw-wait" style="color:${w.wait>45?'var(--red)':w.wait>20?'var(--amber)':'var(--ink)'}">${w.wait}m</span>
+          </div>`
+        ).join('')}
+      </div>`;
+    }
+
+    // ── Pillar cells ──
+    const pillarsHTML = Object.entries(PCOLS).map(([k, c]) => {
+      const v = p.sc[k];
+      return `<div class="pillar-cell">
+        <div class="pillar-label">${c.label}</div>
+        <div class="pillar-num" style="color:${c.color}">${v}</div>
+        <div class="pillar-bar-wrap">
+          <div class="pillar-bar-bg">
+            <div class="pillar-bar-fill" style="width:${v}%;background:${c.color}"></div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    const card = document.createElement('div');
+    card.className = 'pcard';
+    card.style.animationDelay = `${idx * 0.045}s`;
+    card.setAttribute('data-qt', p.qtId || '');
+    card.innerHTML = `
+      <div class="pcard-top">
+        <div class="pcard-meta">
+          <div class="pcard-badges">
+            <span class="badge-type ${p.type}">${typeLabel}</span>
+            <span class="badge-state">${p.state}</span>
+          </div>
+          <div class="pcard-name">${p.name}</div>
+        </div>
+        <div class="score-hero">
+          <div class="score-big ${b.cls}">${score}</div>
+          <div class="score-band ${b.cls}">${b.lbl}</div>
+        </div>
+      </div>
+
+      <div class="pcard-rule"></div>
+
+      <div class="pcard-hours">
+        <div class="hours-label">Operating Hours — Trip Window</div>
+        <div class="hours-grid">${hoursHTML}</div>
+      </div>
+
+      <div class="pcard-live" data-live="${p.qtId || ''}">${liveHTML}</div>
+
+      ${topWaitsHTML}
+
+      <div class="pcard-pillars">${pillarsHTML}</div>
+
+      <div class="pcard-footer">
+        <div class="audit-note">${p.audits} verified audits${d ? ` · <span id="liveStatusLabel" style="color:var(--green-dark)">Queue-Times live</span>` : ''}</div>
+        <button class="btn-detail">Park Profile →</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ── INLINE STYLES FOR TOP WAITS ───────────────────────────────────
+const style = document.createElement('style');
+style.textContent = `
+  .top-waits {
+    padding: 0 20px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .tw-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .tw-row:last-child { border-bottom: none; }
+  .tw-name {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+  }
+  .tw-wait {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+`;
+document.head.appendChild(style);
+
+init();
+</script>
+</body>
+</html>
