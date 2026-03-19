@@ -203,7 +203,8 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <nav class="nav a1">
 <a href="/" class="nl">Amusement<span>Rating</span></a>
 <div class="nav-r">
-<a href="rankings.html" class="nav-login" id="nav-rankings" style="display:none">🏆 Rankings</a>
+<a href="rankings.html" class="nav-login">🏆 Rankings</a>
+<a href="trip-planner.html" class="nav-login">📅 Trip Planner</a>
 <span class="nav-stat" id="nav-stat"><strong>3,937</strong> rides tracked</span>
 <div class="nav-tag">BETA</div>
 <button class="nav-login" id="nav-login-btn" onclick="document.getElementById('login-modal').classList.add('show')">Log In</button>
@@ -283,7 +284,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <div class="ft-disc">Not affiliated with any park or operator. Scores reflect external observations only.</div>
 <div class="ft-data">RIDE DATA POWERED BY <a href="https://queue-times.com/" target="_blank">Queue-Times.com</a> · <a href="https://themeparks.wiki/" target="_blank">ThemeParks.wiki</a></div>
 <div class="ft-links">
-<a href="mailto:contact@amusementrating.org">Contact</a>
+<a href="/cdn-cgi/l/email-protection#75161a1b0114160135141800061018101b010714011c1b125b1a0712">Contact</a>
 <a href="how-it-works.html">How Your Data Works</a>
 <a href="terms.html">Terms of Service</a>
 <a href="privacy.html">Privacy Policy</a>
@@ -291,7 +292,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 </div>
 </footer>
 </div>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 var SIGNUP_URL='https://ar-signup.amusementstandards.workers.dev';
 var PARKS_URL='https://ar-parks.amusementstandards.workers.dev';
 var PROFILE_URL='https://ar-profile.amusementstandards.workers.dev';
@@ -304,8 +305,6 @@ var ACTIVITY_URL='https://ar-activity.amusementstandards.workers.dev';
   if(token&&user){
     var btn=document.getElementById('nav-login-btn');
     if(btn){btn.textContent='👤 '+user;btn.onclick=function(){window.location.href='profile.html';};}
-    var rankLink=document.getElementById('nav-rankings');
-    if(rankLink)rankLink.style.display='inline-block';
   }
 })();
 
@@ -525,10 +524,4 @@ function auditGo(){
   var p=new URLSearchParams();
   p.set('rideId',amSelected.id);
   p.set('rideName',amSelected.name);
-  p.set('rideType',amSelected.rideType);
-  p.set('park',document.getElementById('am-park').value);
-  window.location.href=form+'?'+p.toString();
-}
-</script>
-</body>
-</html>
+  p.set('rideTy
