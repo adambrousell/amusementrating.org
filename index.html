@@ -488,7 +488,7 @@ async function auditParkChanged(){
     amRides=d.rides||[];
     if(!amRides.length){rideSel.innerHTML='<option value="">No rides found</option>';return;}
     var grouped={};
-    amRides.forEach(function(ride){var t=ride.rideType||'Unclassified';if(!grouped[t])grouped[t]=[];grouped[t].push(ride);});
+    amRides.forEach(function(ride){var t=(ride.rideType||'Unclassified').trim();ride.rideType=t;if(!grouped[t])grouped[t]=[];grouped[t].push(ride);});
     var html='<option value="">Select a ride...</option>';
     ['Coaster','Flat Ride','Water','Aquatic','Play Structure','Unclassified'].forEach(function(type){
       if(!grouped[type]||!grouped[type].length)return;
