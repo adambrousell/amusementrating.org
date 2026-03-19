@@ -13,48 +13,44 @@
 body{font-family:var(--d);background:var(--bg);color:var(--bright);-webkit-font-smoothing:antialiased;min-height:100vh}
 a{color:var(--ac);text-decoration:none}
 input:focus,select:focus{outline:none;border-color:var(--ac)!important}
-
-/* NAV */
 .nav{padding:14px 24px;display:flex;align-items:center;justify-content:space-between;max-width:900px;margin:0 auto}
 .nl{font-size:15px;font-weight:800;letter-spacing:-.3px}.nl span{color:var(--ac)}
 .nav-r{display:flex;align-items:center;gap:10px}
 .nav-tag{font-family:var(--m);font-size:7px;letter-spacing:1.5px;color:var(--ac);border:1px solid rgba(34,216,124,.2);padding:2px 7px;border-radius:3px;background:rgba(34,216,124,.04)}
 .nav-user{font-family:var(--m);font-size:10px;color:var(--dim);padding:5px 12px;border:1px solid var(--border);border-radius:6px;transition:all .2s;cursor:pointer;background:none}.nav-user:hover{color:var(--ac);border-color:rgba(34,216,124,.3)}
-
-/* PAGE */
+.nav-link{font-family:var(--m);font-size:9px;color:var(--dim);transition:color .2s;padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:none}.nav-link:hover{color:var(--ac);border-color:rgba(34,216,124,.3)}
 .page{max-width:900px;margin:0 auto;padding:0 24px 60px}
-
-/* TABS */
 .tabs{display:flex;gap:0;background:var(--s2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px}
 .tab{flex:1;padding:13px 16px;font-family:var(--m);font-size:10px;font-weight:700;letter-spacing:.5px;text-align:center;cursor:pointer;transition:all .2s;border:none;background:transparent;color:var(--dim)}
 .tab:hover{color:var(--text);background:rgba(255,255,255,.02)}
 .tab.on{color:var(--bright);background:rgba(255,255,255,.04);box-shadow:inset 0 -2px 0 var(--ac)}
-
-/* SEC LABEL */
 .sec{font-family:var(--m);font-size:9px;letter-spacing:2px;color:var(--dim);margin:28px 0 12px;display:flex;align-items:center;gap:8px}
-
-/* SEARCH & FILTER BAR */
 .filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
 .filter-bar input,.filter-bar select{padding:9px 13px;border:1px solid var(--border);border-radius:7px;background:var(--s2);color:var(--bright);font-family:var(--d);font-size:12px;transition:border-color .15s}
 .filter-bar input{flex:1;min-width:160px}
 .filter-bar select{appearance:none;cursor:pointer;padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath fill='%234E556A' d='M5 7L1 3h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
-
-/* ═══════════ TAB 1: PARK RANKINGS ═══════════ */
+.beta-banner{padding:16px 20px;background:linear-gradient(135deg,rgba(34,216,124,.06),rgba(96,165,250,.04));border:1px solid rgba(34,216,124,.15);border-radius:12px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px}
+.beta-banner-icon{font-size:24px;flex-shrink:0}
+.beta-banner-text{flex:1}
+.beta-banner-title{font-size:13px;font-weight:700;color:var(--bright);margin-bottom:4px}
+.beta-banner-desc{font-size:11px;color:var(--text);line-height:1.6}
+.beta-banner-desc strong{color:var(--yellow)}
+.beta-banner-stats{display:flex;gap:16px;margin-top:8px}
+.bbs{font-family:var(--m);font-size:9px;color:var(--dim)}
+.bbs strong{color:var(--ac)}
 .park-grid{display:flex;flex-direction:column;gap:6px}
 .park-row{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--s2);border:1px solid var(--border);border-radius:10px;transition:all .2s;cursor:pointer}
 .park-row:hover{border-color:var(--bh);transform:translateX(4px);box-shadow:0 4px 16px rgba(0,0,0,.3)}
 .park-rank{font-family:var(--m);font-size:14px;font-weight:700;width:32px;text-align:center;flex-shrink:0;color:var(--dim)}
-.park-rank.top3{color:var(--yellow)}
 .park-info{flex:1;min-width:0}
 .park-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .park-meta{font-family:var(--m);font-size:9px;color:var(--dim);margin-top:2px;display:flex;gap:10px;flex-wrap:wrap}
 .park-score-wrap{text-align:right;flex-shrink:0}
 .park-score{font-family:var(--m);font-size:22px;font-weight:700;line-height:1}
 .park-score.strong{color:var(--ac)}.park-score.good{color:var(--yellow)}.park-score.watch{color:var(--orange)}.park-score.na{color:var(--dim);font-size:14px}
-.park-score-label{font-family:var(--m);font-size:7px;color:var(--dim);letter-spacing:.8px;margin-top:2px}
-.park-audits{font-family:var(--m);font-size:9px;color:var(--dim)}
-
-/* PARK DETAIL EXPANDED */
+.collecting{font-family:var(--m);font-size:9px;color:var(--dim)}
+.collect-bar{height:4px;border-radius:2px;background:var(--mute);margin-top:4px;width:80px}
+.collect-fill{height:100%;border-radius:2px;background:var(--ac);transition:width .6s}
 .park-detail{display:none;padding:16px 18px 18px;background:var(--s1);border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;margin-top:-7px;margin-bottom:6px}
 .park-detail.show{display:block}
 .pillars-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
@@ -64,16 +60,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)!important}
 .pillar-score{font-family:var(--m);font-size:24px;font-weight:700;margin-top:4px;line-height:1}
 .pillar-bar{height:3px;border-radius:2px;background:var(--mute);margin-top:6px;overflow:hidden}
 .pillar-fill{height:100%;border-radius:2px;transition:width .6s ease}
-.park-rides-label{font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:6px}
-.ride-chip{display:inline-block;font-size:11px;padding:4px 10px;background:var(--s2);border:1px solid var(--border);border-radius:6px;margin:2px 3px;color:var(--text);transition:all .15s}
-.ride-chip:hover{border-color:var(--bh);color:var(--bright)}
-
-/* COLLECTING DATA STATE */
-.collecting{font-family:var(--m);font-size:10px;color:var(--dim)}
-.collect-bar{height:4px;border-radius:2px;background:var(--mute);margin-top:4px;width:80px}
-.collect-fill{height:100%;border-radius:2px;background:var(--ac);transition:width .6s}
-
-/* ═══════════ TAB 2: AUDITOR LEADERBOARD ═══════════ */
 .lb-row{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--s2);border:1px solid var(--border);border-radius:8px;margin-bottom:4px;transition:all .2s}
 .lb-row:hover{border-color:var(--bh);transform:translateX(3px)}
 .lb-row.me{border-color:rgba(34,216,124,.3);background:linear-gradient(90deg,rgba(34,216,124,.06),transparent)}
@@ -86,8 +72,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)!important}
 .lb-right{text-align:right;flex-shrink:0}
 .lb-xp{font-family:var(--m);font-size:13px;font-weight:700;color:var(--yellow)}
 .lb-level{font-family:var(--m);font-size:8px;color:var(--dim);margin-top:1px}
-
-/* CONTEST CARD */
 .contest-card{padding:22px;background:linear-gradient(135deg,rgba(250,204,21,.06),rgba(34,216,124,.04));border:1px solid rgba(250,204,21,.2);border-radius:14px;margin-bottom:20px;position:relative;overflow:hidden}
 .contest-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--yellow),var(--ac))}
 .contest-card h3{font-size:16px;font-weight:800;margin-bottom:4px}.contest-card h3 em{font-style:normal;color:var(--yellow)}
@@ -98,8 +82,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)!important}
 .cp-name{font-size:10px;font-weight:600;color:var(--bright);margin-top:4px;line-height:1.3}
 .cp-val{font-family:var(--m);font-size:9px;color:var(--yellow);margin-top:3px}
 .contest-link{font-family:var(--m);font-size:9px;color:var(--dim);margin-top:12px;display:inline-block;transition:color .2s}.contest-link:hover{color:var(--ac)}
-
-/* ═══════════ TAB 3: REWARDS SHOP ═══════════ */
 .rewards-header{text-align:center;padding:20px 0;margin-bottom:20px}
 .rewards-header h2{font-size:22px;font-weight:800;letter-spacing:-.3px}
 .rewards-header h2 em{font-style:normal;color:var(--ac)}
@@ -107,7 +89,6 @@ input:focus,select:focus{outline:none;border-color:var(--ac)!important}
 .your-xp{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(250,204,21,.08);border:1px solid rgba(250,204,21,.2);border-radius:8px;margin-top:12px}
 .your-xp-num{font-family:var(--m);font-size:18px;font-weight:700;color:var(--yellow)}
 .your-xp-label{font-family:var(--m);font-size:9px;color:var(--dim);letter-spacing:.5px}
-
 .tiers{display:flex;flex-direction:column;gap:10px}
 .tier{background:var(--s2);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .2s}
 .tier:hover{border-color:var(--bh)}
@@ -138,33 +119,20 @@ input:focus,select:focus{outline:none;border-color:var(--ac)!important}
 .mi-btn:hover{background:var(--ac2);transform:translateY(-1px)}
 .mi-btn.soon{background:var(--mute);color:var(--dim);cursor:default}
 .mi-btn.soon:hover{transform:none}
-
-/* EMPTY STATE */
 .empty{text-align:center;padding:40px 20px;color:var(--dim)}
 .empty-icon{font-size:40px;margin-bottom:12px}
 .empty h3{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
 .empty p{font-size:12px;line-height:1.6}
-
-/* FOOTER */
 footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margin-top:40px}
 .ft-b{font-size:13px;font-weight:800}.ft-b em{font-style:normal;color:var(--ac)}
 .ft-s{font-family:var(--m);font-size:8px;color:var(--dim);letter-spacing:1.5px;margin-top:4px}
 .ft-links{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:10px}
 .ft-links a{font-family:var(--m);font-size:8px;color:var(--dim);transition:color .15s}.ft-links a:hover{color:var(--ac)}
-
-/* ANIMATIONS */
 @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 .a1{opacity:0;animation:up .4s .1s ease forwards}
 .a2{opacity:0;animation:up .4s .2s ease forwards}
 .a3{opacity:0;animation:up .4s .3s ease forwards}
-
-@media(max-width:600px){
-  .pillars-row{grid-template-columns:repeat(2,1fr)}
-  .contest-prizes{grid-template-columns:1fr}
-  .tier-items{grid-template-columns:1fr 1fr}
-  .filter-bar{flex-direction:column}
-  .filter-bar input,.filter-bar select{width:100%}
-}
+@media(max-width:600px){.pillars-row{grid-template-columns:repeat(2,1fr)}.contest-prizes{grid-template-columns:1fr}.tier-items{grid-template-columns:1fr 1fr}.filter-bar{flex-direction:column}.filter-bar input,.filter-bar select{width:100%}}
 </style>
 </head>
 <body>
@@ -172,6 +140,8 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 <nav class="nav">
 <a href="/" class="nl">Amusement<span>Rating</span></a>
 <div class="nav-r">
+<a href="/" class="nav-link">← Home</a>
+<a href="trip-planner.html" class="nav-link">📅 Trip Planner</a>
 <div class="nav-tag">BETA</div>
 <button class="nav-user" id="nav-user" onclick="window.location.href='profile.html'">👤 Loading...</button>
 </div>
@@ -179,23 +149,36 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 
 <div class="page">
 
-<!-- TABS -->
 <div class="tabs a1">
 <button class="tab on" onclick="showTab('parks')">🏟️ PARK RANKINGS</button>
 <button class="tab" onclick="showTab('auditors')">🏆 LEADERBOARD</button>
 <button class="tab" onclick="showTab('rewards')">🎁 REWARDS SHOP</button>
 </div>
 
-<!-- ═══════════ TAB: PARK RANKINGS ═══════════ -->
+<!-- TAB: PARK RANKINGS -->
 <div id="tab-parks" class="a2">
+
+<div class="beta-banner">
+<div class="beta-banner-icon">📊</div>
+<div class="beta-banner-text">
+<div class="beta-banner-title">Park Rankings Are Building</div>
+<div class="beta-banner-desc">Rankings go live once a park hits <strong>10 verified audits</strong>. Until then, every park is listed with its current audit progress. Be one of the first auditors to rank your home park.</div>
+<div class="beta-banner-stats" id="banner-stats">
+<span class="bbs"><strong id="bs-parks">—</strong> parks tracked</span>
+<span class="bbs"><strong id="bs-audits">0</strong> total audits</span>
+<span class="bbs"><strong>10</strong> audits to rank</span>
+</div>
+</div>
+</div>
 
 <div class="filter-bar">
 <input type="text" id="park-search" placeholder="Search parks..." oninput="filterParks()">
 <select id="park-sort" onchange="sortParks()">
+<option value="name-asc">A → Z</option>
+<option value="name-desc">Z → A</option>
+<option value="audits-desc">Most Audited</option>
 <option value="score-desc">Highest Score</option>
 <option value="score-asc">Lowest Score</option>
-<option value="audits-desc">Most Audited</option>
-<option value="name-asc">A → Z</option>
 </select>
 <select id="park-region" onchange="filterParks()">
 <option value="">All Chains</option>
@@ -203,19 +186,19 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 </div>
 
 <div class="park-grid" id="park-grid">
-<div class="empty"><div class="empty-icon">🏟️</div><h3>Loading park rankings...</h3><p>Fetching facility scores from the community.</p></div>
+<div class="empty"><div class="empty-icon">🏟️</div><h3>Loading parks...</h3></div>
 </div>
 
 </div>
 
-<!-- ═══════════ TAB: AUDITOR LEADERBOARD ═══════════ -->
+<!-- TAB: AUDITOR LEADERBOARD -->
 <div id="tab-auditors" style="display:none" class="a2">
 
 <div class="contest-card">
 <h3>🏆 Spring 2026 <em>Contest</em></h3>
 <p>Top 3 auditors by XP at the end of Memorial Day win real prizes. Contest runs March 22 — May 25, 2026.</p>
 <div class="contest-prizes">
-<div class="cp"><div class="cp-medal">🥇</div><div class="cp-name">All Season Fast Lane — Ultimate</div><div class="cp-val">~$299</div></div>
+<div class="cp"><div class="cp-medal">🥇</div><div class="cp-name">All Season Fast Lane — Ultimate</div><div class="cp-val">~$499</div></div>
 <div class="cp"><div class="cp-medal">🥈</div><div class="cp-name">2× Epic Universe Tickets</div><div class="cp-val">~$280–398</div></div>
 <div class="cp"><div class="cp-medal">🥉</div><div class="cp-name">SF 2-Meal All Season Dining</div><div class="cp-val">~$150</div></div>
 </div>
@@ -224,12 +207,12 @@ footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;margi
 
 <div class="sec">🏆 GLOBAL RANKINGS</div>
 <div id="lb-grid">
-<div class="empty"><div class="empty-icon">🏆</div><h3>Loading leaderboard...</h3><p>Fetching global rankings.</p></div>
+<div class="empty"><div class="empty-icon">🏆</div><h3>Loading leaderboard...</h3></div>
 </div>
 
 </div>
 
-<!-- ═══════════ TAB: REWARDS SHOP ═══════════ -->
+<!-- TAB: REWARDS SHOP -->
 <div id="tab-rewards" style="display:none" class="a2">
 
 <div class="rewards-header">
@@ -255,7 +238,6 @@ Prices include production. Shipping calculated at checkout. NJ sales tax applies
 
 </div>
 
-<!-- FOOTER -->
 <footer>
 <div class="ft-b">Amusement<em>Rating</em>.org</div>
 <div class="ft-s">INDEPENDENT · CROWDSOURCED · COMMUNITY-DRIVEN</div>
@@ -278,201 +260,104 @@ var username=localStorage.getItem('ar_username')||'';
 var userXP=0;
 var allParksData=[];
 
-// Nav user display
 (function(){
   var el=document.getElementById('nav-user');
   if(username){el.textContent='👤 '+username;}
   else{el.textContent='Log In';el.onclick=function(){window.location.href='/';};}
 })();
 
-// Tab switching
 function showTab(t){
-  ['parks','auditors','rewards'].forEach(function(id){
-    document.getElementById('tab-'+id).style.display=(id===t)?'block':'none';
-  });
-  document.querySelectorAll('.tab').forEach(function(btn,i){
-    var ids=['parks','auditors','rewards'];
-    btn.classList.toggle('on',ids[i]===t);
-  });
+  ['parks','auditors','rewards'].forEach(function(id){document.getElementById('tab-'+id).style.display=(id===t)?'block':'none';});
+  document.querySelectorAll('.tab').forEach(function(btn,i){var ids=['parks','auditors','rewards'];btn.classList.toggle('on',ids[i]===t);});
 }
 
-// Toggle tier accordion
-function toggleTier(header){
-  var items=header.nextElementSibling;
-  if(!items||!items.classList.contains('tier-items'))return;
-  items.style.display=items.style.display==='none'?'grid':'none';
-}
+function toggleTier(header){var items=header.nextElementSibling;if(!items||!items.classList.contains('tier-items'))return;items.style.display=items.style.display==='none'?'grid':'none';}
 
-// ═══════════ REWARDS SHOP DATA ═══════════
-// PRINTFUL STORE CONFIG
-// ─────────────────────────────────────────
-// 1. Create your Quick Store at https://www.printful.com/quick-stores
-// 2. Store name suggestion: "amusementrating"
-//    → URL becomes: https://amusementrating.printful.me
-// 3. Add products, set retail prices (auditor prices below)
-// 4. Copy each product's URL and paste into the 'url' field below
-// 5. Set 'live' to true once the product is published
-// ─────────────────────────────────────────
+// ═══════════ REWARDS SHOP ═══════════
 var STORE_BASE='https://amusementrating.printful.me';
 var MERCH_TIERS=[
-  {
-    name:'Starter Tier',emoji:'🌱',badge:'t1',xp:100,
-    req:'100 XP · 2 ride logs or 1 audit',
-    items:[
-      {icon:'🏷️',name:'AR Sticker Pack (5ct)',orig:'$8',price:'$5',tag:'37% OFF',url:STORE_BASE+'/product/ar-sticker-pack',live:false},
-      {icon:'📌',name:'Enamel Pin — "I Audit Parks"',orig:'$10',price:'$7',tag:'30% OFF',url:STORE_BASE+'/product/i-audit-parks-pin',live:false}
-    ]
-  },
-  {
-    name:'Observer Tier',emoji:'🔍',badge:'t2',xp:250,
-    req:'250 XP · ~5 audits',
-    items:[
-      {icon:'🧢',name:'AR Snapback Hat — Black',orig:'$28',price:'$18',tag:'35% OFF · OBSERVER ONLY',url:STORE_BASE+'/product/ar-snapback-black',live:false},
-      {icon:'🎒',name:'Patch + Pin Set',orig:'$16',price:'$12',tag:'25% OFF',url:STORE_BASE+'/product/patch-pin-set',live:false}
-    ]
-  },
-  {
-    name:'Auditor Tier',emoji:'⭐',badge:'t3',xp:500,
-    req:'500 XP · ~10 audits',
-    items:[
-      {icon:'👕',name:'AR Logo Tee — Black',orig:'$28',price:'$20',tag:'28% OFF · AUDITOR ONLY',url:STORE_BASE+'/product/ar-logo-tee-black',live:false},
-      {icon:'🧃',name:'AR Water Bottle — 24oz',orig:'$22',price:'$15',tag:'32% OFF',url:STORE_BASE+'/product/ar-water-bottle',live:false},
-      {icon:'👕',name:'"Log. Audit. Rank. Repeat." Tee',orig:'$30',price:'$22',tag:'26% OFF',url:STORE_BASE+'/product/log-audit-rank-repeat-tee',live:false}
-    ]
-  },
-  {
-    name:'Expert Tier',emoji:'🔮',badge:'t4',xp:1000,
-    req:'1,000 XP · serious auditors only',
-    items:[
-      {icon:'🧥',name:'AR Pullover Hoodie',orig:'$50',price:'$35',tag:'30% OFF · EXPERT ONLY',url:STORE_BASE+'/product/ar-pullover-hoodie',live:false},
-      {icon:'🎽',name:'AR Windbreaker — Black/Green',orig:'$65',price:'$45',tag:'30% OFF · EXPERT ONLY',url:STORE_BASE+'/product/ar-windbreaker',live:false}
-    ]
-  },
-  {
-    name:'Founding Tier',emoji:'💎',badge:'t5',xp:2500,
-    req:'2,500 XP · top of the leaderboard',
-    items:[
-      {icon:'🧥',name:'Limited Edition AR Jacket',orig:null,price:'$55',tag:'💎 ONLY AT 2,500 XP · NOT SOLD ANYWHERE',url:STORE_BASE+'/product/limited-ar-jacket',live:false},
-      {icon:'🏅',name:'Physical Founding Badge',orig:null,price:'FREE',tag:'💎 SHIPS TO YOU · FOUNDING 100 ONLY',url:STORE_BASE+'/product/founding-badge',live:false}
-    ]
-  }
+  {name:'Starter Tier',emoji:'🌱',badge:'t1',xp:100,req:'100 XP · 2 ride logs or 1 audit',items:[{icon:'🏷️',name:'AR Sticker Pack (5ct)',orig:'$8',price:'$5',tag:'37% OFF',url:STORE_BASE+'/product/ar-sticker-pack',live:false},{icon:'📌',name:'Enamel Pin — "I Audit Parks"',orig:'$10',price:'$7',tag:'30% OFF',url:STORE_BASE+'/product/i-audit-parks-pin',live:false}]},
+  {name:'Observer Tier',emoji:'🔍',badge:'t2',xp:250,req:'250 XP · ~5 audits',items:[{icon:'🧢',name:'AR Snapback Hat — Black',orig:'$28',price:'$18',tag:'35% OFF · OBSERVER ONLY',url:STORE_BASE+'/product/ar-snapback-black',live:false},{icon:'🎒',name:'Patch + Pin Set',orig:'$16',price:'$12',tag:'25% OFF',url:STORE_BASE+'/product/patch-pin-set',live:false}]},
+  {name:'Auditor Tier',emoji:'⭐',badge:'t3',xp:500,req:'500 XP · ~10 audits',items:[{icon:'👕',name:'AR Logo Tee — Black',orig:'$28',price:'$20',tag:'28% OFF · AUDITOR ONLY',url:STORE_BASE+'/product/ar-logo-tee-black',live:false},{icon:'🧃',name:'AR Water Bottle — 24oz',orig:'$22',price:'$15',tag:'32% OFF',url:STORE_BASE+'/product/ar-water-bottle',live:false},{icon:'👕',name:'"Log. Audit. Rank. Repeat." Tee',orig:'$30',price:'$22',tag:'26% OFF',url:STORE_BASE+'/product/log-audit-rank-repeat-tee',live:false}]},
+  {name:'Expert Tier',emoji:'🔮',badge:'t4',xp:1000,req:'1,000 XP · serious auditors only',items:[{icon:'🧥',name:'AR Pullover Hoodie',orig:'$50',price:'$35',tag:'30% OFF · EXPERT ONLY',url:STORE_BASE+'/product/ar-pullover-hoodie',live:false},{icon:'🎽',name:'AR Windbreaker — Black/Green',orig:'$65',price:'$45',tag:'30% OFF · EXPERT ONLY',url:STORE_BASE+'/product/ar-windbreaker',live:false}]},
+  {name:'Founding Tier',emoji:'💎',badge:'t5',xp:2500,req:'2,500 XP · top of the leaderboard',items:[{icon:'🧥',name:'Limited Edition AR Jacket',orig:null,price:'$55',tag:'💎 ONLY AT 2,500 XP · NOT SOLD ANYWHERE',url:STORE_BASE+'/product/limited-ar-jacket',live:false},{icon:'🏅',name:'Physical Founding Badge',orig:null,price:'FREE',tag:'💎 SHIPS TO YOU · FOUNDING 100 ONLY',url:STORE_BASE+'/product/founding-badge',live:false}]}
 ];
 
 function renderRewardsShop(){
-  var container=document.getElementById('rewards-tiers');
-  var h='';
+  var container=document.getElementById('rewards-tiers');var h='';
   MERCH_TIERS.forEach(function(tier,ti){
-    var unlocked=userXP>=tier.xp;
-    var isFirst=ti===0;
-    h+='<div class="tier">';
-    h+='<div class="tier-header" onclick="toggleTier(this)">';
-    h+='<div class="tier-badge '+tier.badge+'">'+tier.emoji+'</div>';
-    h+='<div class="tier-info"><div class="tier-name">'+tier.name+'</div>';
-    h+='<div class="tier-req">'+tier.req+'</div></div>';
-    if(unlocked){
-      h+='<span class="tier-status unlocked">✓ UNLOCKED</span>';
-    }else{
-      var needed=tier.xp-userXP;
-      h+='<span class="tier-status locked">🔒 '+needed.toLocaleString()+' XP to go</span>';
-    }
-    h+='</div>';
-
-    // Items — expanded by default if unlocked and first unlocked tier, or first tier
-    var showItems=isFirst||unlocked;
-    h+='<div class="tier-items" style="display:'+(showItems?'grid':'none')+'">';
+    var unlocked=userXP>=tier.xp;var isFirst=ti===0;
+    h+='<div class="tier"><div class="tier-header" onclick="toggleTier(this)"><div class="tier-badge '+tier.badge+'">'+tier.emoji+'</div><div class="tier-info"><div class="tier-name">'+tier.name+'</div><div class="tier-req">'+tier.req+'</div></div>';
+    if(unlocked){h+='<span class="tier-status unlocked">✓ UNLOCKED</span>';}else{h+='<span class="tier-status locked">🔒 '+(tier.xp-userXP).toLocaleString()+' XP to go</span>';}
+    h+='</div><div class="tier-items" style="display:'+(isFirst||unlocked?'grid':'none')+'">';
     tier.items.forEach(function(item){
       var itemLocked=!unlocked;
-      h+='<div class="merch-item'+(itemLocked?' locked-item':'')+'">';
-      h+='<div class="mi-icon">'+item.icon+'</div>';
-      h+='<div class="mi-name">'+item.name+'</div>';
-      h+='<div class="mi-prices">';
+      h+='<div class="merch-item'+(itemLocked?' locked-item':'')+'"><div class="mi-icon">'+item.icon+'</div><div class="mi-name">'+item.name+'</div><div class="mi-prices">';
       if(item.orig)h+='<span class="mi-orig">'+item.orig+'</span>';
-      h+='<span class="mi-price">'+item.price+'</span>';
-      h+='</div>';
-      h+='<div class="mi-tag">'+item.tag+'</div>';
-
-      if(itemLocked){
-        h+='<button class="mi-btn soon">🔒 EARN '+(tier.xp).toLocaleString()+' XP</button>';
-      }else if(!item.live){
-        h+='<button class="mi-btn soon">COMING SOON</button>';
-      }else{
-        h+='<a href="'+item.url+'" target="_blank" rel="noopener" class="mi-btn">BUY ON STORE →</a>';
-      }
+      h+='<span class="mi-price">'+item.price+'</span></div><div class="mi-tag">'+item.tag+'</div>';
+      if(itemLocked){h+='<button class="mi-btn soon">🔒 EARN '+tier.xp.toLocaleString()+' XP</button>';}
+      else if(!item.live){h+='<button class="mi-btn soon">COMING SOON</button>';}
+      else{h+='<a href="'+item.url+'" target="_blank" rel="noopener" class="mi-btn">BUY ON STORE →</a>';}
       h+='</div>';
     });
-    h+='</div>';
-    h+='</div>';
+    h+='</div></div>';
   });
   container.innerHTML=h;
 }
 
-// Load user XP for rewards + leaderboard highlight
 async function loadUserXP(){
-  if(!username){
-    document.getElementById('your-xp').textContent='0';
-    renderRewardsShop();
-    return;
-  }
-  try{
-    var r=await fetch(PROFILE_URL+'?u='+encodeURIComponent(username));
-    var d=await r.json();
-    if(d.user){
-      userXP=d.user.xp||0;
-      document.getElementById('your-xp').textContent=userXP.toLocaleString();
-    }
-  }catch(e){}
+  if(!username){document.getElementById('your-xp').textContent='0';renderRewardsShop();return;}
+  try{var r=await fetch(PROFILE_URL+'?u='+encodeURIComponent(username));var d=await r.json();if(d.user){userXP=d.user.xp||0;document.getElementById('your-xp').textContent=userXP.toLocaleString();}}catch(e){}
   renderRewardsShop();
 }
 
-// Load leaderboard
+// ═══════════ LEADERBOARD ═══════════
 async function loadLeaderboard(){
   try{
-    var r=await fetch(LB_URL);var d=await r.json();
-    var el=document.getElementById('lb-grid');
+    var r=await fetch(LB_URL);var d=await r.json();var el=document.getElementById('lb-grid');
     if(!d.leaderboard||!d.leaderboard.length){el.innerHTML='<div class="empty"><div class="empty-icon">🏆</div><h3>No auditors ranked yet</h3><p>Be the first — <a href="profile.html?action=ride">log a ride</a> to get on the board.</p></div>';return;}
     var h='';d.leaderboard.forEach(function(u,i){
-      var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
-      var isMe=u.username===username;
+      var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';var isMe=u.username===username;
       h+='<div class="lb-row'+(isMe?' me':'')+'"><span class="lb-medal">'+(medal||'')+'</span><span class="lb-rank">'+(medal?'':'#'+(i+1))+'</span><span class="lb-avatar">'+(u.emoji||'🎢')+'</span><div class="lb-info"><div class="lb-name">'+(u.username||'—')+(isMe?' <span style="color:var(--ac);font-size:10px">(you)</span>':'')+'</div><div class="lb-stats"><span>'+(u.rideCount||0)+' rides</span><span>'+(u.auditCount||0)+' audits</span><span>'+(u.parkCount||0)+' parks</span></div></div><div class="lb-right"><div class="lb-xp">'+(u.xp||0).toLocaleString()+' XP</div><div class="lb-level">LVL '+(Math.floor(Math.sqrt((u.xp||0)/25))+1)+'</div></div></div>';
     });
     el.innerHTML=h;
-  }catch(e){
-    document.getElementById('lb-grid').innerHTML='<div class="empty"><div class="empty-icon">🏆</div><h3>Could not load leaderboard</h3><p>Check back shortly.</p></div>';
-  }
+  }catch(e){document.getElementById('lb-grid').innerHTML='<div class="empty"><div class="empty-icon">🏆</div><h3>Could not load leaderboard</h3><p>Check back shortly.</p></div>';}
 }
 
-// Load parks with scores for rankings
+// ═══════════ PARKS — handles both response formats ═══════════
 async function loadParks(){
   try{
-    var r=await fetch(PARKS_URL+'?scores=1');var d=await r.json();
-    var parks=d.parks||[];
-    allParksData=parks.map(function(p){
-      return{
-        name:p.name,
-        group:p.group||'',
-        audits:p.audits||0,
-        score:p.score||null,
-        ops:p.ops||null,
-        safe:p.safe||null,
-        guest:p.guest||null,
-        facil:p.facil||null,
-        rideCount:p.rideCount||0
-      };
-    });
-    // Sort: parks with scores first, then by score desc, then audited parks, then alphabetical
-    allParksData.sort(function(a,b){
-      if(a.score!==null&&b.score===null)return -1;
-      if(a.score===null&&b.score!==null)return 1;
-      if(a.score!==null&&b.score!==null)return b.score-a.score;
-      if(a.audits>0&&b.audits===0)return -1;
-      if(a.audits===0&&b.audits>0)return 1;
-      if(a.audits>0&&b.audits>0)return b.audits-a.audits;
-      return a.name.localeCompare(b.name);
-    });
+    var r=await fetch(PARKS_URL);var d=await r.json();
+    var parks=[];
+
+    // Handle flat parks array if present
+    if(d.parks&&d.parks.length>0){
+      parks=d.parks.map(function(p){
+        return{name:p.name,group:p.group||p.chain||'',audits:p.audits||0,score:p.score||null,ops:p.ops||null,safe:p.safe||null,guest:p.guest||null,facil:p.facil||null,rideCount:p.rideCount||0};
+      });
+    }
+
+    // Also flatten groups if present (worker may return groups without flat parks)
+    if(d.groups&&(!parks.length||parks.length===0)){
+      var groups=d.groups;
+      Object.keys(groups).forEach(function(gName){
+        (groups[gName]||[]).forEach(function(p){
+          parks.push({name:p.name,group:gName==='Independent'?'':gName,audits:p.audits||0,score:p.score||null,ops:p.ops||null,safe:p.safe||null,guest:p.guest||null,facil:p.facil||null,rideCount:p.rideCount||0});
+        });
+      });
+    }
+
+    allParksData=parks;
+
+    // Update banner stats
+    var totalAudits=0;parks.forEach(function(p){totalAudits+=p.audits||0;});
+    document.getElementById('bs-parks').textContent=parks.length;
+    document.getElementById('bs-audits').textContent=totalAudits;
+
     populateGroupFilter();
     renderParks();
   }catch(e){
-    document.getElementById('park-grid').innerHTML='<div class="empty"><div class="empty-icon">🏟️</div><h3>Could not load parks</h3><p>Check back shortly.</p></div>';
+    document.getElementById('park-grid').innerHTML='<div class="empty"><div class="empty-icon">🏟️</div><h3>Could not load parks</h3><p>Check your connection and try again.</p></div>';
   }
 }
 
@@ -490,44 +375,41 @@ function renderParks(){
 
   filtered.sort(function(a,b){
     if(sort==='score-desc'){
-      if(a.score!==null&&b.score===null)return -1;
-      if(a.score===null&&b.score!==null)return 1;
+      if(a.score!==null&&b.score===null)return -1;if(a.score===null&&b.score!==null)return 1;
       if(a.score!==null&&b.score!==null)return b.score-a.score;
-      if(a.audits>0&&b.audits===0)return -1;
-      if(a.audits===0&&b.audits>0)return 1;
+      if(a.audits>0&&b.audits===0)return -1;if(a.audits===0&&b.audits>0)return 1;
       return b.audits-a.audits;
     }
     if(sort==='score-asc'){
-      if(a.score!==null&&b.score===null)return -1;
-      if(a.score===null&&b.score!==null)return 1;
+      if(a.score!==null&&b.score===null)return -1;if(a.score===null&&b.score!==null)return 1;
       if(a.score!==null&&b.score!==null)return a.score-b.score;
       return a.name.localeCompare(b.name);
     }
     if(sort==='audits-desc')return(b.audits||0)-(a.audits||0);
+    if(sort==='name-desc')return b.name.localeCompare(a.name);
     return a.name.localeCompare(b.name);
   });
 
   if(!filtered.length){el.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><h3>No parks match your search</h3><p>Try a different filter.</p></div>';return;}
 
-  var h='';filtered.slice(0,50).forEach(function(p,i){
+  var h='';filtered.forEach(function(p,i){
     var hasScore=p.score!==null&&p.audits>=10;
     var scoreClass=hasScore?(p.score>=4?'strong':p.score>=3?'good':'watch'):'na';
-    var rankClass=i<3?'top3':'';
     h+='<div class="park-row" onclick="toggleParkDetail(\'pd-'+i+'\')">';
-    h+='<span class="park-rank '+rankClass+'">'+(i+1)+'</span>';
+    h+='<span class="park-rank">'+(i+1)+'</span>';
     h+='<div class="park-info"><div class="park-name">'+p.name+'</div>';
     h+='<div class="park-meta">';
     if(p.group)h+='<span>'+p.group+'</span>';
     if(p.rideCount)h+='<span>'+p.rideCount+' rides</span>';
-    h+='<span>'+p.audits+' audits</span>';
+    h+='<span>'+p.audits+' audit'+(p.audits!==1?'s':'')+'</span>';
     h+='</div></div>';
     if(hasScore){
-      h+='<div class="park-score-wrap"><div class="park-score '+scoreClass+'">'+p.score.toFixed(1)+'</div><div class="park-score-label">COMPOSITE</div></div>';
+      h+='<div class="park-score-wrap"><div class="park-score '+scoreClass+'">'+p.score.toFixed(1)+'</div><div style="font-family:var(--m);font-size:7px;color:var(--dim);letter-spacing:.8px;margin-top:2px">COMPOSITE</div></div>';
     }else{
-      h+='<div class="park-score-wrap"><div class="collecting">'+p.audits+' of 10 audits</div><div class="collect-bar"><div class="collect-fill" style="width:'+Math.min(p.audits/10*100,100)+'%"></div></div></div>';
+      var pct=Math.min((p.audits||0)/10*100,100);
+      h+='<div class="park-score-wrap"><div class="collecting">'+(p.audits||0)+'/10 audits</div><div class="collect-bar"><div class="collect-fill" style="width:'+pct+'%"></div></div></div>';
     }
     h+='</div>';
-    // Expandable detail (placeholder)
     h+='<div class="park-detail" id="pd-'+i+'">';
     if(hasScore){
       h+='<div class="pillars-row">';
@@ -537,28 +419,28 @@ function renderParks(){
       });
       h+='</div>';
     }else{
-      h+='<div style="text-align:center;padding:12px;color:var(--dim);font-size:12px">Pillar breakdowns appear after 10 audits. <a href="profile.html?action=audit" style="color:var(--ac)">Audit this park →</a></div>';
+      h+='<div style="text-align:center;padding:16px;color:var(--text);font-size:12px;line-height:1.7">';
+      h+='<div style="font-size:20px;margin-bottom:6px">📋</div>';
+      h+='<strong style="color:var(--bright)">'+p.name+'</strong> needs <strong style="color:var(--yellow)">'+(10-(p.audits||0))+'</strong> more audit'+(10-(p.audits||0)!==1?'s':'')+' to unlock rankings.<br>';
+      h+='<a href="profile.html?action=audit" style="color:var(--ac);font-weight:700">Be one of the first to audit this park →</a>';
+      h+='</div>';
     }
     h+='</div>';
   });
   el.innerHTML=h;
 }
+
 function filterParks(){renderParks();}
 function sortParks(){renderParks();}
 function populateGroupFilter(){
   var sel=document.getElementById('park-region');
-  var groupSet={};
-  allParksData.forEach(function(p){if(p.group&&p.group!=='Independent')groupSet[p.group]=true;});
+  var groupSet={};allParksData.forEach(function(p){if(p.group)groupSet[p.group]=true;});
   var groups=Object.keys(groupSet).sort();
-  sel.innerHTML='<option value="">All Chains</option><option value="Independent">Independent</option>';
+  sel.innerHTML='<option value="">All Chains</option>';
   groups.forEach(function(g){sel.innerHTML+='<option value="'+g+'">'+g+'</option>';});
 }
-function toggleParkDetail(id){
-  var el=document.getElementById(id);
-  if(el)el.classList.toggle('show');
-}
+function toggleParkDetail(id){var el=document.getElementById(id);if(el)el.classList.toggle('show');}
 
-// Init
 loadUserXP();
 loadLeaderboard();
 loadParks();
