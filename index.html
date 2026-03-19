@@ -219,7 +219,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <div class="field"><label>USERNAME</label><input type="text" id="login-username" placeholder="your username" autocomplete="username"></div>
 <div class="field"><label>PASSWORD</label><input type="password" id="login-password" placeholder="your password" autocomplete="current-password"></div>
 <button class="modal-btn" id="login-btn" onclick="handleLogin()">Log In</button>
-<div class="modal-note" id="login-note">No account? Scroll down to sign up.</div>
+<div class="modal-note" id="login-note">First time logging in? Enter your username and choose a password — it'll be saved automatically.<br>No account? <a href="#signup-user" onclick="document.getElementById('login-modal').classList.remove('show')" style="color:var(--ac)">Sign up below</a>.</div>
 </div>
 </div>
 
@@ -336,6 +336,10 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <div class="field"><label>I WANT TO</label>
 <select id="signup-intent"><option value="">Select...</option><option>Log rides + audit parks</option><option>Log rides + browse scores</option><option>Just explore</option></select>
 </div>
+<div style="margin:12px 0 4px;display:flex;align-items:flex-start;gap:8px;">
+<input type="checkbox" id="signup-tos" style="margin-top:2px;accent-color:var(--ac);cursor:pointer;">
+<label for="signup-tos" style="font-size:11px;color:var(--text);line-height:1.5;cursor:pointer;letter-spacing:0;">I agree to the <a href="terms.html" target="_blank" style="color:var(--ac)">Terms of Service</a> and <a href="privacy.html" target="_blank" style="color:var(--ac)">Privacy Policy</a>.</label>
+</div>
 <button class="signup-btn" onclick="handleSignup()">Join the Beta → Earn 50 XP</button>
 </div>
 <div class="signup-bonus">🎁 SIGNUP BONUS: 50 XP + FIRST LOG badge unlocked instantly</div>
@@ -349,7 +353,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <div class="ft-disc">Not affiliated with any park or operator. Scores reflect external observations only.</div>
 <div class="ft-data">RIDE DATA POWERED BY <a href="https://queue-times.com/" target="_blank">Queue-Times.com</a> · <a href="https://themeparks.wiki/" target="_blank">ThemeParks.wiki</a></div>
 <div class="ft-links">
-<a href="/cdn-cgi/l/email-protection#9dfef2f3e9fcfee9ddfcf0e8eef8f0f8f3e9effce9f4f3fab3f2effa">Contact</a>
+<a href="mailto:contact@amusementrating.org">Contact</a>
 <a href="how-it-works.html">How Your Data Works</a>
 <a href="terms.html">Terms of Service</a>
 <a href="privacy.html">Privacy Policy</a>
@@ -595,6 +599,7 @@ async function handleSignup() {
   var intent = document.getElementById('signup-intent').value;
   if (!user || !email) { alert('Username and email are required.'); return; }
   if (!password || password.length < 6) { alert('Password must be at least 6 characters.'); return; }
+  if (!document.getElementById('signup-tos').checked) { alert('You must agree to the Terms of Service and Privacy Policy.'); return; }
   var btn = document.querySelector('.signup-btn');
   btn.textContent = 'Creating account...'; btn.disabled = true;
   try {
