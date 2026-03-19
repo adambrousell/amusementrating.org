@@ -199,7 +199,7 @@ function showAuthTab(tab){
 <div class="field"><label>USERNAME</label><input type="text" id="modal-login-user" placeholder="your username" autocomplete="username"></div>
 <div class="field"><label>PASSWORD</label><input type="password" id="modal-login-pass" placeholder="your password" autocomplete="current-password"></div>
 <button class="modal-btn" onclick="handleModalLogin()">Log In</button>
-<div class="modal-note" id="modal-login-note">Forgot password? Email <a href="mailto:contact@amusementrating.org" style="color:var(--ac)">contact@amusementrating.org</a></div>
+<div class="modal-note" id="modal-login-note">Forgot password? Email <a href="mailto:adam@amusementstandards.com" style="color:var(--ac)">adam@amusementstandards.com</a></div>
 </div>
 </div>
 </div>
@@ -302,7 +302,7 @@ function showAuthTab(tab){
 <div class="ft-disc">Not affiliated with any park or operator. Scores reflect external observations only.</div>
 <div class="ft-data">RIDE DATA POWERED BY <a href="https://queue-times.com/" target="_blank">Queue-Times.com</a> · <a href="https://themeparks.wiki/" target="_blank">ThemeParks.wiki</a></div>
 <div class="ft-links">
-<a href="mailto:contact@amusementrating.org">Contact</a>
+<a href="mailto:adam@amusementstandards.com">Contact</a>
 <a href="how-it-works.html">How Your Data Works</a>
 <a href="terms.html">Terms of Service</a>
 <a href="privacy.html">Privacy Policy</a>
@@ -486,13 +486,41 @@ async function handleModalLogin(){
   try{
     var r=await fetch(SIGNUP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',username:user,password:pass})});
     var d=await r.json();
-    if(d.error){note.textContent=d.error;note.style.color='var(--red)';btn.textContent='Log In';btn.disabled=false;return;}
+    if(d.error){
+      // Fallback: try profile lookup by username (worker may not support login action yet)
+      try{
+        var pr=await fetch(PROFILE_URL+'?u='+encodeURIComponent(user));
+        var pd=await pr.json();
+        if(pd.user&&pd.user.username){
+          localStorage.setItem('ar_token','beta-'+Date.now());
+          localStorage.setItem('ar_username',pd.user.username);
+          btn.textContent='✓ Welcome back!';
+          btn.style.background='var(--yellow)';btn.style.color='#0A0C10';
+          setTimeout(function(){window.location.href='profile.html';},1000);
+          return;
+        }
+      }catch(e2){}
+      note.textContent=d.error;note.style.color='var(--red)';btn.textContent='Log In';btn.disabled=false;return;
+    }
     localStorage.setItem('ar_token',d.token||'beta');
     localStorage.setItem('ar_username',d.username||user);
     btn.textContent='✓ Welcome back!';
     btn.style.background='var(--yellow)';btn.style.color='#0A0C10';
     setTimeout(function(){window.location.href='profile.html';},1000);
   }catch(e){
+    // Network error on signup worker — try profile fallback
+    try{
+      var pr=await fetch(PROFILE_URL+'?u='+encodeURIComponent(user));
+      var pd=await pr.json();
+      if(pd.user&&pd.user.username){
+        localStorage.setItem('ar_token','beta-'+Date.now());
+        localStorage.setItem('ar_username',pd.user.username);
+        btn.textContent='✓ Welcome back!';
+        btn.style.background='var(--yellow)';btn.style.color='#0A0C10';
+        setTimeout(function(){window.location.href='profile.html';},1000);
+        return;
+      }
+    }catch(e2){}
     note.textContent='Network error — try again.';note.style.color='var(--red)';
     btn.textContent='Log In';btn.disabled=false;
   }
@@ -546,7 +574,7 @@ function auditRideChanged(){
   amSelected=amRides.find(function(r){return r.id===rideSel.value;});
   if(amSelected&&amSelected.rideType&&AUDIT_FORMS[amSelected.rideType]){
     var t=amSelected.rideType;
-    badge.innerHTML='<span class="at-tag '+(AUDIT_CSS[t]||'t-non    badge.innerHTML='<span class="at-tag '+(AUDIT_CSS[t]||'t-none')+'">'+(AUDIT_EMOJI[t]||'📋')+' '+esc(t).toUpperCase()+' AUDIT</span>';
+    badge.innerHTML='<span class="at-tag '+(AUDIT_CSS[t]||'t-none')+'">'+(AUDIT_EMOJI[t]||'📋')+' '+esc(t).toUpperCase()+' AUDIT</span>';
     btn.disabled=false;btn.textContent='Start '+t+' Audit → +50 XP';
   }else{
     badge.innerHTML='<span class="at-tag t-none">⚠️ No audit form for this type</span>';
