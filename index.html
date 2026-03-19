@@ -169,19 +169,27 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <div class="modal-overlay" id="login-modal">
 <div class="modal">
 <button class="modal-close" onclick="document.getElementById('login-modal').classList.remove('show')">&times;</button>
-<div id="login-step1">
-<h3>Welcome back, <em>auditor.</em></h3>
-<p>Enter your email and we'll send you a 6-digit login code.</p>
-<div class="field"><label>EMAIL</label><input type="email" id="login-email" placeholder="you@email.com"></div>
-<button class="modal-btn" onclick="sendLoginCode()">Send Login Code</button>
-<div class="modal-note">No password needed — we'll email you a one-time code.</div>
+<div style="display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid var(--border)">
+<button id="tab-signup" onclick="showAuthTab('signup')" style="flex:1;padding:10px;border:none;background:none;font-family:var(--d);font-size:13px;font-weight:800;color:var(--ac);border-bottom:2px solid var(--ac);cursor:pointer">Sign Up</button>
+<button id="tab-login" onclick="showAuthTab('login')" style="flex:1;padding:10px;border:none;background:none;font-family:var(--d);font-size:13px;font-weight:700;color:var(--dim);border-bottom:2px solid transparent;cursor:pointer">Log In</button>
 </div>
-<div id="login-step2" style="display:none">
-<h3>Check your <em>inbox.</em></h3>
-<p>We sent a 6-digit code to <strong id="login-email-display"></strong></p>
-<div class="field"><label>LOGIN CODE</label><input type="text" id="login-code" placeholder="000000" maxlength="6" inputmode="numeric"></div>
-<button class="modal-btn" onclick="verifyLoginCode()">Verify & Log In</button>
-<div class="modal-note">Code expires in 15 minutes. <a href="#" onclick="document.getElementById('login-step1').style.display='block';document.getElementById('login-step2').style.display='none';return false;">Resend code</a></div>
+<div id="auth-signup">
+<h3>Join the <em>beta.</em></h3>
+<p>Create your account and start earning XP immediately.</p>
+<div class="field"><label>USERNAME</label><input type="text" id="modal-signup-user" placeholder="coasterking99" autocomplete="username"></div>
+<div class="field"><label>EMAIL</label><input type="email" id="modal-signup-email" placeholder="you@email.com" autocomplete="email"></div>
+<div class="field"><label>PASSWORD</label><input type="password" id="modal-signup-pass" placeholder="6+ characters" autocomplete="new-password"></div>
+<div class="field"><label>HOME PARK</label><select id="modal-signup-park"><option value="">Loading parks...</option></select></div>
+<button class="modal-btn" onclick="handleModalSignup()">Create Account → Earn 50 XP</button>
+<div class="modal-note">Free forever. No credit card needed.</div>
+</div>
+<div id="auth-login" style="display:none">
+<h3>Welcome back, <em>auditor.</em></h3>
+<p>Log in with your username and password.</p>
+<div class="field"><label>USERNAME</label><input type="text" id="modal-login-user" placeholder="your username" autocomplete="username"></div>
+<div class="field"><label>PASSWORD</label><input type="password" id="modal-login-pass" placeholder="your password" autocomplete="current-password"></div>
+<button class="modal-btn" onclick="handleModalLogin()">Log In</button>
+<div class="modal-note" id="modal-login-note">Forgot password? Email <a href="mailto:contact@amusementrating.org" style="color:var(--ac)">contact@amusementrating.org</a></div>
 </div>
 </div>
 </div>
@@ -311,23 +319,27 @@ var ACTIVITY_URL='https://ar-activity.amusementstandards.workers.dev';
 (async function(){
   try{
     var r=await fetch(PARKS_URL);var d=await r.json();
-    var s=document.getElementById('signup-park');
-    if(!s)return;
-    s.innerHTML='<option value="">Select your home park...</option>';
-    var groups=d.groups||{};
-    var groupNames=Object.keys(groups).sort(function(a,b){if(a==='Independent')return 1;if(b==='Independent')return -1;return a.localeCompare(b);});
-    if(groupNames.length>0){
-      groupNames.forEach(function(gName){
-        var og=document.createElement('optgroup');og.label=gName;
-        (groups[gName]||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;og.appendChild(o);});
-        if((groups[gName]||[]).length>0)s.appendChild(og);
-      });
-    }else{
-      (d.parks||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;s.appendChild(o);});
-    }
+    ['signup-park','modal-signup-park'].forEach(function(id){
+      var s=document.getElementById(id);
+      if(!s)return;
+      s.innerHTML='<option value="">Select your home park...</option>';
+      var groups=d.groups||{};
+      var groupNames=Object.keys(groups).sort(function(a,b){if(a==='Independent')return 1;if(b==='Independent')return -1;return a.localeCompare(b);});
+      if(groupNames.length>0){
+        groupNames.forEach(function(gName){
+          var og=document.createElement('optgroup');og.label=gName;
+          (groups[gName]||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;og.appendChild(o);});
+          if((groups[gName]||[]).length>0)s.appendChild(og);
+        });
+      }else{
+        (d.parks||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;s.appendChild(o);});
+      }
+    });
   }catch(e){
-    var s=document.getElementById('signup-park');
-    if(s)s.innerHTML='<option value="">Select...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Hersheypark</option><option>Dollywood</option><option>Other</option>';
+    ['signup-park','modal-signup-park'].forEach(function(id){
+      var s=document.getElementById(id);
+      if(s)s.innerHTML='<option value="">Select...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Hersheypark</option><option>Dollywood</option><option>Other</option>';
+    });
   }
 })();
 
@@ -419,30 +431,65 @@ async function handleSignup(){
   }
 }
 
-async function sendLoginCode(){
-  var email=document.getElementById('login-email').value.trim();
-  if(!email){alert('Enter your email');return;}
-  document.getElementById('login-email-display').textContent=email;
-  document.getElementById('login-step1').style.display='none';
-  document.getElementById('login-step2').style.display='block';
+function showAuthTab(tab){
+  document.getElementById('auth-signup').style.display=tab==='signup'?'block':'none';
+  document.getElementById('auth-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('tab-signup').style.color=tab==='signup'?'var(--ac)':'var(--dim)';
+  document.getElementById('tab-signup').style.borderBottom=tab==='signup'?'2px solid var(--ac)':'2px solid transparent';
+  document.getElementById('tab-login').style.color=tab==='login'?'var(--ac)':'var(--dim)';
+  document.getElementById('tab-login').style.borderBottom=tab==='login'?'2px solid var(--ac)':'2px solid transparent';
 }
-async function verifyLoginCode(){
-  var code=document.getElementById('login-code').value.trim();
-  if(!code||code.length<6){alert('Enter the 6-digit code');return;}
-  var email=document.getElementById('login-email').value.trim();
+
+async function handleModalSignup(){
+  var user=document.getElementById('modal-signup-user').value.trim();
+  var email=document.getElementById('modal-signup-email').value.trim();
+  var pass=document.getElementById('modal-signup-pass').value;
+  var park=document.getElementById('modal-signup-park').value;
+  if(!user||!email){alert('Username and email are required.');return;}
+  if(!pass||pass.length<6){alert('Password must be at least 6 characters.');return;}
+  var btn=document.querySelector('#auth-signup .modal-btn');
+  btn.textContent='Creating account...';btn.disabled=true;
   try{
-    var r=await fetch(PROFILE_URL+'?email='+encodeURIComponent(email));
+    var r=await fetch(SIGNUP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:user,email:email,password:pass,park:park})});
     var d=await r.json();
-    if(d.error){alert('Account not found for this email.');return;}
-    localStorage.setItem('ar_token','beta-'+Date.now());
-    localStorage.setItem('ar_username',d.user.username);
-    window.location.href='profile.html';
+    if(d.error){btn.textContent=d.error;setTimeout(function(){btn.textContent='Create Account → Earn 50 XP';btn.disabled=false;},3000);return;}
+    localStorage.setItem('ar_token',d.token||'beta');
+    localStorage.setItem('ar_username',user);
+    btn.textContent='✓ Welcome, '+user+'! +50 XP';
+    btn.style.background='var(--yellow)';btn.style.color='#0A0C10';
+    setTimeout(function(){window.location.href='profile.html';},1200);
   }catch(e){
-    localStorage.setItem('ar_token','beta-'+Date.now());
-    document.getElementById('login-modal').classList.remove('show');
-    alert('Login system is being set up. Use your username on the profile page.');
+    btn.textContent='Network error — try again';
+    setTimeout(function(){btn.textContent='Create Account → Earn 50 XP';btn.disabled=false;},3000);
   }
 }
+
+async function handleModalLogin(){
+  var user=document.getElementById('modal-login-user').value.trim();
+  var pass=document.getElementById('modal-login-pass').value;
+  var note=document.getElementById('modal-login-note');
+  if(!user||!pass){note.textContent='Enter your username and password.';note.style.color='var(--red)';return;}
+  var btn=document.querySelector('#auth-login .modal-btn');
+  btn.textContent='Logging in...';btn.disabled=true;
+  note.textContent='';note.style.color='';
+  try{
+    var r=await fetch(SIGNUP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',username:user,password:pass})});
+    var d=await r.json();
+    if(d.error){note.textContent=d.error;note.style.color='var(--red)';btn.textContent='Log In';btn.disabled=false;return;}
+    localStorage.setItem('ar_token',d.token||'beta');
+    localStorage.setItem('ar_username',d.username||user);
+    btn.textContent='✓ Welcome back!';
+    btn.style.background='var(--yellow)';btn.style.color='#0A0C10';
+    setTimeout(function(){window.location.href='profile.html';},1000);
+  }catch(e){
+    note.textContent='Network error — try again.';note.style.color='var(--red)';
+    btn.textContent='Log In';btn.disabled=false;
+  }
+}
+
+document.getElementById('modal-login-pass').addEventListener('keydown',function(e){if(e.key==='Enter')handleModalLogin();});
+document.getElementById('modal-login-user').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('modal-login-pass').focus();});
+document.getElementById('modal-signup-pass').addEventListener('keydown',function(e){if(e.key==='Enter')handleModalSignup();});
 
 var AUDIT_FORMS={'Coaster':'coaster-audit.html','Flat Ride':'flatride-audit.html','Water':'water-audit.html','Aquatic':'aquatic-audit.html','Play Structure':'play-audit.html'};
 var AUDIT_CSS={'Coaster':'t-coaster','Flat Ride':'t-flat','Water':'t-water','Aquatic':'t-aquatic','Play Structure':'t-play'};
