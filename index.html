@@ -189,7 +189,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 <div class="field"><label>USERNAME</label><input type="text" id="modal-login-user" placeholder="your username" autocomplete="username"></div>
 <div class="field"><label>PASSWORD</label><input type="password" id="modal-login-pass" placeholder="your password" autocomplete="current-password"></div>
 <button class="modal-btn" onclick="handleModalLogin()">Log In</button>
-<div class="modal-note" id="modal-login-note">Forgot password? Email <a href="mailto:contact@amusementrating.org" style="color:var(--ac)">contact@amusementrating.org</a></div>
+<div class="modal-note" id="modal-login-note">Forgot password? Email <a href="/cdn-cgi/l/email-protection#72111d1c0613110632131f0701171f171c060013061b1c155c1d0015" style="color:var(--ac)"><span class="__cf_email__" data-cfemail="f2919d9c86939186b2939f8781979f979c868093869b9c95dc9d8095">[email&#160;protected]</span></a></div>
 </div>
 </div>
 </div>
@@ -300,7 +300,7 @@ footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;margi
 </div>
 </footer>
 </div>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 var SIGNUP_URL='https://ar-signup.amusementstandards.workers.dev';
 var PARKS_URL='https://ar-parks.amusementstandards.workers.dev';
 var PROFILE_URL='https://ar-profile.amusementstandards.workers.dev';
@@ -319,10 +319,11 @@ var ACTIVITY_URL='https://ar-activity.amusementstandards.workers.dev';
 (async function(){
   try{
     var r=await fetch(PARKS_URL);var d=await r.json();
-    ['signup-park','modal-signup-park'].forEach(function(id){
+    ['signup-park','modal-signup-park','am-park'].forEach(function(id){
       var s=document.getElementById(id);
       if(!s)return;
-      s.innerHTML='<option value="">Select your home park...</option>';
+      var placeholder=id==='am-park'?'Select park...':'Select your home park...';
+      s.innerHTML='<option value="">'+placeholder+'</option>';
       var groups=d.groups||{};
       var groupNames=Object.keys(groups).sort(function(a,b){if(a==='Independent')return 1;if(b==='Independent')return -1;return a.localeCompare(b);});
       if(groupNames.length>0){
@@ -336,7 +337,7 @@ var ACTIVITY_URL='https://ar-activity.amusementstandards.workers.dev';
       }
     });
   }catch(e){
-    ['signup-park','modal-signup-park'].forEach(function(id){
+    ['signup-park','modal-signup-park','am-park'].forEach(function(id){
       var s=document.getElementById(id);
       if(s)s.innerHTML='<option value="">Select...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Hersheypark</option><option>Dollywood</option><option>Other</option>';
     });
@@ -496,28 +497,7 @@ var AUDIT_CSS={'Coaster':'t-coaster','Flat Ride':'t-flat','Water':'t-water','Aqu
 var AUDIT_EMOJI={'Coaster':'🎢','Flat Ride':'🎡','Water':'💧','Aquatic':'🏊','Play Structure':'🏗️'};
 var amRides=[],amSelected=null;
 
-(async function(){
-  try{
-    var r=await fetch(PARKS_URL);var d=await r.json();
-    var s=document.getElementById('am-park');
-    if(!s)return;
-    s.innerHTML='<option value="">Select park...</option>';
-    var groups=d.groups||{};
-    var gn=Object.keys(groups).sort(function(a,b){if(a==='Independent')return 1;if(b==='Independent')return -1;return a.localeCompare(b);});
-    if(gn.length>0){
-      gn.forEach(function(g){
-        var og=document.createElement('optgroup');og.label=g;
-        (groups[g]||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;og.appendChild(o);});
-        if((groups[g]||[]).length)s.appendChild(og);
-      });
-    }else{
-      (d.parks||[]).forEach(function(p){var o=document.createElement('option');o.value=p.name;o.textContent=p.name;s.appendChild(o);});
-    }
-  }catch(e){
-    var s=document.getElementById('am-park');
-    if(s)s.innerHTML='<option value="">Error loading parks</option>';
-  }
-})();
+// am-park is populated by the unified parks loader above
 
 async function auditParkChanged(){
   var parkSel=document.getElementById('am-park');
@@ -560,15 +540,4 @@ function auditRideChanged(){
     btn.disabled=false;btn.textContent='Start '+t+' Audit → +50 XP';
   }else{
     badge.innerHTML='<span class="at-tag t-none">⚠️ No audit form for this type</span>';
-    btn.disabled=true;btn.textContent='No audit form available';
-  }
-}
-
-function auditGo(){
-  if(!amSelected||!amSelected.rideType)return;
-  var form=AUDIT_FORMS[amSelected.rideType];
-  if(!form)return;
-  var p=new URLSearchParams();
-  p.set('rideId',amSelected.id);
-  p.set('rideName',amSelected.name);
-  p.set('rideTy
+    btn.disabled=true;btn.textContent='No audit form availab
