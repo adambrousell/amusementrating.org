@@ -14,7 +14,7 @@
     --gold:#F5C518; --gold-d:rgba(245,197,24,0.1); --gold-b:rgba(245,197,24,0.2);
     --red:#FF4C4C; --muted:rgba(255,255,255,0.42); --text:#ffffff; --r:14px; --r-sm:10px;
   }
-  html,body { background:var(--bg); color:var(--text); font-family:'Sora',sans-serif; max-width:430px; margin:0 auto; overflow-x:hidden; scroll-behavior:smooth; scroll-padding-top:96px; }
+  html,body { background:var(--bg); color:var(--text); font-family:'Sora',sans-serif; max-width:430px; margin:0 auto; overflow-x:hidden; scroll-behavior:smooth; scroll-padding-top:100px; }
 
   /* BANNER */
   .banner { background:#0d1a0f; border-bottom:1px solid rgba(34,216,124,0.15); padding:11px 16px; display:flex; align-items:flex-start; gap:9px; cursor:pointer; }
@@ -24,13 +24,21 @@
   .banner-copy strong { color:var(--text); font-weight:600; }
   .banner-copy a { color:var(--green); text-decoration:none; }
 
-  /* ── HEADER: two-row sticky block ── */
+  /* ── HEADER: two-row fixed block — always at top ── */
   .site-header {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
+    max-width: 430px;
+    margin: 0 auto;
     z-index: 100;
     background: var(--bg);
     border-bottom: 1px solid var(--border);
+  }
+  .header-spacer {
+    /* matches header height so content isn't hidden behind it */
+    height: 88px;
   }
   .header-top {
     display: flex;
@@ -396,7 +404,7 @@
   <p class="banner-copy">🏆 <strong>Spring 2026 Leaderboard Contest</strong> — Win All Season Fast Lane Ultimate → <a href="https://amusementrating.org/contest-rules.html" onclick="event.stopPropagation()">Official Rules</a></p>
 </div>
 
-<!-- HEADER: two-row sticky block — row 1: full logo + buttons, row 2: all nav pills -->
+<!-- HEADER: two-row fixed block — row 1: full logo + buttons, row 2: all nav pills -->
 <div class="site-header">
   <div class="header-top">
     <div class="logo" id="logoBtn">Amusement<span class="logo-dim">Rating</span></div>
@@ -411,6 +419,7 @@
     <a href="#shop-section" class="nav-link">🎁 Shop</a>
   </div>
 </div>
+<div class="header-spacer"></div>
 
 <!-- HERO -->
 <div class="hero">
