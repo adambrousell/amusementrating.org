@@ -295,7 +295,7 @@
 <!-- NAV -->
 <div class="nav">
   <button class="nav-btn" id="rankingsBtn">🏆 Rankings</button>
-  <button class="nav-btn" id="tripBtn">📅 Trip Planner</button>
+  <button class="nav-btn" id="rewardsBtn">🎁 Rewards Shop</button>
 </div>
 <div class="nav-bottom">
   <button class="btn-login" id="loginBtn">Log In</button>
@@ -458,13 +458,7 @@
     <div class="lb-tab" data-lb="challenge">🎯 Challenge</div>
   </div>
   <select class="lb-park-select" id="lbParkSelect">
-    <option value="sfga">Six Flags Great Adventure</option>
-    <option value="cp">Cedar Point</option>
-    <option value="ki">Kings Island</option>
-    <option value="hershey">Hersheypark</option>
-    <option value="bgw">Busch Gardens Williamsburg</option>
-    <option value="wonderland">Canada's Wonderland</option>
-    <option value="knotts">Knott's Berry Farm</option>
+    <option value="">Loading parks…</option>
   </select>
   <div class="lb-card" id="lbCard"></div>
   <div class="lb-position-callout">
@@ -722,16 +716,66 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="tripModal">
+<div class="modal-overlay" id="rewardsModal">
   <div class="modal modal-relative">
-    <button class="modal-close" data-close="tripModal">✕</button>
+    <button class="modal-close" data-close="rewardsModal">✕</button>
     <div class="modal-handle"></div>
-    <div class="modal-title">📅 Trip <span class="green">Planner</span></div>
-    <div class="modal-sub">Plan your next park visit and track rides you want to hit.</div>
-    <div class="field"><label>Destination Park</label><select><option value="">Select a park...</option><option>Six Flags Great Adventure</option><option>Cedar Point</option><option>Kings Island</option><option>Hersheypark</option></select></div>
-    <div class="field"><label>Visit Date</label><input type="date" style="color-scheme:dark"></div>
-    <div style="background:var(--green-d);border:1px solid var(--green-b);border-radius:var(--r-sm);padding:12px 14px;font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:16px;line-height:1.5;">🚧 Full trip planning — wishlists, wait time forecasts, and route optimization — coming soon.</div>
-    <button class="modal-btn" id="tripNotifyBtn">Notify Me at Launch →</button>
+    <div class="modal-title">🎁 Rewards <span class="green">Shop</span></div>
+    <div class="modal-sub">Spend your XP on real prizes. Climb higher to unlock better rewards.</div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+
+      <div style="background:var(--surface2);border:1px solid var(--green-b);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:14px;">
+        <div style="font-size:28px;flex-shrink:0;">🎟️</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:3px;">All Season Fast Lane Ultimate</div>
+          <div style="font-size:11px;color:var(--muted);">Six Flags · Contest Prize · #1 on Board wins</div>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--gold);background:var(--gold-d);border:1px solid var(--gold-b);border-radius:20px;padding:3px 9px;flex-shrink:0;">CONTEST</div>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:14px;">
+        <div style="font-size:28px;flex-shrink:0;">🎡</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:3px;">2x Epic Universe Tickets</div>
+          <div style="font-size:11px;color:var(--muted);">#2 on Leaderboard · ~$280–398 value</div>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--gold);background:var(--gold-d);border:1px solid var(--gold-b);border-radius:20px;padding:3px 9px;flex-shrink:0;">CONTEST</div>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:14px;">
+        <div style="font-size:28px;flex-shrink:0;">🍔</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:3px;">Six Flags 2-Meal All Season Dining</div>
+          <div style="font-size:11px;color:var(--muted);">#3 on Leaderboard · ~$150 value</div>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--gold);background:var(--gold-d);border:1px solid var(--gold-b);border-radius:20px;padding:3px 9px;flex-shrink:0;">CONTEST</div>
+      </div>
+
+      <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase;padding:0 2px;">Coming Soon — XP Store</div>
+
+      <div style="background:var(--surface2);border:1px dashed rgba(255,255,255,0.1);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:14px;opacity:0.5;">
+        <div style="font-size:28px;flex-shrink:0;">🏷️</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:3px;">AmusementRating Merch</div>
+          <div style="font-size:11px;color:var(--muted);">Redeem XP for branded gear</div>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:3px 9px;flex-shrink:0;">SOON</div>
+      </div>
+
+      <div style="background:var(--surface2);border:1px dashed rgba(255,255,255,0.1);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:14px;opacity:0.5;">
+        <div style="font-size:28px;flex-shrink:0;">🎫</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:3px;">Partner Park Discount Codes</div>
+          <div style="font-size:11px;color:var(--muted);">Verified auditors only</div>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:3px 9px;flex-shrink:0;">SOON</div>
+      </div>
+
+    </div>
+
+    <a href="https://amusementrating.org/contest-rules.html" style="display:block;text-align:center;margin-top:16px;font-size:11px;color:var(--muted);text-decoration:none;">Contest Official Rules →</a>
   </div>
 </div>
 
@@ -860,7 +904,7 @@ document.getElementById('loginBtn').addEventListener('click',()=>{
 
 document.getElementById('betaBtn').addEventListener('click',()=>openModal('signupModal'));
 document.getElementById('rankingsBtn').addEventListener('click',()=>openModal('rankingsModal'));
-document.getElementById('tripBtn').addEventListener('click',()=>openModal('tripModal'));
+document.getElementById('rewardsBtn').addEventListener('click',()=>openModal('rewardsModal'));
 document.getElementById('contestLeaderboardBtn').addEventListener('click',()=>openModal('rankingsModal'));
 document.getElementById('viewAllRankingsBtn').addEventListener('click',()=>openModal('rankingsModal'));
 document.getElementById('claimBtn').addEventListener('click',()=>{ if(getSession()) return; openModal('signupModal'); });
@@ -891,8 +935,49 @@ document.getElementById('signupSubmitBtn').addEventListener('click',()=>{
   setLoggedIn(u);
 });
 
-// trip
-document.getElementById('tripNotifyBtn').addEventListener('click',()=>{closeModal('tripModal');showToast("✅ You'll be notified when Trip Planner launches!");});
+// ── AIRTABLE PARKS FETCH ─────────────────────────────
+// Fetches AR_Parks from Airtable via the ar-signup Cloudflare Worker proxy.
+// The worker exposes GET /parks → returns {records:[{id, fields:{Park_Name, Park_ID, Status}}]}
+// Falls back to static list if fetch fails.
+const PARKS_PROXY = 'https://ar-signup.amusementstandards.workers.dev/parks';
+const STATIC_PARKS = [
+  {id:'sfga', name:'Six Flags Great Adventure'},
+  {id:'cp',   name:'Cedar Point'},
+  {id:'ki',   name:'Kings Island'},
+  {id:'hershey', name:'Hersheypark'},
+  {id:'bgw',  name:'Busch Gardens Williamsburg'},
+  {id:'wonderland', name:"Canada's Wonderland"},
+  {id:'knotts', name:"Knott's Berry Farm"},
+];
+
+async function loadParksIntoSelect() {
+  const sel = document.getElementById('lbParkSelect');
+  try {
+    const res = await fetch(PARKS_PROXY, { headers:{'Accept':'application/json'} });
+    if (!res.ok) throw new Error('status ' + res.status);
+    const data = await res.json();
+    const records = data.records || [];
+    if (!records.length) throw new Error('empty');
+
+    // Sort alphabetically by Park_Name
+    records.sort((a,b) => (a.fields.Park_Name||'').localeCompare(b.fields.Park_Name||''));
+
+    sel.innerHTML = records.map(r =>
+      `<option value="${r.id}">${r.fields.Park_Name}</option>`
+    ).join('');
+
+    // Set curPark to first record's Airtable record ID
+    curPark = records[0].id;
+
+  } catch(e) {
+    console.warn('Parks fetch failed, using static fallback:', e.message);
+    sel.innerHTML = STATIC_PARKS.map(p =>
+      `<option value="${p.id}">${p.name}</option>`
+    ).join('');
+    curPark = STATIC_PARKS[0].id;
+  }
+}
+loadParksIntoSelect();
 
 // log ride
 const rPS=document.getElementById('rideParkSelect'),rSF=document.getElementById('rideSelectField'),rS=document.getElementById('rideSelect'),rXP=document.getElementById('rideXpPreview'),rXA=document.getElementById('rideXpAmt'),rSB=document.getElementById('logRideSubmitBtn');
