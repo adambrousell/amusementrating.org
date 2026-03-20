@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Select Test</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0a0d0f;color:#fff;font-family:sans-serif;max-width:430px;margin:0 auto;padding:20px}
+  
+  h3{margin-bottom:12px;font-size:14px}
+  
+  /* TEST 1: Plain select, no modal */
+  .test-select{
+    width:100%;background:#12181d;border:1px solid rgba(255,255,255,0.08);
+    border-radius:10px;padding:12px 14px;font-size:16px;color:#fff;
+    margin-bottom:20px;
+  }
+  
+  /* TEST 2: Select inside a fixed modal */
+  .overlay{
+    display:none;position:fixed;inset:0;z-index:1000;
+    background:rgba(0,0,0,0.85);
+    align-items:flex-end;justify-content:center;
+  }
+  .overlay.open{display:flex}
+  .modal{
+    background:#12181d;border-radius:20px 20px 0 0;
+    width:100%;max-width:430px;max-height:90vh;
+    overflow-y:auto;padding:24px 22px 40px;
+  }
+  .modal select{
+    width:100%;background:#171d23;border:1px solid rgba(255,255,255,0.08);
+    border-radius:10px;padding:12px 14px;font-size:16px;color:#fff;
+    margin-bottom:12px;
+  }
+  .modal select option{background:#1a2028;color:#fff}
+  
+  .btn{
+    width:100%;background:#22D87C;border:none;border-radius:10px;
+    padding:14px;font-size:15px;font-weight:700;color:#000;
+    cursor:pointer;margin-bottom:12px;
+  }
+  .close-btn{background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.1)}
+  
+  #result{font-family:monospace;font-size:12px;color:#22D87C;padding:10px;background:#171d23;border-radius:8px;margin-top:10px;min-height:40px}
+</style>
+</head>
+<body>
+
+<h3>TEST 1: Plain select (no modal)</h3>
+<select class="test-select" id="test1" onchange="log('Test1: '+this.value)">
+  <option value="">Select a park...</option>
+  <option value="sfga">Six Flags Great Adventure</option>
+  <option value="cp">Cedar Point</option>
+  <option value="ki">Kings Island</option>
+</select>
+
+<h3>TEST 2: Select with optgroups (no modal)</h3>
+<select class="test-select" id="test2" onchange="log('Test2: '+this.value)">
+  <option value="">Select a park...</option>
+  <optgroup label="Six Flags">
+    <option value="sfga">Six Flags Great Adventure</option>
+    <option value="sfga2">Six Flags Great America</option>
+  </optgroup>
+  <optgroup label="Cedar Fair">
+    <option value="cp">Cedar Point</option>
+    <option value="ki">Kings Island</option>
+  </optgroup>
+</select>
+
+<button class="btn" onclick="document.getElementById('testModal').classList.add('open')">Open Modal with Select</button>
+
+<h3>TEST 3: Dynamically loaded (like your parks)</h3>
+<select class="test-select" id="test3" onchange="log('Test3: '+this.value)">
+  <option value="">Loading parks...</option>
+</select>
+
+<div id="result">Tap a select to test...</div>
+
+<!-- MODAL -->
+<div class="overlay" id="testModal">
+  <div class="modal">
+    <h3 style="margin-bottom:16px">TEST 4: Select inside modal</h3>
+    
+    <select class="test-select" id="test4" onchange="log('Test4-park: '+this.value); showRides(this.value)">
+      <option value="">Select a park...</option>
+      <optgroup label="Six Flags">
+        <option value="sfga">Six Flags Great Adventure</option>
+      </optgroup>
+      <optgroup label="Cedar Fair">
+        <option value="cp">Cedar Point</option>
+      </optgroup>
+    </select>
+    
+    <select class="test-select" id="test4rides" style="display:none" onchange="log('Test4-ride: '+this.value)">
+      <option value="">Select a ride...</option>
+    </select>
+    
+    <button class="btn close-btn" onclick="document.getElementById('testModal').classList.remove('open')">Close Modal</button>
+  </div>
+</div>
+
+<script>
+function log(msg) {
+  document.getElementById('result').textContent = msg + ' (' + new Date().toLocaleTimeString() + ')';
+}
+
+// Simulate dynamic park loading (like ar-parks Worker)
+setTimeout(function() {
+  var sel = document.getElementById('test3');
+  sel.innerHTML = '<option value="">Select a park...</option>' +
+    '<optgroup label="Six Flags">' +
+    '<option value="sfga" data-name="Six Flags Great Adventure">Six Flags Great Adventure</option>' +
+    '<option value="sfne" data-name="Six Flags New England">Six Flags New England</option>' +
+    '</optgroup>' +
+    '<optgroup label="Cedar Fair">' +
+    '<option value="cp" data-name="Cedar Point">Cedar Point</option>' +
+    '</optgroup>';
+  log('Test3 parks loaded dynamically');
+}, 1000);
+
+function showRides(parkVal) {
+  var sel = document.getElementById('test4rides');
+  if (!parkVal) { sel.style.display = 'none'; return; }
+  var rides = {
+    sfga: ['Kingda Ka', 'El Toro', 'Nitro'],
+    cp: ['Steel Vengeance', 'Millennium Force', 'Maverick']
+  };
+  sel.innerHTML = '<option value="">Select a ride...</option>' +
+    (rides[parkVal] || []).map(function(r) { return '<option value="' + r + '">' + r + '</option>'; }).join('');
+  sel.style.display = 'block';
+}
+</script>
+</body>
+</html>
