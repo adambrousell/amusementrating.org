@@ -276,11 +276,11 @@ function toggleTier(header){var items=header.nextElementSibling;if(!items||!item
 // ═══════════ REWARDS SHOP ═══════════
 var STORE_BASE='https://amusementrating.printful.me';
 var MERCH_TIERS=[
-  {name:'Starter Tier',emoji:'🌱',badge:'t1',xp:100,req:'100 XP · 2 ride logs or 1 audit',items:[{icon:'🏷️',name:'AR Sticker Pack (5ct)',orig:'$8',price:'$5',tag:'37% OFF',url:STORE_BASE+'/product/ar-sticker-pack',live:false},{icon:'📌',name:'Enamel Pin — "I Audit Parks"',orig:'$10',price:'$7',tag:'30% OFF',url:STORE_BASE+'/product/i-audit-parks-pin',live:false}]},
-  {name:'Observer Tier',emoji:'🔍',badge:'t2',xp:250,req:'250 XP · ~5 audits',items:[{icon:'🧢',name:'AR Snapback Hat — Black',orig:'$28',price:'$18',tag:'35% OFF · OBSERVER ONLY',url:STORE_BASE+'/product/ar-snapback-black',live:false},{icon:'🎒',name:'Patch + Pin Set',orig:'$16',price:'$12',tag:'25% OFF',url:STORE_BASE+'/product/patch-pin-set',live:false}]},
-  {name:'Auditor Tier',emoji:'⭐',badge:'t3',xp:500,req:'500 XP · ~10 audits',items:[{icon:'👕',name:'AR Logo Tee — Black',orig:'$28',price:'$20',tag:'28% OFF · AUDITOR ONLY',url:STORE_BASE+'/product/ar-logo-tee-black',live:false},{icon:'🧃',name:'AR Water Bottle — 24oz',orig:'$22',price:'$15',tag:'32% OFF',url:STORE_BASE+'/product/ar-water-bottle',live:false},{icon:'👕',name:'"Log. Audit. Rank. Repeat." Tee',orig:'$30',price:'$22',tag:'26% OFF',url:STORE_BASE+'/product/log-audit-rank-repeat-tee',live:false}]},
-  {name:'Expert Tier',emoji:'🔮',badge:'t4',xp:1000,req:'1,000 XP · serious auditors only',items:[{icon:'🧥',name:'AR Pullover Hoodie',orig:'$50',price:'$35',tag:'30% OFF · EXPERT ONLY',url:STORE_BASE+'/product/ar-pullover-hoodie',live:false},{icon:'🎽',name:'AR Windbreaker — Black/Green',orig:'$65',price:'$45',tag:'30% OFF · EXPERT ONLY',url:STORE_BASE+'/product/ar-windbreaker',live:false}]},
-  {name:'Founding Tier',emoji:'💎',badge:'t5',xp:2500,req:'2,500 XP · top of the leaderboard',items:[{icon:'🧥',name:'Limited Edition AR Jacket',orig:null,price:'$55',tag:'💎 ONLY AT 2,500 XP · NOT SOLD ANYWHERE',url:STORE_BASE+'/product/limited-ar-jacket',live:false},{icon:'🏅',name:'Physical Founding Badge',orig:null,price:'FREE',tag:'💎 SHIPS TO YOU · FOUNDING 100 ONLY',url:STORE_BASE+'/product/founding-badge',live:false}]}
+  {name:'Starter Tier',emoji:'🌱',badge:'t1',xp:100,req:'100 XP · 2 ride logs or 1 audit',items:[{icon:'🏷️',name:'"I Rated That Ride" Stickers',orig:null,price:'$9',tag:'STARTER EXCLUSIVE',url:STORE_BASE+'/product/bubble-free-stickers',live:true},{icon:'📌',name:'AR Pin Button Set',orig:null,price:'$20',tag:'COLLECTOR SET',url:STORE_BASE+'/product/set-of-pin-buttons',live:true}]},
+  {name:'Observer Tier',emoji:'🔍',badge:'t2',xp:250,req:'250 XP · ~5 audits',items:[{icon:'🧢',name:'AR Snapback Hat',orig:null,price:'TBD',tag:'COMING SOON · OBSERVER ONLY',url:STORE_BASE,live:false}]},
+  {name:'Auditor Tier',emoji:'⭐',badge:'t3',xp:500,req:'500 XP · ~10 audits',items:[{icon:'👕',name:'"Enthusiasts with Standards" Tee',orig:null,price:'$30',tag:'AUDITOR ONLY',url:STORE_BASE+'/product/unisex-classic-tee',live:true},{icon:'👕',name:'"With Standards" Premium Tee',orig:null,price:'$30',tag:'PREMIUM FIT · AUDITOR ONLY',url:STORE_BASE+'/product/cotton-heritage-mc1082-i-mens-premium-short-sleeve-tee',live:true}]},
+  {name:'Expert Tier',emoji:'🔮',badge:'t4',xp:1000,req:'1,000 XP · serious auditors only',items:[{icon:'🧥',name:'"Ride It Rate It Repeat" Zip Hoodie',orig:null,price:'$55',tag:'EXPERT ONLY',url:STORE_BASE+'/product/unisex-heavy-blend-zip-hoodie',live:true}]},
+  {name:'Founding Tier',emoji:'💎',badge:'t5',xp:2500,req:'2,500 XP · top of the leaderboard',items:[{icon:'🧥',name:'Limited Edition AR Jacket',orig:null,price:'TBD',tag:'💎 ONLY AT 2,500 XP · NOT SOLD ANYWHERE',url:STORE_BASE,live:false},{icon:'🏅',name:'Physical Founding Badge',orig:null,price:'FREE',tag:'💎 SHIPS TO YOU · FOUNDING 100 ONLY',url:STORE_BASE,live:false}]}
 ];
 
 function renderRewardsShop(){
@@ -436,11 +436,4 @@ function populateGroupFilter(){
   sel.innerHTML='<option value="">All Chains</option>';
   groups.forEach(function(g){sel.innerHTML+='<option value="'+g+'">'+g+'</option>';});
 }
-function toggleParkDetail(id){var el=document.getElementById(id);if(el)el.classList.toggle('show');}
-
-loadUserXP();
-loadLeaderboard();
-loadParks();
-</script>
-</body>
-</html>
+function toggleP
