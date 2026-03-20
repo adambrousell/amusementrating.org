@@ -662,17 +662,14 @@
       </select>
     </div>
     <div class="field" id="auditRideField" style="display:none"><label>Ride</label><select id="auditRideSelect"><option value="">Select a ride...</option></select></div>
-    <div class="field" id="auditTypeField" style="display:none"><label>Audit Type</label>
-      <select id="auditTypeSelect">
-        <option value="">Select audit type...</option>
-        <option value="ops">Operations &amp; Dispatch</option>
-        <option value="safety">Safety &amp; Restraints</option>
-        <option value="guest">Guest Experience</option>
-        <option value="facility">Facility &amp; Cleanliness</option>
-      </select>
+    <!-- ride type + destination shown after ride selection -->
+    <div id="auditTypeDisplay" style="display:none;background:var(--green-d);border:1px solid var(--green-b);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:14px">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Audit Type</div>
+      <div style="font-size:14px;font-weight:700;color:var(--green)" id="auditTypeLabel">—</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px" id="auditTypeDesc">—</div>
     </div>
     <div class="xp-preview" id="auditXpPreview" style="display:none"><span class="xp-preview-label">XP you'll earn</span><span class="xp-preview-val">⚡ +50 XP</span></div>
-    <button class="modal-btn" id="auditSubmitBtn" disabled>Load Checklist →</button>
+    <button class="modal-btn" id="auditSubmitBtn" disabled>Open Audit Checklist →</button>
   </div>
 </div>
 
@@ -1123,37 +1120,32 @@ async function populateRideSelectLive(sel, parkName) {
     return;
   }
 
-  // Group by type, with a defined display order
-  const TYPE_ORDER = ['Roller Coaster','Flat Ride','Water Ride','Dark Ride','Kids Ride','Show','Other',''];
+  // Real RideType values from Airtable → audit page mapping
+  const TYPE_ORDER = ['Coaster','Flat Ride','Water','Aquatic','Play Structure'];
   const TYPE_LABELS = {
-    'Roller Coaster': '🎢 Roller Coasters',
+    'Coaster':        '🎢 Coasters',
     'Flat Ride':      '🎡 Flat Rides',
-    'Water Ride':     '💧 Water Rides',
-    'Dark Ride':      '🌑 Dark Rides',
-    'Kids Ride':      '🧸 Kids Rides',
-    'Show':           '🎭 Shows',
-    'Other':          '🎠 Other',
-    '':               '🎠 Uncategorized',
+    'Water':          '💧 Water Rides',
+    'Aquatic':        '🏊 Aquatic Rides',
+    'Play Structure': '🧸 Play Structures',
   };
 
-  // Bucket rides into groups
+  // Bucket rides — anything not in TYPE_ORDER goes into nearest match or last group
   const groups = {};
+  TYPE_ORDER.forEach(t => groups[t] = []);
   rides.forEach(r => {
-    const key = TYPE_ORDER.includes(r.type) ? r.type : 'Other';
-    if (!groups[key]) groups[key] = [];
+    const key = TYPE_ORDER.includes(r.type) ? r.type : 'Flat Ride'; // fallback to Flat Ride
     groups[key].push(r);
   });
 
-  // Build HTML in type order, skipping empty groups
   let html = '<option value="">Select a ride...</option>';
   TYPE_ORDER.forEach(type => {
     const group = groups[type];
     if (!group || !group.length) return;
-    const label = TYPE_LABELS[type] || type;
-    html += `<optgroup label="${label}">`;
+    html += `<optgroup label="${TYPE_LABELS[type]}">`;
     html += group
       .sort((a, b) => a.name.localeCompare(b.name))
-      .map(r => `<option value="${r.id}" data-name="${r.name}">${r.name}</option>`)
+      .map(r => `<option value="${r.id}" data-name="${r.name}" data-type="${r.type}">${r.name}</option>`)
       .join('');
     html += `</optgroup>`;
   });
@@ -1215,13 +1207,26 @@ rSB.addEventListener('click', () => {
 });
 
 // ── AUDIT wiring ──────────────────────────────────────
-const aPS=document.getElementById('auditParkSelect'),aRF=document.getElementById('auditRideField'),
-      aRS=document.getElementById('auditRideSelect'),aTF=document.getElementById('auditTypeField'),
-      aTS=document.getElementById('auditTypeSelect'),aXP=document.getElementById('auditXpPreview'),
-      aSB=document.getElementById('auditSubmitBtn');
+// RideType → audit page + label/description
+const AUDIT_PAGE_MAP = {
+  'Coaster':        { page: 'coaster-audit.html',  label: 'Coaster Audit',       desc: 'Dispatch efficiency, restraints, capacity management' },
+  'Flat Ride':      { page: 'flatride-audit.html', label: 'Flat Ride Audit',     desc: 'Operations, safety systems, guest throughput' },
+  'Water':          { page: 'water-audit.html',    label: 'Water Ride Audit',     desc: 'Dispatch, safety, capacity, facility condition' },
+  'Aquatic':        { page: 'aquatic-audit.html',  label: 'Aquatic Audit',        desc: 'Lifeguard coverage, facility, water safety protocols' },
+  'Play Structure': { page: 'play-audit.html',     label: 'Play Structure Audit', desc: 'Condition, safety surfacing, supervision, cleanliness' },
+};
+
+const aPS=document.getElementById('auditParkSelect'),
+      aRF=document.getElementById('auditRideField'),
+      aRS=document.getElementById('auditRideSelect'),
+      aXP=document.getElementById('auditXpPreview'),
+      aSB=document.getElementById('auditSubmitBtn'),
+      aTD=document.getElementById('auditTypeDisplay'),
+      aTL=document.getElementById('auditTypeLabel'),
+      aTDesc=document.getElementById('auditTypeDesc');
 
 aPS.addEventListener('change', async () => {
-  aXP.style.display='none'; aSB.disabled=true; aTF.style.display='none';
+  aXP.style.display='none'; aSB.disabled=true; aTD.style.display='none';
   if (!aPS.value) { aRF.style.display='none'; return; }
   const parkName = aPS.options[aPS.selectedIndex].dataset.name || aPS.options[aPS.selectedIndex].text;
   aRF.style.display='block';
@@ -1229,24 +1234,49 @@ aPS.addEventListener('change', async () => {
 });
 
 aRS.addEventListener('change', () => {
-  if (aRS.value) aTF.style.display='block';
-  else { aTF.style.display='none'; aXP.style.display='none'; aSB.disabled=true; }
-});
+  if (!aRS.value) {
+    aTD.style.display='none'; aXP.style.display='none'; aSB.disabled=true;
+    return;
+  }
+  const opt = aRS.options[aRS.selectedIndex];
+  const rideType = opt.dataset.type || '';
+  const auditInfo = AUDIT_PAGE_MAP[rideType];
 
-aTS.addEventListener('change', () => {
-  if (aTS.value) { aXP.style.display='flex'; aSB.disabled=false; }
-  else { aXP.style.display='none'; aSB.disabled=true; }
+  if (auditInfo) {
+    aTL.textContent = auditInfo.label;
+    aTDesc.textContent = auditInfo.desc;
+  } else {
+    aTL.textContent = 'Coaster Audit'; // safe fallback
+    aTDesc.textContent = 'Standard ride operations audit';
+  }
+  aTD.style.display='block';
+  aXP.style.display='flex';
+  aSB.disabled=false;
 });
 
 aSB.addEventListener('click', () => {
   const opt = aRS.options[aRS.selectedIndex];
-  const rideName = opt ? (opt.dataset.name || opt.text) : '';
-  const typeName = aTS.options[aTS.selectedIndex].text;
+  const rideName = opt.dataset.name || opt.text;
+  const rideId   = opt.value;
+  const rideType = opt.dataset.type || '';
+  const parkName = aPS.options[aPS.selectedIndex].dataset.name || aPS.options[aPS.selectedIndex].text;
+  const auditInfo = AUDIT_PAGE_MAP[rideType] || AUDIT_PAGE_MAP['Coaster'];
+
+  // Build URL with pre-fill params so the audit page can load park+ride
+  const params = new URLSearchParams({
+    park: parkName,
+    ride: rideName,
+    rideId: rideId,
+    u: getSession()?.username || ''
+  });
+
   closeModal('auditModal');
-  aPS.value=''; aRF.style.display='none'; aTF.style.display='none';
-  aXP.style.display='none'; aSB.disabled=true;
+  // Reset state
+  aPS.value=''; aRF.style.display='none';
+  aTD.style.display='none'; aXP.style.display='none'; aSB.disabled=true;
   aRS.innerHTML='<option value="">Select a ride...</option>';
-  showToast(`📋 <span class="t-green">${typeName}</span> audit started for ${rideName}!`, 4000);
+
+  window.location.href = `/${auditInfo.page}?${params.toString()}`;
 });
 
 // FIX 6: leaderboard tabs
