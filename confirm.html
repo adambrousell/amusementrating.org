@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirming your account · AmusementRating</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #22D87C;
+      --green-dim: #1aad62;
+      --bg: #0d1117;
+      --surface: #141b22;
+      --border: #1e2a36;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --gold: #f5c518;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Sora', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* ── Spinner state ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 56px 48px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 52px;
+      height: 52px;
+      border: 3px solid var(--border);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .card h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .card p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── Error state ── */
+    .error-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    .error-title { color: #f87171; }
+    .retry-link {
+      display: inline-block;
+      margin-top: 24px;
+      color: var(--green);
+      font-size: 14px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .retry-link:hover { text-decoration: underline; }
+
+    /* ── Welcome modal overlay ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0;
+      opacity: 0;
+      animation: fadeIn 0.3s ease forwards;
+      z-index: 100;
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    .modal {
+      background: #1a2330;
+      border-radius: 24px 24px 0 0;
+      padding: 40px 32px 48px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(60px); opacity: 0; }
+      to   { transform: translateY(0);   opacity: 1; }
+    }
+
+    .modal-handle {
+      width: 36px;
+      height: 4px;
+      background: #2d3f52;
+      border-radius: 2px;
+      margin: 0 auto 32px;
+    }
+
+    .coaster-emoji {
+      font-size: 52px;
+      display: block;
+      margin-bottom: 20px;
+      animation: bounce 0.6s 0.5s ease both;
+    }
+    @keyframes bounce {
+      0%   { transform: scale(0.5); opacity: 0; }
+      70%  { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .xp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(34,216,124,0.12);
+      border: 1px solid rgba(34,216,124,0.3);
+      border-radius: 100px;
+      padding: 8px 20px;
+      margin-bottom: 24px;
+      font-family: 'Space Mono', monospace;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--green);
+      animation: popIn 0.4s 0.7s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .founding-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #f5c518, #e6a800);
+      color: #1a1000;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+      animation: popIn 0.4s 0.9s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    .modal h2 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      animation: fadeUp 0.4s 0.8s ease both;
+    }
+    .modal p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+      animation: fadeUp 0.4s 0.9s ease both;
+    }
+    @keyframes fadeUp {
+      from { transform: translateY(10px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .cta-btn {
+      display: block;
+      width: 100%;
+      background: var(--green);
+      color: #0a1a0f;
+      font-family: 'Sora', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 17px 24px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      animation: fadeUp 0.4s 1s ease both;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .cta-btn:hover {
+      background: var(--green-dim);
+      transform: translateY(-1px);
+    }
+    .cta-btn:active { transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- Loading state (shown by default) -->
+  <div class="card" id="loading-card">
+    <div class="spinner"></div>
+    <h2>Confirming your account…</h2>
+    <p>Just a moment while we verify your email.</p>
+  </div>
+
+  <!-- Error state (hidden by default) -->
+  <div class="card" id="error-card" style="display:none;">
+    <div class="error-icon">⚠️</div>
+    <h2 class="error-title" id="error-title">Something went wrong</h2>
+    <p id="error-msg">This confirmation link is invalid or has already been used.</p>
+    <a href="/" class="retry-link">← Back to AmusementRating</a>
+  </div>
+
+  <!-- Welcome modal (injected on success) -->
+
+  <script>
+    const WORKER_URL = "https://ar-signup.amusementstandards.workers.dev";
+
+    async function confirm() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+      const email = params.get("email");
+
+      if (!token || !email) {
+        showError("Missing confirmation details", "This link appears to be incomplete. Please check your email and try again.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${WORKER_URL}/confirm?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`);
+        const data = await res.json();
+
+        if (data.success) {
+          showWelcomeModal(data);
+        } else {
+          showError("Confirmation failed", data.error || "This link is invalid or has already been used.");
+        }
+      } catch (err) {
+        showError("Connection error", "We couldn't reach our servers. Please check your connection and try again.");
+      }
+    }
+
+    function showError(title, msg) {
+      document.getElementById("loading-card").style.display = "none";
+      document.getElementById("error-card").style.display = "block";
+      document.getElementById("error-title").textContent = title;
+      document.getElementById("error-msg").textContent = msg;
+    }
+
+    function showWelcomeModal(data) {
+      document.getElementById("loading-card").style.display = "none";
+
+      const isFounding = data.isFounding;
+      const username   = data.username || "Auditor";
+
+      const overlay = document.createElement("div");
+      overlay.className = "overlay";
+      overlay.innerHTML = `
+        <div class="modal">
+          <div class="modal-handle"></div>
+          <span class="coaster-emoji">🎢</span>
+          <div class="xp-badge">⚡ +50 XP</div>
+          ${isFounding ? '<div class="founding-badge">🏅 Founding 100 Member</div>' : ""}
+          <h2>You're in, ${username}!</h2>
+          <p>
+            Welcome to AmusementRating. Your account is confirmed and your
+            <strong style="color:#22D87C;">+50 XP</strong> signup bonus has been added.
+            ${isFounding ? "You've also earned the exclusive <strong>Founding 100</strong> badge." : ""}
+            Start logging rides to climb the leaderboard.
+          </p>
+          <a href="/log" class="cta-btn">Start Logging Rides 🎡</a>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+    }
+
+    // Run on load
+    confirm();
+  </script>
+</body>
+</html>
