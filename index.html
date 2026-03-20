@@ -1076,8 +1076,43 @@ async function populateRideSelectLive(sel, parkName) {
     sel.innerHTML = '<option value="">No rides found</option>';
     return;
   }
-  sel.innerHTML = '<option value="">Select a ride...</option>' +
-    rides.map(r => `<option value="${r.id}" data-name="${r.name}">${r.name}</option>`).join('');
+
+  // Group by type, with a defined display order
+  const TYPE_ORDER = ['Roller Coaster','Flat Ride','Water Ride','Dark Ride','Kids Ride','Show','Other',''];
+  const TYPE_LABELS = {
+    'Roller Coaster': '🎢 Roller Coasters',
+    'Flat Ride':      '🎡 Flat Rides',
+    'Water Ride':     '💧 Water Rides',
+    'Dark Ride':      '🌑 Dark Rides',
+    'Kids Ride':      '🧸 Kids Rides',
+    'Show':           '🎭 Shows',
+    'Other':          '🎠 Other',
+    '':               '🎠 Uncategorized',
+  };
+
+  // Bucket rides into groups
+  const groups = {};
+  rides.forEach(r => {
+    const key = TYPE_ORDER.includes(r.type) ? r.type : 'Other';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(r);
+  });
+
+  // Build HTML in type order, skipping empty groups
+  let html = '<option value="">Select a ride...</option>';
+  TYPE_ORDER.forEach(type => {
+    const group = groups[type];
+    if (!group || !group.length) return;
+    const label = TYPE_LABELS[type] || type;
+    html += `<optgroup label="${label}">`;
+    html += group
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(r => `<option value="${r.id}" data-name="${r.name}">${r.name}</option>`)
+      .join('');
+    html += `</optgroup>`;
+  });
+
+  sel.innerHTML = html;
 }
 
 // Load parks into all four selects on page load
