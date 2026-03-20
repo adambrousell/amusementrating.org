@@ -1000,30 +1000,52 @@ const AR_RIDES_URL = 'https://ar-signup.amusementstandards.workers.dev/rides';
 // Cache rides per park so we don't re-fetch on every change
 const ridesCache = {};
 
-// Flatten the grouped parks response into a sorted [{id, name}] array
-function flattenParks(data) {
-  const parks = [];
-  if (data.groups) {
-    Object.values(data.groups).forEach(group =>
-      group.forEach(p => parks.push({id: p.id, name: p.name}))
-    );
-  } else if (data.parks) {
-    data.parks.forEach(p => parks.push({id: p.id, name: p.name}));
+// Build a grouped <select> from the ar-parks worker response.
+// Response shape: { groups: { "Chain Name": [{id, name, country}, ...] }, parkCount }
+function buildParkOptions(data) {
+  // Flat fallback if no groups key
+  if (!data.groups) {
+    const parks = (data.parks || []).sort((a,b) => a.name.localeCompare(b.name));
+    return '<option value="">Select a park...</option>' +
+      parks.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
   }
-  return parks.sort((a, b) => a.name.localeCompare(b.name));
+
+  // Sort group names alphabetically, but put "Other" last
+  const groupNames = Object.keys(data.groups).sort((a, b) => {
+    if (a === 'Other') return 1;
+    if (b === 'Other') return -1;
+    return a.localeCompare(b);
+  });
+
+  let html = '<option value="">Select a park...</option>';
+  groupNames.forEach(groupName => {
+    const parks = (data.groups[groupName] || [])
+      .slice()
+      .sort((a, b) => a.name.localeCompare(b.name));
+    if (!parks.length) return;
+    html += `<optgroup label="${groupName}">`;
+    html += parks.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    html += `</optgroup>`;
+  });
+  return html;
 }
 
-// Populate a <select> with parks from the worker
+// Cache the parks response so we only fetch once
+let parksDataCache = null;
+async function getParksData() {
+  if (parksDataCache) return parksDataCache;
+  const res = await fetch(AR_PARKS_URL);
+  if (!res.ok) throw new Error('status ' + res.status);
+  parksDataCache = await res.json();
+  return parksDataCache;
+}
+
+// Populate a <select> with grouped parks from the worker
 async function loadParksIntoModalSelect(selId) {
   const sel = document.getElementById(selId);
   try {
-    const res = await fetch(AR_PARKS_URL);
-    if (!res.ok) throw new Error('status ' + res.status);
-    const data = await res.json();
-    const parks = flattenParks(data);
-    if (!parks.length) throw new Error('empty');
-    sel.innerHTML = '<option value="">Select a park...</option>' +
-      parks.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    const data = await getParksData();
+    sel.innerHTML = buildParkOptions(data);
   } catch(e) {
     console.warn('Park load failed for', selId, e.message);
     sel.innerHTML = '<option value="">Could not load parks</option>';
@@ -1061,17 +1083,15 @@ async function populateRideSelectLive(sel, parkId, loadingText = 'Loading rides.
 loadParksIntoModalSelect('rideParkSelect');
 loadParksIntoModalSelect('auditParkSelect');
 
-// Leaderboard park select uses the same ar-parks worker
+// Leaderboard park select — same grouped data, but needs a first selected value for curPark
 async function loadParksIntoSelect() {
   const sel = document.getElementById('lbParkSelect');
   try {
-    const res = await fetch(AR_PARKS_URL);
-    if (!res.ok) throw new Error('status ' + res.status);
-    const data = await res.json();
-    const parks = flattenParks(data);
-    if (!parks.length) throw new Error('empty');
-    sel.innerHTML = parks.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-    curPark = parks[0].id;
+    const data = await getParksData();
+    sel.innerHTML = buildParkOptions(data);
+    // Set curPark to the first real option value
+    const firstOpt = sel.querySelector('option[value]:not([value=""])');
+    if (firstOpt) curPark = firstOpt.value;
   } catch(e) {
     console.warn('LB parks fetch failed:', e.message);
     sel.innerHTML = '<option value="">Could not load parks</option>';
