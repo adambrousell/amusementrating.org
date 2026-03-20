@@ -1380,68 +1380,114 @@ async function openProfileModal() {
     const d = await res.json();
     if (!d.user) throw new Error('no user');
     const u = d.user;
-    const xp = u.xp || 0;
-    const level = Math.floor(Math.sqrt(xp / 25)) + 1;
-    const rides = u.rideCount || 0;
-    const audits = u.auditCount || 0;
-    const parks = u.parkCount || 0;
-    const tier = xp >= 2500 ? '💎 Founding' : xp >= 1000 ? '🔮 Expert' : xp >= 500 ? '⭐ Auditor' : xp >= 250 ? '🔍 Observer' : '🌱 Starter';
-    const nextTierXP = xp >= 2500 ? null : xp >= 1000 ? 2500 : xp >= 500 ? 1000 : xp >= 250 ? 500 : xp >= 100 ? 250 : 100;
-    const pct = nextTierXP ? Math.min((xp / nextTierXP) * 100, 100) : 100;
+    const xp      = u.xp || 0;
+    const level   = Math.floor(Math.sqrt(xp / 25)) + 1;
+    const rides   = u.rideCount || 0;
+    const parks   = u.parkCount || 0;
+    const rank    = u.rank || '—';
+    const founding = u.isFounding;
 
-    // Recent activity
-    const activity = (d.recentActivity || d.activity || []).slice(0, 8);
+    // Tier label from XP
+    const tier = xp >= 2500 ? '💎 Founding' : xp >= 1000 ? '🔮 Expert' : xp >= 500 ? '⭐ Auditor' : xp >= 250 ? '🔍 Observer' : xp >= 100 ? '🌱 Starter' : '🌱 Rookie';
+    const nextTierXP = [100,250,500,1000,2500].find(t => t > xp) || null;
+    const prevTierXP = nextTierXP ? ([0,100,250,500,1000,2500].reverse().find(t => t <= xp) || 0) : 2500;
+    const tierPct = nextTierXP ? Math.round(((xp - prevTierXP) / (nextTierXP - prevTierXP)) * 100) : 100;
+
+    // Badges — split earned vs locked
+    const earned  = (d.badges || []).filter(b => b.earned);
+    const locked  = (d.badges || []).filter(b => !b.earned);
+
+    // Recent rides (up to 5)
+    const recentRides = (d.rides || []).slice(0, 5);
+
+    // XP history (up to 6)
+    const xpHist = (d.xpHistory || []).slice(0, 6);
+
+    function timeAgo(ts) {
+      if (!ts) return '';
+      const diff = Date.now() - new Date(ts).getTime();
+      const m = Math.floor(diff/60000), h = Math.floor(m/60), dy = Math.floor(h/24);
+      return dy > 0 ? dy+'d ago' : h > 0 ? h+'h ago' : m > 0 ? m+'m ago' : 'just now';
+    }
 
     content.innerHTML = `
-      <!-- avatar + name -->
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
-        <div style="width:52px;height:52px;background:var(--green-d);border:2px solid var(--green-b);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">${u.emoji || '🎢'}</div>
-        <div>
-          <div style="font-size:18px;font-weight:800;letter-spacing:-.02em">${u.username}</div>
-          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px">${tier} · Level ${level}</div>
+      <!-- header -->
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+        <div style="width:52px;height:52px;background:var(--green-d);border:2px solid var(--green-b);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">${u.emoji||'🎢'}</div>
+        <div style="flex:1">
+          <div style="font-size:18px;font-weight:800;letter-spacing:-.02em">${u.username}${founding?' <span style="font-family:\'Space Mono\',monospace;font-size:9px;color:var(--gold);border:1px solid var(--gold-b);border-radius:4px;padding:2px 5px;vertical-align:middle">FOUNDING</span>':''}</div>
+          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px">${tier} · Level ${level} · Rank #${rank}</div>
         </div>
-        <div style="margin-left:auto;text-align:right">
+        <div style="text-align:right;flex-shrink:0">
           <div style="font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--gold)">${xp.toLocaleString()}</div>
-          <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted)">TOTAL XP</div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted)">XP</div>
         </div>
       </div>
 
       <!-- stat row -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
-        ${[['🎢','Rides',rides],['📋','Audits',audits],['🏟️','Parks',parks]].map(([icon,label,val]) =>
-          `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 10px;text-align:center">
-            <div style="font-size:18px;margin-bottom:4px">${icon}</div>
-            <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:700">${val}</div>
-            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px">${label}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+        ${[['🎢','Rides Logged',rides],['🏟️','Parks Visited',parks]].map(([ic,lb,v])=>`
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;text-align:center">
+            <div style="font-size:20px;margin-bottom:4px">${ic}</div>
+            <div style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700">${v}</div>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px">${lb}</div>
           </div>`).join('')}
       </div>
 
       <!-- tier progress -->
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;margin-bottom:16px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:13px 15px;margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <span style="font-size:12px;font-weight:700">${tier}</span>
-          ${nextTierXP ? `<span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted)">${(nextTierXP-xp).toLocaleString()} XP to next tier</span>` : `<span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold)">MAX TIER</span>`}
+          ${nextTierXP
+            ? `<span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted)">${(nextTierXP-xp).toLocaleString()} XP to next</span>`
+            : `<span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold)">MAX TIER</span>`}
         </div>
-        <div style="height:6px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden">
-          <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--green),#1ab868);border-radius:10px"></div>
+        <div style="height:5px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden">
+          <div style="height:100%;width:${tierPct}%;background:linear-gradient(90deg,var(--green),#1ab868);border-radius:10px"></div>
         </div>
       </div>
 
-      <!-- recent activity -->
-      ${activity.length ? `
-        <div style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:10px">Recent Activity</div>
-        <div style="display:flex;flex-direction:column;gap:2px">
-          ${activity.map(a => `
+      <!-- badges earned -->
+      ${earned.length ? `
+        <div style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Badges Earned (${earned.length})</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+          ${earned.map(b=>`
+            <div style="background:var(--gold-d);border:1px solid var(--gold-b);border-radius:8px;padding:5px 10px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--gold)" title="${b.earnedDate||''}">${b.name}</div>
+          `).join('')}
+        </div>` : ''}
+
+      <!-- recent rides -->
+      ${recentRides.length ? `
+        <div style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Recent Rides</div>
+        <div style="display:flex;flex-direction:column;gap:2px;margin-bottom:14px">
+          ${recentRides.map(r=>`
             <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
-              <span style="font-size:16px">${a.type==='audit'?'📋':a.type==='badge'?'🏅':'🎢'}</span>
-              <div style="flex:1;font-size:12px;color:rgba(255,255,255,.7);line-height:1.4">${a.description || a.text || ''}</div>
-              <span style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--gold)">${a.xp?'+'+a.xp+' XP':''}</span>
+              <span style="font-size:15px">${r.isFirstTime?'🆕':'🎢'}</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12.5px;font-weight:700;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.rideName}</div>
+                <div style="font-size:11px;color:var(--muted)">${r.parkName||''}</div>
+              </div>
+              <div style="text-align:right;flex-shrink:0">
+                <div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--gold)">+${r.xp} XP</div>
+                <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted)">${timeAgo(r.timestamp)}</div>
+              </div>
+            </div>`).join('')}
+        </div>` : ''}
+
+      <!-- xp history -->
+      ${xpHist.length ? `
+        <div style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:8px">XP History</div>
+        <div style="display:flex;flex-direction:column;gap:2px;margin-bottom:18px">
+          ${xpHist.map(x=>`
+            <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
+              <div style="flex:1;font-size:12px;color:rgba(255,255,255,.7)">${x.description||x.source}</div>
+              <div style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--gold);flex-shrink:0">+${x.amount} XP</div>
             </div>`).join('')}
         </div>` : ''}
 
       <!-- actions -->
-      <button class="modal-btn" style="margin-top:18px" onclick="closeModal('profileModal');openModal('logRideModal')">🎢 Log a Ride</button>
-      <button class="modal-btn secondary" onclick="closeModal('profileModal');openModal('auditModal')">📋 Start Audit</button>
+      <button class="modal-btn" onclick="closeModal('profileModal');openModal('logRideModal')">🎢 Log a Ride</button>
+      <button class="modal-btn secondary" style="margin-top:8px" onclick="closeModal('profileModal');openModal('auditModal')">📋 Start Audit</button>
       <button class="modal-btn secondary" style="margin-top:6px;color:var(--red);border-color:rgba(255,76,76,.2)" onclick="setLoggedOut();closeModal('profileModal');showToast('👋 Logged out.')">Log Out</button>
     `;
   } catch(e) {
