@@ -436,4 +436,11 @@ function populateGroupFilter(){
   sel.innerHTML='<option value="">All Chains</option>';
   groups.forEach(function(g){sel.innerHTML+='<option value="'+g+'">'+g+'</option>';});
 }
-function toggleP
+function toggleParkDetail(id){var el=document.getElementById(id);if(el)el.classList.toggle('show');}
+
+loadUserXP();
+loadLeaderboard();
+loadParks();
+</script>
+</body>
+</html>
