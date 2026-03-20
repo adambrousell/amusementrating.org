@@ -1104,6 +1104,8 @@ async function fetchRidesForPark(parkName) {
     if (!res.ok) throw new Error('status ' + res.status);
     const data = await res.json();
     const rides = (data.rides || []).sort((a, b) => a.name.localeCompare(b.name));
+    // DEBUG — remove after confirming type values are correct
+    console.log('[AR] rides for', parkName, rides.slice(0,8).map(r => `${r.name} → "${r.type}"`));
     ridesCache[parkName] = rides;
     return rides;
   } catch(e) {
