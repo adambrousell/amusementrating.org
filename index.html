@@ -115,8 +115,10 @@
 
   /* LEADERBOARD */
   .leaderboard { padding:0 18px; }
-  .lb-tabs { display:flex; gap:6px; margin-bottom:12px; }
-  .lb-tab { flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:var(--r-sm); padding:8px 6px; font-family:'Space Mono',monospace; font-size:10px; font-weight:700; color:var(--muted); cursor:pointer; text-align:center; letter-spacing:0.04em; transition:all 0.15s; }
+  .lb-tabs { display:flex; gap:4px; margin-bottom:12px; }
+  .lb-tab { flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:var(--r-sm); padding:7px 3px; font-family:'Space Mono',monospace; font-size:8px; font-weight:700; color:var(--muted); cursor:pointer; text-align:center; letter-spacing:0.02em; transition:all 0.15s; display:flex; flex-direction:column; align-items:center; gap:3px; line-height:1.2; }
+  .lb-tab-icon { font-size:14px; line-height:1; }
+  .lb-tab-label { font-size:8px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; }
   .lb-tab.active { background:var(--green-d); border-color:var(--green-b); color:var(--green); }
   .lb-park-select { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:var(--r-sm); padding:9px 12px; font-family:'Sora',sans-serif; font-size:13px; color:var(--text); margin-bottom:10px; display:none; }
   .lb-park-select.visible { display:block; }
@@ -798,10 +800,10 @@
 </div>
 <div class="leaderboard">
   <div class="lb-tabs">
-    <div class="lb-tab active" data-lb="global">🌎 Global</div>
-    <div class="lb-tab" data-lb="park">🏟️ By Park</div>
-    <div class="lb-tab" data-lb="crew">👥 Crews</div>
-    <div class="lb-tab" data-lb="challenge">🎯 Challenge</div>
+    <div class="lb-tab active" data-lb="global"><span class="lb-tab-icon">🌎</span><span class="lb-tab-label">Global</span></div>
+    <div class="lb-tab" data-lb="park"><span class="lb-tab-icon">🏟️</span><span class="lb-tab-label">By Park</span></div>
+    <div class="lb-tab" data-lb="crew"><span class="lb-tab-icon">👥</span><span class="lb-tab-label">Crews</span></div>
+    <div class="lb-tab" data-lb="challenge"><span class="lb-tab-icon">🎯</span><span class="lb-tab-label">Challenge</span></div>
   </div>
   <select class="lb-park-select" id="lbParkSelect"><option value="">Loading parks…</option></select>
   <div class="lb-card" id="lbCard"></div>
@@ -2934,7 +2936,7 @@ function incrementLocalAuditCount(parkName) {
   verifiedTab.className = 'lb-tab';
   verifiedTab.id = 'lbTabVerified';
   verifiedTab.dataset.lb = 'verified';
-  verifiedTab.innerHTML = '✅ Verified';
+  verifiedTab.innerHTML = '<span class="lb-tab-icon">✅</span><span class="lb-tab-label">Verified</span>';
   lbTabs.appendChild(verifiedTab);
 
   // Verified leaderboard data — users who have 3+ verified audits (GPS + photo)
