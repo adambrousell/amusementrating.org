@@ -3736,7 +3736,8 @@ function wireLiveLbTabs() {
       if (thisDateStr === todayStr2 && rideDates[thisDateStr]) {
         streakDays[d].classList.add('today');
       } else if (thisDateStr === todayStr2) {
-        streakDays[d].classList.add('today');
+        streakDays[d].style.border = '2px solid var(--green)';
+        streakDays[d].style.color = 'var(--green)';
       } else if (rideDates[thisDateStr]) {
         streakDays[d].classList.add('done');
       }
