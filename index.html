@@ -2029,7 +2029,16 @@ function checkGeofence(parkLat,parkLng,statusContainerId,dataObj,blockBtnId) {
       fetch(PROFILE_URL+'?u='+encodeURIComponent(session.username)).then(r=>r.json()).then(d=>{
         if(d.user){
           if(d.user.crewIcon){document.getElementById('crewDashAvatar').textContent=d.user.crewIcon;saveCrewIcon(d.user.crewIcon);}
-          if(d.user.crewName&&d.user.crewName!==crewName){saveCrewName(d.user.crewName);document.getElementById('crewDashName').textContent=d.user.crewName;}
+         var serverCrew = d.user.crewName || d.user.crew_name || '';
+         var serverIcon = d.user.crewIcon || d.user.Crew_Icon || '';
+         if(serverCrew){
+           saveCrewName(serverCrew);
+           document.getElementById('crewDashName').textContent = serverCrew;
+         }
+         if(serverIcon){
+           document.getElementById('crewDashAvatar').textContent = serverIcon;
+           saveCrewIcon(serverIcon);
+         }
         }
       }).catch(()=>{});
     }
@@ -2089,7 +2098,6 @@ function checkGeofence(parkLat,parkLng,statusContainerId,dataObj,blockBtnId) {
   const origSignupBtn=document.getElementById('signupSubmitBtn');
   if(origSignupBtn){origSignupBtn.addEventListener('click',()=>{const crewVal=document.getElementById('signupCrew')?.value?.trim();if(crewVal)saveCrewName(crewVal);});}
 
-  if(!getCrewName()){const s=getSession();if(s&&s.username==='adamatic')saveCrewName('Jersey Coaster Crew');}
   renderCrewSection();
 })();
 
