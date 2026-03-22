@@ -1982,7 +1982,7 @@ function checkGeofence(parkLat,parkLng,statusContainerId,dataObj,blockBtnId,park
       const userLat=pos.coords.latitude,userLng=pos.coords.longitude;
       const dist=haversineDistance(userLat,userLng,parkLat,parkLng);
       const verified=dist<=GEO_RADIUS_METERS;
-      const parkName=document.getElementById('rideParkSelect')?.options[document.getElementById('rideParkSelect').selectedIndex]?.dataset?.name||document.getElementById('auditParkSelect')?.options[document.getElementById('auditParkSelect').selectedIndex]?.dataset?.name||'the park';
+      if(!parkName)parkName=document.getElementById('rideParkSelect')?.options[document.getElementById('rideParkSelect').selectedIndex]?.dataset?.name||document.getElementById('auditParkSelect')?.options[document.getElementById('auditParkSelect').selectedIndex]?.dataset?.name||'the park';
       if(dataObj){dataObj.gpsVerified=verified?'verified':'remote';dataObj.gpsDistance=Math.round(dist);dataObj.userLat=userLat;dataObj.userLng=userLng;}
       renderGeoStatus(statusContainerId,verified?'verified':'remote',dist,parkName);
       if(!verified&&blockBtnId){const btn=document.getElementById(blockBtnId);if(btn){btn.disabled=true;btn.textContent='📍 You must be at the park';}}
