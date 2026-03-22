@@ -1996,110 +1996,239 @@ function checkGeofence(parkLat,parkLng,statusContainerId,dataObj,blockBtnId) {
   );
 }
 
+// ═══ CREW / BUDDY SYSTEM (PATCHED 2026-03-22) ═══
+// Fake data renders INSTANTLY. Live Airtable data replaces it when fetch completes.
+// Delete this block and paste as replacement for the existing crew IIFE in index.html.
+
 (function() {
-  const ALL_USERS = [
-    { u:'coasterking_nj', crew:'Jersey Coaster Crew', xp:4820, av:'🎢' },
-    { u:'jersey_rider', crew:'Jersey Coaster Crew', xp:610, av:'🌊' },
+  // ── FAKE USERS: shown immediately, replaced by live data ──
+  var FAKE_USERS = [
+    { u:'coasterking_nj', crew:'Callsign Viper', xp:4820, av:'🎢' },
+    { u:'jersey_rider', crew:'Callsign Viper', xp:610, av:'🌊' },
     { u:'flatride_fanatic', crew:'SoCal Riders', xp:2415, av:'🎡' },
     { u:'thrillseeker_OH', crew:'Ohio Thrill Squad', xp:2190, av:'🏔️' },
     { u:'park_patrol_22', crew:'Ohio Thrill Squad', xp:1870, av:'⚡' },
     { u:'dispatch_timer_88', crew:'SoCal Riders', xp:490, av:'⚡' },
-    { u:'adamatic', crew:'Jersey Coaster Crew', xp:276, av:'🎠' },
+    { u:'adamatic', crew:'Callsign Viper', xp:276, av:'🎠' },
   ];
 
-  function getCrewName(){try{const s=JSON.parse(localStorage.getItem('ar_session'));if(s&&s.crew)return s.crew;}catch(e){}return localStorage.getItem('ar_crew')||'';}
-  function getCrewIcon(){try{const s=JSON.parse(localStorage.getItem('ar_session'));if(s&&s.crewIcon)return s.crewIcon;}catch(e){}return localStorage.getItem('ar_crew_icon')||'🎢';}
-  function saveCrewName(name){localStorage.setItem('ar_crew',name);try{const s=JSON.parse(localStorage.getItem('ar_session'))||{};s.crew=name;localStorage.setItem('ar_session',JSON.stringify(s));}catch(e){}}
-  function saveCrewIcon(icon){localStorage.setItem('ar_crew_icon',icon);try{const s=JSON.parse(localStorage.getItem('ar_session'))||{};s.crewIcon=icon;localStorage.setItem('ar_session',JSON.stringify(s));}catch(e){}}
-  function clearCrewName(){localStorage.removeItem('ar_crew');localStorage.removeItem('ar_crew_icon');try{const s=JSON.parse(localStorage.getItem('ar_session'))||{};delete s.crew;delete s.crewIcon;localStorage.setItem('ar_session',JSON.stringify(s));}catch(e){}}
+  // Live data — null until profile fetch returns
+  var liveUsers = null;
 
-  window.pickCrewIcon=function(el){document.querySelectorAll('.crew-icon-opt').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');};
-  function getSelectedIcon(){const sel=document.querySelector('.crew-icon-opt.selected');return sel?sel.dataset.icon:'🎢';}
+  function getActiveUsers() { return liveUsers || FAKE_USERS; }
+
+  function getCrewName(){try{var s=JSON.parse(localStorage.getItem('ar_session'));if(s&&s.crew)return s.crew;}catch(e){}return localStorage.getItem('ar_crew')||'';}
+  function getCrewIcon(){try{var s=JSON.parse(localStorage.getItem('ar_session'));if(s&&s.crewIcon)return s.crewIcon;}catch(e){}return localStorage.getItem('ar_crew_icon')||'🎢';}
+  function saveCrewName(name){localStorage.setItem('ar_crew',name);try{var s=JSON.parse(localStorage.getItem('ar_session'))||{};s.crew=name;localStorage.setItem('ar_session',JSON.stringify(s));}catch(e){}}
+  function saveCrewIcon(icon){localStorage.setItem('ar_crew_icon',icon);try{var s=JSON.parse(localStorage.getItem('ar_session'))||{};s.crewIcon=icon;localStorage.setItem('ar_session',JSON.stringify(s));}catch(e){}}
+  function clearCrewName(){localStorage.removeItem('ar_crew');localStorage.removeItem('ar_crew_icon');try{var s=JSON.parse(localStorage.getItem('ar_session'))||{};delete s.crew;delete s.crewIcon;localStorage.setItem('ar_session',JSON.stringify(s));}catch(e){}}
+
+  window.pickCrewIcon=function(el){document.querySelectorAll('.crew-icon-opt').forEach(function(o){o.classList.remove('selected')});el.classList.add('selected');};
+  function getSelectedIcon(){var sel=document.querySelector('.crew-icon-opt.selected');return sel?sel.dataset.icon:'🎢';}
 
   function renderCrewSection(){
-    const crewName=getCrewName();
-    const joinCard=document.getElementById('crewJoinCard');
-    const dashCard=document.getElementById('crewDash');
+    var crewName=getCrewName();
+    var joinCard=document.getElementById('crewJoinCard');
+    var dashCard=document.getElementById('crewDash');
     if(!crewName){joinCard.style.display='';dashCard.style.display='none';return;}
     joinCard.style.display='none';dashCard.style.display='';
-    const localIcon=getCrewIcon();
+
+    var localIcon=getCrewIcon();
     document.getElementById('crewDashAvatar').textContent=localIcon;
-    const session=getSession();
+
+    // ── Render immediately with fake data ──
+    renderRoster(crewName);
+
+    // ── Then fetch live data and re-render ──
+    var session=getSession();
     if(session&&session.username){
-      fetch(PROFILE_URL+'?u='+encodeURIComponent(session.username)).then(r=>r.json()).then(d=>{
-        if(d.user){
-          if(d.user.crewIcon){document.getElementById('crewDashAvatar').textContent=d.user.crewIcon;saveCrewIcon(d.user.crewIcon);}
-         var serverCrew = d.user.crewName || d.user.crew_name || '';
-         var serverIcon = d.user.crewIcon || d.user.Crew_Icon || '';
-         if(serverCrew){
-           saveCrewName(serverCrew);
-           document.getElementById('crewDashName').textContent = serverCrew;
-         }
-         if(serverIcon){
-           document.getElementById('crewDashAvatar').textContent = serverIcon;
-           saveCrewIcon(serverIcon);
-         }
-        }
-      }).catch(()=>{});
+      fetch(PROFILE_URL+'?u='+encodeURIComponent(session.username))
+        .then(function(r){return r.json()})
+        .then(function(d){
+          if(!d.user) return;
+
+          // Update crew name + icon from Airtable
+          var serverCrew = d.user.crewName || d.user.crew_name || '';
+          var serverIcon = d.user.crewIcon || d.user.Crew_Icon || '';
+
+          if(serverCrew){
+            saveCrewName(serverCrew);
+            crewName = serverCrew;
+            document.getElementById('crewDashName').textContent = serverCrew;
+            document.getElementById('crewInviteCode').textContent =
+              'Tell friends to type: "' + serverCrew + '"';
+          }
+          if(serverIcon){
+            document.getElementById('crewDashAvatar').textContent = serverIcon;
+            saveCrewIcon(serverIcon);
+          }
+
+          // ── Build liveUsers from crewRoster + allCrews ──
+          if(d.crewRoster && d.crewRoster.length > 0){
+            var live = [];
+            // Add my crew members
+            d.crewRoster.forEach(function(m){
+              live.push({ u: m.username, crew: crewName, xp: m.xp || 0, av: m.emoji || '🎠' });
+            });
+            // Add members from other crews via allCrews
+            if(d.allCrews){
+              d.allCrews.forEach(function(crew){
+                if(crew.name === crewName) return; // already added
+                crew.members.forEach(function(m){
+                  // Only add if not already in live
+                  if(!live.find(function(l){return l.u === m.username})){
+                    live.push({ u: m.username, crew: crew.name, xp: m.xp || 0, av: m.emoji || '🎠' });
+                  }
+                });
+              });
+            }
+            liveUsers = live;
+          }
+
+          // Re-render with live data
+          renderRoster(crewName);
+
+          // Also update the CREW_LB leaderboard if crew tab is active
+          if(d.allCrews && d.allCrews.length > 0){
+            updateCrewLeaderboard(d.allCrews, crewName);
+          }
+        }).catch(function(){});
     }
-    const members=ALL_USERS.filter(u=>u.crew===crewName).sort((a,b)=>b.xp-a.xp);
-    const totalXP=members.reduce((sum,m)=>sum+m.xp,0);
-    const myUser=getSession()?.username||'';
-    const crewMap={};ALL_USERS.forEach(u=>{if(!u.crew)return;if(!crewMap[u.crew])crewMap[u.crew]=0;crewMap[u.crew]+=u.xp;});
-    const crewRanks=Object.entries(crewMap).sort((a,b)=>b[1]-a[1]);
-    const myRank=crewRanks.findIndex(c=>c[0]===crewName)+1;
+  }
+
+  function renderRoster(crewName){
+    var users = getActiveUsers();
+    var members = users.filter(function(u){return u.crew===crewName}).sort(function(a,b){return b.xp-a.xp});
+    var totalXP = members.reduce(function(sum,m){return sum+m.xp},0);
+    var myUser = getSession()?.username || '';
+
+    // Compute crew rank across all crews
+    var crewMap = {};
+    users.forEach(function(u){
+      if(!u.crew) return;
+      if(!crewMap[u.crew]) crewMap[u.crew]=0;
+      crewMap[u.crew]+=u.xp;
+    });
+    var crewRanks=Object.entries(crewMap).sort(function(a,b){return b[1]-a[1]});
+    var myRank=crewRanks.findIndex(function(c){return c[0]===crewName})+1;
+
     document.getElementById('crewDashName').textContent=crewName;
-    document.getElementById('crewDashMeta').textContent=members.length+' member'+(members.length!==1?'s':'')+' · crew rank #'+myRank;
+    document.getElementById('crewDashMeta').textContent=
+      members.length+' member'+(members.length!==1?'s':'')+' · crew rank #'+myRank;
     document.getElementById('crewStatXP').textContent=totalXP.toLocaleString();
     document.getElementById('crewStatMembers').textContent=members.length;
     document.getElementById('crewStatRank').textContent='#'+myRank;
-    const rankIcons=['🥇','🥈','🥉'],rankClasses=['g','s','b'];
-    let rosterHtml='';
-    members.forEach((m,i)=>{
-      const isYou=m.u===myUser;
-      const rk=i<3?rankIcons[i]:(i+1); const rkClass=i<3?rankClasses[i]:'';
-      rosterHtml+=`<div class="cdr-row"><div class="cdr-rank ${rkClass}">${rk}</div><div class="cdr-av">${m.av||'🎠'}</div><div class="cdr-name${isYou?' you':''}">${m.u}</div><div class="cdr-xp">${m.xp.toLocaleString()} XP</div></div>`;
+    document.getElementById('crewInviteCode').textContent=
+      'Tell friends to type: "'+crewName+'"';
+
+    var rankIcons=['🥇','🥈','🥉'], rankClasses=['g','s','b'];
+    var rosterHtml='';
+    members.forEach(function(m,i){
+      var isYou = m.u===myUser;
+      var rk = i<3 ? rankIcons[i] : (i+1);
+      var rkClass = i<3 ? rankClasses[i] : '';
+      rosterHtml+='<div class="cdr-row"><div class="cdr-rank '+rkClass+'">'+rk
+        +'</div><div class="cdr-av">'+(m.av||'🎠')
+        +'</div><div class="cdr-name'+(isYou?' you':'')+'">'+m.u
+        +'</div><div class="cdr-xp">'+m.xp.toLocaleString()+' XP</div></div>';
     });
+    if(!rosterHtml){
+      rosterHtml='<div style="text-align:center;padding:16px;font-family:\'Space Mono\',monospace;font-size:10px;color:var(--muted)">No crew members yet — invite friends!</div>';
+    }
     document.getElementById('crewRosterRows').innerHTML=rosterHtml;
-    document.getElementById('crewInviteCode').textContent='Tell friends to type: "'+crewName+'"';
   }
 
-  window.joinCrew=function(){
-    const input=document.getElementById('crewNameInput');
-    const name=input.value.trim();
-    if(!name){showToast('Enter a crew name to join.');return;}
-    if(name.length<3){showToast('Crew name must be at least 3 characters.');return;}
-    const icon=getSelectedIcon();
-    saveCrewName(name);saveCrewIcon(icon);renderCrewSection();
-    showToast(icon+' Joined <span class="t-green">'+name+'</span>! Tag crewmates for +5 XP bonus.');
-    const signupCrew=document.getElementById('signupCrew');if(signupCrew)signupCrew.value=name;
+  // ── Update CREW_LB with live Airtable data ──
+  function updateCrewLeaderboard(allCrews, myCrewName){
+    // Replace the static CREW_LB with live data
+    var liveLB = allCrews.map(function(crew, i){
+      var rankIcons = ['🥇','🥈','🥉'];
+      var rankClasses = ['gold','silver','bronze'];
+      return {
+        r: i < 3 ? rankIcons[i] : String(i+1),
+        rc: i < 3 ? rankClasses[i] : '',
+        name: crew.name,
+        icon: crew.icon || '👥',
+        members: crew.members.length,
+        xp: crew.totalXP.toLocaleString() + ' XP',
+        you: crew.name === myCrewName,
+        roster: crew.members.sort(function(a,b){return b.xp-a.xp}).map(function(m, mi){
+          return {
+            n: m.username,
+            xp: m.xp.toLocaleString(),
+            role: mi === 0 ? 'Founder' : 'Member',
+            you: m.username === (getSession()?.username || '')
+          };
+        })
+      };
+    });
+    // Store for renderCrewLb to use
+    window._liveCrewLB = liveLB;
+  }
+
+  // ── Override renderCrewLb to prefer live data ──
+  var _origRenderCrewLb = window.renderCrewLb || function(){};
+  window.renderCrewLb = function(data){
+    // Use live data if available, otherwise fallback to whatever was passed
+    var useData = window._liveCrewLB || data;
+    var card=document.getElementById('crewLbCard');
+    card.innerHTML=useData.map(function(crew,ci){
+      var membersHtml=crew.roster.map(function(m){
+        return '<div class="crew-member-row"><div class="crew-member-name'+(m.you?' you':'')+'">'+m.n+'</div><div class="crew-member-xp"><b>'+m.xp+'</b> XP · '+m.role+'</div></div>';
+      }).join('');
+      return '<div><div class="crew-row'+(crew.you?' you':'')+'" onclick="toggleCrewExpand(\'crew-exp-'+ci+'\')"><div class="crew-rank '+crew.rc+'">'+crew.r+'</div><div class="crew-avatar">'+(crew.icon||'👥')+'</div><div class="crew-info"><div class="crew-name-lb">'+crew.name+'</div><div class="crew-members">'+crew.members+' member'+(crew.members!==1?'s':'')+'</div></div><div class="crew-xp">'+crew.xp+'</div></div><div class="crew-expand" id="crew-exp-'+ci+'">'+membersHtml+'</div></div>';
+    }).join('');
   };
 
-  window.leaveCrew=function(){const name=getCrewName();clearCrewName();renderCrewSection();showToast('Left '+(name||'crew')+'. You can rejoin anytime.');};
-  window.copyCrewName=function(){const name=getCrewName();if(!name)return;navigator.clipboard.writeText(name).then(()=>{const btn=document.getElementById('crewCopyBtn');btn.textContent='Copied!';setTimeout(()=>{btn.textContent='Copy';},2000);}).catch(()=>{showToast('Couldn\'t copy — crew name: '+name);});};
+  window.joinCrew=function(){
+    var input=document.getElementById('crewNameInput');
+    var name=input.value.trim();
+    if(!name){showToast('Enter a crew name to join.');return;}
+    if(name.length<3){showToast('Crew name must be at least 3 characters.');return;}
+    var icon=getSelectedIcon();
+    saveCrewName(name);saveCrewIcon(icon);renderCrewSection();
+    showToast(icon+' Joined <span class="t-green">'+name+'</span>! Tag crewmates for +5 XP bonus.');
+    var signupCrew=document.getElementById('signupCrew');if(signupCrew)signupCrew.value=name;
+  };
+
+  window.leaveCrew=function(){var name=getCrewName();clearCrewName();renderCrewSection();showToast('Left '+(name||'crew')+'. You can rejoin anytime.');};
+  window.copyCrewName=function(){var name=getCrewName();if(!name)return;navigator.clipboard.writeText(name).then(function(){var btn=document.getElementById('crewCopyBtn');btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy';},2000);}).catch(function(){showToast('Couldn\'t copy — crew name: '+name);});};
 
   window.populateBuddySelect=function(){
-    const sel=document.getElementById('buddySelect');
-    const session=getSession();const myUser=session?.username||'';const myCrew=getCrewName();
+    var sel=document.getElementById('buddySelect');
+    var session=getSession();var myUser=session?.username||'';var myCrew=getCrewName();
+    var users = getActiveUsers();
     sel.innerHTML='<option value="">Riding solo</option>';
-    const crewMembers=myCrew?ALL_USERS.filter(u=>u.crew===myCrew&&u.u!==myUser):[];
-    const others=ALL_USERS.filter(u=>!crewMembers.find(cm=>cm.u===u.u)&&u.u!==myUser);
-    if(crewMembers.length){const og=document.createElement('optgroup');og.label='👥 '+myCrew;crewMembers.forEach(u=>{const o=document.createElement('option');o.value=u.u;o.textContent=u.u;o.dataset.sameCrew='true';og.appendChild(o);});sel.appendChild(og);}
-    if(others.length){const og=document.createElement('optgroup');og.label='🎢 Other auditors';others.forEach(u=>{const o=document.createElement('option');o.value=u.u;o.textContent=u.u;og.appendChild(o);});sel.appendChild(og);}
+    var crewMembers=myCrew?users.filter(function(u){return u.crew===myCrew&&u.u!==myUser}):[];
+    var others=users.filter(function(u){return !crewMembers.find(function(cm){return cm.u===u.u})&&u.u!==myUser});
+    if(crewMembers.length){
+      var og=document.createElement('optgroup');og.label='👥 '+myCrew;
+      crewMembers.forEach(function(u){var o=document.createElement('option');o.value=u.u;o.textContent=u.u;o.dataset.sameCrew='true';og.appendChild(o);});
+      sel.appendChild(og);
+    }
+    if(others.length){
+      var og2=document.createElement('optgroup');og2.label='🎢 Other auditors';
+      others.forEach(function(u){var o=document.createElement('option');o.value=u.u;o.textContent=u.u;og2.appendChild(o);});
+      sel.appendChild(og2);
+    }
     sel.onchange=function(){
-      const hint=document.getElementById('buddyXpHint');
+      var hint=document.getElementById('buddyXpHint');
       if(!this.value){hint.textContent='⚡ +3 XP each — or +5 XP if same crew';hint.style.color='';return;}
-      const opt=this.options[this.selectedIndex];const isCrew=opt.dataset.sameCrew==='true';
+      var opt=this.options[this.selectedIndex];var isCrew=opt.dataset.sameCrew==='true';
       hint.textContent=isCrew?'⚡ +5 XP each — same crew bonus!':'⚡ +3 XP each for the co-ride';
       hint.style.color=isCrew?'var(--green)':'rgba(160,140,255,0.6)';
     };
   };
 
-  const origSignupBtn=document.getElementById('signupSubmitBtn');
-  if(origSignupBtn){origSignupBtn.addEventListener('click',()=>{const crewVal=document.getElementById('signupCrew')?.value?.trim();if(crewVal)saveCrewName(crewVal);});}
+  var origSignupBtn=document.getElementById('signupSubmitBtn');
+  if(origSignupBtn){origSignupBtn.addEventListener('click',function(){var crewVal=document.getElementById('signupCrew')?.value?.trim();if(crewVal)saveCrewName(crewVal);});}
+
+  // NO hardcoded fallback — crew name comes from Airtable via profile fetch
 
   renderCrewSection();
 })();
+
+
 
 (function() {
   const CONTEST_START=new Date('2026-03-22T00:00:00-04:00').getTime();
