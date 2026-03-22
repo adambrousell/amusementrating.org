@@ -1722,7 +1722,7 @@ document.getElementById('rideParkSelect').addEventListener('change', async ()=>{
     rSF.style.display = 'block';
     await populateRideSelectLive(rS, rideLogData.park);
     if (rideLogData.parkLat && rideLogData.parkLng) {
-      checkGeofence(rideLogData.parkLat, rideLogData.parkLng, 'rideGeoStatus', rideLogData, 'logRideStep2Btn');
+      checkGeofence(rideLogData.parkLat, rideLogData.parkLng, 'rideGeoStatus', rideLogData, 'logRideStep2Btn', rideLogData.park);
     }
   } catch(e) {}
 });
@@ -1863,7 +1863,7 @@ aPS.addEventListener('change', async ()=>{
     const parkLng=parseFloat(opt.dataset.lng)||null;
     aRF.style.display='block';
     await populateRideSelectLive(aRS, parkName);
-    if(parkLat&&parkLng){checkGeofence(parkLat,parkLng,'auditGeoStatus',null,null);}
+    if(parkLat&&parkLng){checkGeofence(parkLat,parkLng,'auditGeoStatus',null,null,parkName);}
   } catch(e){}
 });
 
@@ -1974,7 +1974,7 @@ function renderGeoStatus(containerId,status,distance,parkName) {
   else if(status==='unavailable'){el.innerHTML='<div class="geo-status denied"><span class="geo-icon">⚠️</span><div class="geo-msg">Location unavailable. Logs without GPS verification may not count toward contest XP.</div></div>';}
 }
 
-function checkGeofence(parkLat,parkLng,statusContainerId,dataObj,blockBtnId) {
+function checkGeofence(parkLat,parkLng,statusContainerId,dataObj,blockBtnId,parkName) {
   renderGeoStatus(statusContainerId,'checking');
   if(!navigator.geolocation){renderGeoStatus(statusContainerId,'unavailable');if(dataObj){dataObj.gpsVerified='unavailable';dataObj.gpsDistance=null;}return;}
   navigator.geolocation.getCurrentPosition(
@@ -3770,9 +3770,6 @@ function wireLiveLbTabs() {
 (async function initLiveChallenges() {
   var s = getSession();
   if (!s || !s.username) return;
-
-  // Wait a moment for other fetches to populate cache
-  await new Promise(function(r){ setTimeout(r, 1500); });
 
   // Fetch profile for rides data + challenge computation
   var profileData = await fetchProfileData();
