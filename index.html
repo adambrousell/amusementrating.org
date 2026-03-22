@@ -3453,7 +3453,309 @@ function wireLiveLbTabs() {
   // We do this after a small delay so the static handlers register first
   setTimeout(wireLiveLbTabs, 100);
 })();
+// ═══════════════════════════════════════════════════════════
+// LIVE BADGES — sync badge grid with Airtable UserBadges
+// Paste at end of <script> block, after live-leaderboard.js
+// ═══════════════════════════════════════════════════════════
 
+(async function initLiveBadges() {
+  var s = getSession();
+  if (!s || !s.username) return;
+
+  var data = await fetchProfileData(); // uses cached profile from live-leaderboard.js
+  if (!data || !data.badges) return;
+
+  // Map Airtable badge names → HTML badge card selectors
+  // The Airtable Name field must match one of these keys (case-insensitive)
+  var BADGE_MAP = {
+    'first log':      { selector: '.badge-card:has(.badge-name)', nameMatch: 'First Log' },
+    'first audit':    { nameMatch: 'First Audit' },
+    '7-day streak':   { nameMatch: '7-Day Streak' },
+    '100 rides':      { nameMatch: '100 Rides' },
+    '10 parks':       { nameMatch: '10 Parks' },
+    'auditor t2':     { nameMatch: 'Auditor T2' },
+    'auditor t3':     { nameMatch: 'Auditor T3' },
+    'auditor t5':     { nameMatch: 'Auditor T5' },
+    '500 rides':      { nameMatch: '500 Rides' },
+    '50 parks':       { nameMatch: '50 Parks' },
+    '30-day streak':  { nameMatch: '30-Day Streak' },
+    'all 6 audits':   { nameMatch: 'All 6 Audits' },
+    'founding 100':   { nameMatch: 'Founding 100' },
+    'founding100':    { nameMatch: 'Founding 100' },
+    'founding_100':   { nameMatch: 'Founding 100' },
+    'FOUNDING 100':   { nameMatch: 'Founding 100' },
+    // Ride-specific
+    'kingda ka':      { id: 'badge-kingda-ka' },
+    'el toro':        { id: 'badge-el-toro' },
+    'steel vengeance':{ id: 'badge-steel-vengeance' },
+    'top thrill':     { id: 'badge-top-thrill' },
+    'millennium force':{ id: 'badge-millennium-force' },
+    'millennium':     { id: 'badge-millennium-force' },
+    "hagrid's":       { id: 'badge-hagrids' },
+    "hagrid's motorbike adventure": { id: 'badge-hagrids' },
+    // Mystery / hidden
+    'night rider':    { id: 'nightRiderBadge' },
+    'early bird':     { id: 'badge-early-bird' },
+    'night owl':      { id: 'badge-night-owl' },
+    'rival parks':    { id: 'badge-rival-parks' },
+    'speed auditor':  { id: 'badge-speed-auditor' },
+    'holiday rider':  { id: 'badge-holiday-rider' },
+    'pioneer':        { id: 'badge-pioneer' },
+  };
+
+  // Find all badge-name elements in the grid
+  var allBadgeCards = document.querySelectorAll('.badge-card');
+  var cardsByName = {};
+  allBadgeCards.forEach(function(card) {
+    var nameEl = card.querySelector('.badge-name');
+    if (nameEl) {
+      cardsByName[nameEl.textContent.trim().toLowerCase()] = card;
+    }
+  });
+
+  // First: reset all non-mystery badges to locked state
+  allBadgeCards.forEach(function(card) {
+    if (card.classList.contains('mystery')) return; // leave mystery badges alone
+    card.classList.remove('earned');
+    card.style.borderColor = '';
+    card.style.background = '';
+    var nameEl = card.querySelector('.badge-name');
+    if (nameEl) nameEl.style.color = '';
+    var lockEl = card.querySelector('.badge-xp, .badge-locked');
+    if (lockEl && lockEl.classList.contains('badge-xp') && lockEl.textContent === 'earned') {
+      lockEl.textContent = '🔒';
+      lockEl.className = 'badge-locked';
+    }
+  });
+
+  // Now apply earned status from Airtable
+  var earnedCount = 0;
+  data.badges.forEach(function(badge) {
+    if (!badge.earned) return;
+    earnedCount++;
+
+    var badgeName = (badge.name || '').toLowerCase().trim();
+    var card = null;
+
+    // Try by ID first (from BADGE_MAP)
+    var mapping = BADGE_MAP[badgeName];
+    if (mapping && mapping.id) {
+      card = document.getElementById(mapping.id);
+    }
+
+    // Try by name match
+    if (!card && mapping && mapping.nameMatch) {
+      card = cardsByName[mapping.nameMatch.toLowerCase()];
+    }
+
+    // Try direct name match
+    if (!card) {
+      card = cardsByName[badgeName];
+    }
+
+    if (!card) return; // no matching card in the HTML
+
+    // Mark as earned
+    card.classList.remove('mystery');
+    card.classList.add('earned');
+    card.style.borderColor = 'var(--gold-b)';
+    card.style.background = 'rgba(245,197,24,0.04)';
+
+    var nameEl = card.querySelector('.badge-name');
+    if (nameEl) nameEl.style.color = 'var(--gold)';
+
+    var lockEl = card.querySelector('.badge-locked');
+    if (lockEl) {
+      lockEl.textContent = 'earned';
+      lockEl.className = 'badge-xp';
+    }
+
+    // Remove whisper tooltip from mystery badges that are now earned
+    var whisper = card.querySelector('.badge-whisper');
+    if (whisper) whisper.remove();
+
+    // Also sync to localStorage badge state
+    try { setBadgeEarned(card.id || badgeName); } catch(e) {}
+  });
+
+  console.log('[AR] Synced ' + earnedCount + ' badges from Airtable');
+})();
+
+
+// ═══════════════════════════════════════════════════════════
+// LIVE ACTIVITY FEED — fetch from ar-leaderboard?feed=1
+// ═══════════════════════════════════════════════════════════
+
+(async function initLiveFeed() {
+  var s = getSession();
+  if (!s || !s.username) return;
+
+  try {
+    var res = await fetch(LEADERBOARD_URL + '?feed=1&limit=15');
+    var data = await res.json();
+    if (!data.feed || data.feed.length === 0) return;
+
+    var feedContainer = document.querySelector('.feed');
+    if (!feedContainer) return;
+
+    function timeAgo(ts) {
+      if (!ts) return '';
+      var diff = Date.now() - new Date(ts).getTime();
+      var m = Math.floor(diff / 60000);
+      var h = Math.floor(m / 60);
+      var d = Math.floor(h / 24);
+      if (d > 0) return d + 'd ago';
+      if (h > 0) return h + 'h ago';
+      if (m > 0) return m + 'm ago';
+      return 'just now';
+    }
+
+    var html = '';
+    data.feed.forEach(function(item, i) {
+      var time = item.timestamp ? timeAgo(item.timestamp) : (item.time || '');
+      var avClass = item.type === 'badge' ? 'av-badge' : item.type === 'audit' ? 'av-audit' : 'av-ride';
+      var avIcon = item.type === 'badge' ? '🏅' : item.type === 'audit' ? '📋' : '🎢';
+
+      var feedText = '';
+      var chips = '';
+
+      if (item.type === 'ride') {
+        var rideName = item.ride || 'a ride';
+        var parkName = item.park || '';
+        feedText = 'logged <span class="ride">' + rideName + '</span>';
+        if (parkName) feedText += ' at <span class="park">' + parkName + '</span>';
+        if (item.buddy) feedText += ' with <span class="buddy">' + item.buddy + '</span>';
+        chips = '<span class="chip-xp">⚡ ' + (item.xp || 5) + ' XP</span>';
+        if (item.isNew) chips += '<span class="chip-new">NEW</span>';
+      } else if (item.type === 'audit') {
+        feedText = 'submitted a <span class="ride">' + (item.ride || 'ride') + '</span> audit';
+        if (item.park) feedText += ' at <span class="park">' + item.park + '</span>';
+        chips = '<span class="chip-xp">⚡ ' + (item.xp || 50) + ' XP</span>';
+        if (item.score) chips += '<span class="chip-score">' + item.score + ' composite</span>';
+      } else if (item.type === 'badge') {
+        feedText = 'earned badge <span class="bdg">' + (item.description || item.badge || 'BADGE') + '</span>';
+        chips = '<span class="chip-xp">⚡ +' + (item.xp || 10) + ' XP</span>';
+      } else {
+        feedText = item.description || 'earned XP';
+        chips = '<span class="chip-xp">⚡ +' + (item.xp || 0) + ' XP</span>';
+      }
+
+      var userName = item.user || 'unknown';
+      var isYou = userName === s.username;
+
+      // Add gap between items that are far apart in time
+      if (i > 0 && i % 5 === 0) html += '<div class="feed-gap"></div>';
+
+      html += '<div class="feed-card">'
+        + '<div class="av ' + avClass + '">' + avIcon + '</div>'
+        + '<div class="feed-body">'
+        + '<div class="feed-top"><span class="feed-user">' + userName + '</span><span class="feed-time">' + time + '</span></div>'
+        + '<div class="feed-text">' + feedText + '</div>'
+        + '<div class="feed-chips">' + chips + '</div>'
+        + '</div></div>';
+    });
+
+    if (html) {
+      feedContainer.innerHTML = html;
+    }
+  } catch(e) {
+    console.log('[AR] Feed fetch failed:', e.message);
+    // Keep static feed as fallback
+  }
+})();
+
+
+// ═══════════════════════════════════════════════════════════
+// LIVE STREAK — compute from ride log timestamps
+// ═══════════════════════════════════════════════════════════
+
+(async function initLiveStreak() {
+  var s = getSession();
+  if (!s || !s.username) return;
+
+  var data = await fetchProfileData();
+  if (!data || !data.rides) return;
+
+  // Compute streak from ride timestamps
+  var rideDates = {};
+  data.rides.forEach(function(r) {
+    if (!r.timestamp) return;
+    var dateStr = new Date(r.timestamp).toISOString().slice(0, 10);
+    rideDates[dateStr] = true;
+  });
+
+  // Count consecutive days ending today (or yesterday)
+  var today = new Date();
+  var streak = 0;
+  var checkDate = new Date(today);
+
+  // Start from today and go backwards
+  for (var i = 0; i < 30; i++) {
+    var dateStr = checkDate.toISOString().slice(0, 10);
+    if (rideDates[dateStr]) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else if (i === 0) {
+      // Today has no ride — check if yesterday continues streak
+      checkDate.setDate(checkDate.getDate() - 1);
+      continue;
+    } else {
+      break;
+    }
+  }
+
+  // Update streak widget
+  var streakCount = document.querySelector('.streak-count');
+  if (streakCount) {
+    if (streak === 0) {
+      streakCount.textContent = 'No active streak — log a ride!';
+    } else {
+      streakCount.textContent = '🔥 Day ' + streak + (streak >= 7 ? ' — amazing!' : ' — keep going!');
+    }
+  }
+
+  // Update streak day boxes
+  var dayNames = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  var streakDays = document.querySelectorAll('.streak-day');
+  if (streakDays.length === 7) {
+    // Figure out the current week (Mon-Sun)
+    var todayDay = today.getDay(); // 0=Sun
+    var mondayOffset = todayDay === 0 ? -6 : 1 - todayDay;
+    var monday = new Date(today);
+    monday.setDate(today.getDate() + mondayOffset);
+
+    for (var d = 0; d < 7; d++) {
+      var thisDate = new Date(monday);
+      thisDate.setDate(monday.getDate() + d);
+      var thisDateStr = thisDate.toISOString().slice(0, 10);
+      var todayStr2 = today.toISOString().slice(0, 10);
+
+      streakDays[d].classList.remove('done', 'today');
+      streakDays[d].textContent = dayNames[(monday.getDay() + d) % 7];
+
+      if (thisDateStr === todayStr2 && rideDates[thisDateStr]) {
+        streakDays[d].classList.add('today');
+      } else if (thisDateStr === todayStr2) {
+        streakDays[d].classList.add('today');
+      } else if (rideDates[thisDateStr]) {
+        streakDays[d].classList.add('done');
+      }
+    }
+  }
+
+  // Update streak CTA
+  var todayHasRide = rideDates[today.toISOString().slice(0, 10)];
+  var streakCta = document.querySelector('.streak-cta');
+  if (streakCta) {
+    if (todayHasRide) {
+      streakCta.innerHTML = '✅ You logged a ride today! Come back tomorrow to keep your streak alive.';
+    } else if (streak > 0) {
+      streakCta.innerHTML = 'Log a ride today to protect your <b>' + streak + '-day streak</b>. Hit <b>7 days</b> for the 🔥 7-Day Streak badge.';
+    } else {
+      streakCta.innerHTML = 'Log your first ride today to start a streak! Hit <b>7 days</b> for the 🔥 7-Day Streak badge.';
+    }
+  }
+})();
 </script>
 </body>
 </html>
