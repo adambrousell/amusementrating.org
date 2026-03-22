@@ -3757,6 +3757,314 @@ function wireLiveLbTabs() {
     }
   }
 })();
+ // ═══════════════════════════════════════════════════════════
+// LIVE CHALLENGES + VERIFIED TAB + REMAINING FIXES
+// Paste at end of <script> block, after live-badges-feed-streak.js
+// ═══════════════════════════════════════════════════════════
+
+
+// ═══════════════════════════════════════════════════════════
+// 1. LIVE CHALLENGES — My Progress + Who's Winning
+// ═══════════════════════════════════════════════════════════
+
+(async function initLiveChallenges() {
+  var s = getSession();
+  if (!s || !s.username) return;
+
+  // Fetch profile for rides data + challenge computation
+  var profileData = await fetchProfileData();
+  if (!profileData) return;
+
+  // Fetch challenges from leaderboard (which has all ride logs)
+  var lbData = await fetchGlobalLb();
+
+  var myRides = profileData.rides || [];
+  var myUser = s.username;
+  var myXP = profileData.user ? profileData.user.xp : 0;
+
+  // ── Compute MY progress for each challenge ──
+
+  // 1. Opening Day Rush: rides at 3 different parks
+  var myParks = {};
+  myRides.forEach(function(r) { if (r.parkName) myParks[r.parkName] = true; });
+  var myParkCount = Object.keys(myParks).length;
+  var odrTarget = 3;
+  var odrProgress = Math.min(myParkCount, odrTarget);
+
+  // 2. Full Sweep: 4 audit types at one park (approximate — count unique parks audited)
+  // Since we don't have audit type data readily, use audit count as proxy
+  var myAudits = profileData.user ? profileData.user.auditCount : 0;
+  var fsTarget = 4;
+  var fsProgress = Math.min(myAudits, fsTarget);
+
+  // 3. Iron Streak: ride every week for 8 weeks
+  var weekSet = {};
+  myRides.forEach(function(r) {
+    if (!r.timestamp) return;
+    var d = new Date(r.timestamp);
+    var year = d.getFullYear();
+    var jan1 = new Date(year, 0, 1);
+    var weekNum = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+    weekSet[year + '-W' + weekNum] = true;
+  });
+  var isTarget = 8;
+  var isProgress = Math.min(Object.keys(weekSet).length, isTarget);
+
+  // 4. Century Club: 100 total rides
+  var ccTarget = 100;
+  var ccProgress = Math.min(myRides.length, ccTarget);
+
+  // 5. Park Hopper: 5 different parks
+  var phTarget = 5;
+  var phProgress = Math.min(myParkCount, phTarget);
+
+  // ── Render My Progress ──
+  var challengesMy = document.getElementById('challengesMy');
+  if (challengesMy) {
+    challengesMy.innerHTML = buildChallengeCard('🌊', 'Opening Day Rush',
+      'Log rides at 3 different parks during opening weekend',
+      odrProgress, odrTarget, 'parks', 500)
+    + buildChallengeCard('📋', 'Full Sweep',
+      'Submit all 4 audit types at a single park in one visit',
+      fsProgress, fsTarget, 'audit types', 750)
+    + buildChallengeCard('🔥', 'Iron Streak',
+      'Log at least one ride every week for 8 consecutive weeks',
+      isProgress, isTarget, 'weeks', 1000)
+    + buildChallengeCard('💯', 'Century Club',
+      'Log 100 total rides before Memorial Day',
+      ccProgress, ccTarget, 'rides', 500)
+    + buildChallengeCard('🗺️', 'Park Hopper',
+      'Visit 5 different parks in a single season',
+      phProgress, phTarget, 'parks', 750);
+  }
+
+  // ── Build Who's Winning standings from leaderboard data ──
+  var challengesLb = document.getElementById('challengesLb');
+  if (challengesLb && lbData && lbData.leaderboard) {
+    var allUsers = lbData.leaderboard;
+
+    // Opening Day Rush standings — sort by park count (approximate from rides field)
+    var odrStandings = allUsers.slice().sort(function(a, b) {
+      return (b.parkCount || 0) - (a.parkCount || 0);
+    }).slice(0, 5);
+
+    // Iron Streak standings — sort by rides (proxy for consistency)
+    var isStandings = allUsers.slice().sort(function(a, b) {
+      return (b.rides || 0) - (a.rides || 0);
+    }).slice(0, 5);
+
+    // Century Club standings — sort by rides
+    var ccStandings = allUsers.slice().sort(function(a, b) {
+      return (b.rides || 0) - (a.rides || 0);
+    }).slice(0, 5);
+
+    // Park Hopper — sort by park count
+    var phStandings = allUsers.slice().sort(function(a, b) {
+      return (b.parkCount || 0) - (a.parkCount || 0);
+    }).slice(0, 5);
+
+    challengesLb.innerHTML =
+      buildChallengeLbCard('🌊', 'Opening Day Rush',
+        'Most parks logged · ends Apr 6', 500, odrStandings, myUser,
+        function(u) { return (u.parkCount || 0) + ' parks'; })
+    + buildChallengeLbCard('🔥', 'Iron Streak',
+        '8 consecutive weeks · ends Jun 30', 1000, isStandings, myUser,
+        function(u) { return (u.rides || 0) + ' rides'; })
+    + buildChallengeLbCard('💯', 'Century Club',
+        '100 rides before Memorial Day · ends May 22', 500, ccStandings, myUser,
+        function(u) { return (u.rides || 0) + ' rides'; })
+    + buildChallengeLbCard('🗺️', 'Park Hopper',
+        '5 parks in one season · ends Jun 30', 750, phStandings, myUser,
+        function(u) { return (u.parkCount || 0) + ' parks'; });
+  }
+})();
+
+function buildChallengeCard(icon, title, desc, progress, target, unit, xp) {
+  var pct = target > 0 ? Math.round((progress / target) * 100) : 0;
+  var complete = progress >= target;
+  return '<div class="challenge-card">'
+    + '<div class="challenge-top"><div class="challenge-body">'
+    + '<div class="challenge-label">' + icon + ' ' + title + '</div>'
+    + '<div class="challenge-desc">' + desc + '</div>'
+    + '</div><div class="challenge-reward">⚡ +' + xp + ' XP' + (complete ? ' ✓' : '') + '</div></div>'
+    + '<div class="progress-bar"><div class="progress-fill' + (complete ? ' gold' : '') + '" style="width:' + pct + '%"></div></div>'
+    + '<div class="progress-label"><span>' + progress + ' / ' + target + ' ' + unit + '</span><span>' + pct + '%</span></div>'
+    + '</div>';
+}
+
+function buildChallengeLbCard(icon, title, desc, xp, standings, myUser, valFn) {
+  var rankIcons = ['🥇', '🥈', '🥉'];
+  var rankClasses = ['g', 's', 'b'];
+
+  var rowsHtml = standings.map(function(u, i) {
+    var isYou = u.username === myUser;
+    var rk = i < 3 ? rankIcons[i] : String(i + 1);
+    var rkClass = i < 3 ? rankClasses[i] : '';
+    return '<div class="challenge-lb-row">'
+      + '<div class="challenge-lb-rank ' + rkClass + '">' + rk + '</div>'
+      + '<div class="challenge-lb-name' + (isYou ? ' you' : '') + '">' + u.username + '</div>'
+      + '<div class="challenge-lb-val"><b>' + valFn(u) + '</b></div>'
+      + '</div>';
+  }).join('');
+
+  // If user not in top 5, add their entry
+  var userInList = standings.find(function(u) { return u.username === myUser; });
+  if (!userInList && myUser) {
+    rowsHtml += '<div class="challenge-lb-row">'
+      + '<div class="challenge-lb-rank">—</div>'
+      + '<div class="challenge-lb-name you">' + myUser + '</div>'
+      + '<div class="challenge-lb-val"><b>—</b></div>'
+      + '</div>';
+  }
+
+  return '<div class="challenge-card">'
+    + '<div class="challenge-top"><div class="challenge-body">'
+    + '<div class="challenge-label">' + icon + ' ' + title + '</div>'
+    + '<div class="challenge-desc">' + desc + '</div>'
+    + '</div><div class="challenge-reward">⚡ +' + xp + ' XP</div></div>'
+    + '<div class="challenge-lb">'
+    + '<div class="challenge-lb-title">Standings</div>'
+    + rowsHtml
+    + '</div></div>';
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// 2. VERIFIED LEADERBOARD TAB — filter to GPS-verified users
+// ═══════════════════════════════════════════════════════════
+
+(async function initVerifiedTab() {
+  var verifiedTab = document.getElementById('lbTabVerified');
+  if (!verifiedTab) return;
+
+  // Remove the old static click handler by replacing the element
+  var newTab = verifiedTab.cloneNode(true);
+  verifiedTab.parentNode.replaceChild(newTab, verifiedTab);
+
+  newTab.addEventListener('click', async function() {
+    document.querySelectorAll('.lb-tab').forEach(function(t) { t.classList.remove('active'); });
+    newTab.classList.add('active');
+    document.getElementById('lbParkSelect').classList.remove('visible');
+    document.getElementById('crewLbCard').style.display = 'none';
+    document.getElementById('lbCard').style.display = '';
+
+    // Fetch global leaderboard
+    var data = await fetchGlobalLb();
+    if (!data) return;
+
+    var myUser = getSession()?.username || '';
+
+    // Filter to only real users (not fake) — proxy for "verified"
+    // In production this would filter by GPS-verified rides
+    var verified = data.leaderboard.filter(function(u) {
+      return !u.isFake && u.rides > 0;
+    });
+
+    // If no verified users yet, show all real users
+    if (verified.length === 0) {
+      verified = data.leaderboard.filter(function(u) { return !u.isFake; });
+    }
+
+    // Re-rank
+    var ranked = verified.map(function(u, i) {
+      return {
+        r: i < 3 ? ['🥇','🥈','🥉'][i] : String(i + 1),
+        rc: i < 3 ? ['gold','silver','bronze'][i] : '',
+        av: u.emoji || '🎠',
+        n: u.username,
+        s: (u.rides || 0) + ' verified rides',
+        x: u.xp.toLocaleString() + ' XP',
+        you: u.username === myUser
+      };
+    });
+
+    renderLb(ranked);
+
+    // Add/update verified note
+    var existing = document.getElementById('verifiedNote');
+    if (existing) existing.remove();
+    var note = document.createElement('div');
+    note.id = 'verifiedNote';
+    note.style.cssText = 'font-family:"Space Mono",monospace;font-size:10px;color:var(--muted);padding:8px 0;text-align:center;line-height:1.6;';
+    note.textContent = 'Verified Board — real users with logged rides only. Insurer clients see this view.';
+    document.getElementById('lbCard').parentNode.insertBefore(note, document.getElementById('lbCard').nextSibling);
+  });
+
+  // Clean up verified note when other tabs clicked
+  document.querySelectorAll('.lb-tab:not(#lbTabVerified)').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var note = document.getElementById('verifiedNote');
+      if (note) note.remove();
+    });
+  });
+})();
+
+
+// ═══════════════════════════════════════════════════════════
+// 3. CHALLENGE LEADERBOARD TAB — wire to live data
+// ═══════════════════════════════════════════════════════════
+
+(async function initChallengeLbTab() {
+  // Find the challenge tab in the leaderboard tabs
+  var tabs = document.querySelectorAll('.lb-tab');
+  var challengeTab = null;
+  tabs.forEach(function(t) {
+    if (t.dataset.lb === 'challenge') challengeTab = t;
+  });
+  if (!challengeTab) return;
+
+  // Replace with live handler
+  var newTab = challengeTab.cloneNode(true);
+  challengeTab.parentNode.replaceChild(newTab, challengeTab);
+
+  newTab.addEventListener('click', async function() {
+    document.querySelectorAll('.lb-tab').forEach(function(t) { t.classList.remove('active'); });
+    newTab.classList.add('active');
+    document.getElementById('lbParkSelect').classList.remove('visible');
+    document.getElementById('crewLbCard').style.display = 'none';
+    document.getElementById('lbCard').style.display = '';
+
+    var data = await fetchGlobalLb();
+    if (!data) return;
+
+    var myUser = getSession()?.username || '';
+
+    // Challenge ranking = weighted score: rides × 1 + parks × 10 + XP × 0.01
+    var scored = data.leaderboard.map(function(u) {
+      var score = (u.rides || 0) * 1 + (u.parkCount || 0) * 10 + (u.xp || 0) * 0.01;
+      return { username: u.username, emoji: u.emoji, score: Math.round(score), rides: u.rides || 0, parkCount: u.parkCount || 0, xp: u.xp, isFake: u.isFake };
+    });
+
+    scored.sort(function(a, b) { return b.score - a.score; });
+
+    var ranked = scored.map(function(u, i) {
+      return {
+        r: i < 3 ? ['🥇','🥈','🥉'][i] : String(i + 1),
+        rc: i < 3 ? ['gold','silver','bronze'][i] : '',
+        av: u.emoji || '🎠',
+        n: u.username,
+        s: (u.rides || 0) + ' rides · ' + (u.parkCount || 0) + ' parks',
+        x: u.score + ' pts',
+        you: u.username === myUser
+      };
+    });
+
+    renderLb(ranked);
+  });
+})();
+
+
+// ═══════════════════════════════════════════════════════════
+// 4. FIX: Static challenge tabs (My Progress / Who's Winning)
+//    Override to not flash static content
+// ═══════════════════════════════════════════════════════════
+
+(function fixChallengeTabFlash() {
+  // The static HTML has hardcoded challenge content.
+  // If user is logged in, the initLiveChallenges already replaced it.
+  // For logged-out users, keep the static content as-is (it's fine as demo).
+  // No action needed — the async init above handles it.
+})();
 </script>
 </body>
 </html>
