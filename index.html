@@ -3706,11 +3706,27 @@ function wireLiveLbTabs() {
 
   // Update streak widget
   var streakCount = document.querySelector('.streak-count');
+  // Count how many days this week have rides
+  var daysThisWeek = 0;
+  var todayDay2 = today.getDay();
+  var mondayOffset2 = todayDay2 === 0 ? -6 : 1 - todayDay2;
+  var monday2 = new Date(today);
+  monday2.setDate(today.getDate() + mondayOffset2);
+  for (var dw = 0; dw < 7; dw++) {
+    var wd = new Date(monday2);
+    wd.setDate(monday2.getDate() + dw);
+    if (rideDates[wd.toISOString().slice(0, 10)]) daysThisWeek++;
+  }
+
   if (streakCount) {
-    if (streak === 0) {
-      streakCount.textContent = 'No active streak — log a ride!';
+    if (streak >= 7) {
+      streakCount.textContent = '🔥 Day ' + streak + ' — amazing!';
+    } else if (streak > 0) {
+      streakCount.textContent = '🔥 Day ' + streak + ' — keep going!';
+    } else if (daysThisWeek > 0) {
+      streakCount.textContent = '📅 ' + daysThisWeek + ' day' + (daysThisWeek !== 1 ? 's' : '') + ' this week';
     } else {
-      streakCount.textContent = '🔥 Day ' + streak + (streak >= 7 ? ' — amazing!' : ' — keep going!');
+      streakCount.textContent = 'No rides this week — log one!';
     }
   }
 
@@ -3752,6 +3768,8 @@ function wireLiveLbTabs() {
       streakCta.innerHTML = '✅ You logged a ride today! Come back tomorrow to keep your streak alive.';
     } else if (streak > 0) {
       streakCta.innerHTML = 'Log a ride today to protect your <b>' + streak + '-day streak</b>. Hit <b>7 days</b> for the 🔥 7-Day Streak badge.';
+    } else if (daysThisWeek > 0) {
+      streakCta.innerHTML = 'You rode <b>' + daysThisWeek + ' day' + (daysThisWeek !== 1 ? 's' : '') + '</b> this week! Log rides on consecutive days to build a streak.';
     } else {
       streakCta.innerHTML = 'Log your first ride today to start a streak! Hit <b>7 days</b> for the 🔥 7-Day Streak badge.';
     }
