@@ -3141,7 +3141,318 @@ function incrementLocalAuditCount(parkName) {
     textEl.innerHTML += `<br><span style="font-size:11px;color:var(--muted)">Park rep: ${reputationText}</span>`;
   }
 })();
+// ═══════════════════════════════════════════════════════════
+// LIVE LEADERBOARD + TIER + MILESTONES + POSITION CALLOUT
+// Paste this AFTER the existing renderLb function in index.html
+// Then delete the hardcoded LB object.
+// ═══════════════════════════════════════════════════════════
 
+// ── Cache for leaderboard data ──
+var _lbCache = null;
+var _lbParkCache = {};
+var _profileCache = null;
+
+// ── Fetch global leaderboard (cached) ──
+async function fetchGlobalLb() {
+  if (_lbCache) return _lbCache;
+  try {
+    var res = await fetch(LEADERBOARD_URL);
+    var data = await res.json();
+    if (data.leaderboard) {
+      _lbCache = data;
+      return data;
+    }
+  } catch(e) {}
+  return null;
+}
+
+// ── Fetch park leaderboard (cached per park) ──
+async function fetchParkLb(parkName) {
+  if (_lbParkCache[parkName]) return _lbParkCache[parkName];
+  try {
+    var res = await fetch(LEADERBOARD_URL + '?park=' + encodeURIComponent(parkName));
+    var data = await res.json();
+    if (data.leaderboard) {
+      _lbParkCache[parkName] = data;
+      return data;
+    }
+  } catch(e) {}
+  return null;
+}
+
+// ── Fetch profile data (cached) ──
+async function fetchProfileData() {
+  if (_profileCache) return _profileCache;
+  var s = getSession();
+  if (!s || !s.username) return null;
+  try {
+    var res = await fetch(PROFILE_URL + '?u=' + encodeURIComponent(s.username));
+    var data = await res.json();
+    if (data.user) {
+      _profileCache = data;
+      return data;
+    }
+  } catch(e) {}
+  return null;
+}
+
+// ── Convert leaderboard data to renderLb format ──
+function lbToRenderFormat(entries, myUsername) {
+  var rankIcons = {1:'🥇', 2:'🥈', 3:'🥉'};
+  var rankClasses = {1:'gold', 2:'silver', 3:'bronze'};
+  return entries.map(function(e) {
+    var isYou = myUsername && e.username === myUsername;
+    return {
+      r: rankIcons[e.rank] || String(e.rank),
+      rc: rankClasses[e.rank] || '',
+      av: e.emoji || '🎠',
+      n: e.username,
+      s: (e.audits ? e.audits + ' audits · ' : '') + (e.ridesAtPark ? e.ridesAtPark + ' rides here' : (e.rides || 0) + ' rides'),
+      x: (e.xpAtPark ? e.xpAtPark.toLocaleString() : e.xp.toLocaleString()) + ' XP',
+      you: isYou
+    };
+  });
+}
+
+// ── Load and render global leaderboard ──
+async function loadGlobalLb() {
+  var myUser = getSession()?.username || '';
+  var data = await fetchGlobalLb();
+  if (!data) return; // keep whatever's rendered (fake fallback)
+
+  var formatted = lbToRenderFormat(data.leaderboard, myUser);
+
+  // If user isn't in top entries, find them and append
+  var userInList = formatted.find(function(e) { return e.you; });
+  if (!userInList && myUser) {
+    var userEntry = data.leaderboard.find(function(e) { return e.username === myUser; });
+    if (userEntry) {
+      formatted.push({
+        r: String(userEntry.rank),
+        rc: '',
+        av: userEntry.emoji || '🎠',
+        n: userEntry.username,
+        s: (userEntry.rides || 0) + ' rides',
+        x: userEntry.xp.toLocaleString() + ' XP',
+        you: true
+      });
+    }
+  }
+
+  renderLb(formatted);
+
+  // Update position callout
+  updatePositionCallout(data.leaderboard, myUser);
+}
+
+// ── Load and render park leaderboard ──
+async function loadParkLb(parkName) {
+  var myUser = getSession()?.username || '';
+  var data = await fetchParkLb(parkName);
+  if (!data) return;
+
+  var formatted = lbToRenderFormat(data.leaderboard, myUser);
+  renderLb(formatted);
+}
+
+// ── Update position callout with live data ──
+function updatePositionCallout(leaderboard, myUsername) {
+  var callout = document.querySelector('.lb-position-callout');
+  var textEl = callout ? callout.querySelector('.lb-position-text') : null;
+  if (!callout || !textEl) return;
+
+  if (!myUsername) {
+    textEl.innerHTML = 'Sign up to get ranked on the leaderboard.';
+    return;
+  }
+
+  var myEntry = leaderboard.find(function(e) { return e.username === myUsername; });
+  if (!myEntry) {
+    textEl.innerHTML = 'Log a ride to get ranked on the leaderboard.';
+    return;
+  }
+
+  var myRank = myEntry.rank;
+  if (myRank === 1) {
+    textEl.innerHTML = 'You\'re <span class="hl">#1</span> — <b>you\'re leading!</b> 🎉 Keep going.';
+  } else {
+    // Find who's above
+    var above = leaderboard.find(function(e) { return e.rank === myRank - 1; });
+    var gap = above ? above.xp - myEntry.xp : 0;
+    textEl.innerHTML = 'You\'re <span class="hl">#' + myRank + '</span> globally. Earn <b>'
+      + gap.toLocaleString() + ' more XP</b> to reach <b>#' + (myRank - 1) + '</b>.';
+  }
+}
+
+// ── Update tier bar with live profile data ──
+async function updateTierBar() {
+  var data = await fetchProfileData();
+  if (!data || !data.user) return;
+
+  var xp = data.user.xp || 0;
+  var tiers = [
+    { name:'Rookie',   min:0 },
+    { name:'Verified', min:1000 },
+    { name:'Expert',   min:2500 },
+    { name:'Elite',    min:5000 }
+  ];
+
+  // Find current tier
+  var currentTier = tiers[0];
+  var nextTier = tiers[1];
+  for (var i = tiers.length - 1; i >= 0; i--) {
+    if (xp >= tiers[i].min) {
+      currentTier = tiers[i];
+      nextTier = tiers[i + 1] || null;
+      break;
+    }
+  }
+
+  // Update tier label
+  var tierLabel = document.querySelector('.tier-bar-current');
+  if (tierLabel) tierLabel.textContent = currentTier.name.toUpperCase();
+
+  // Update fill bar
+  var fill = document.querySelector('.tier-fill');
+  if (fill) {
+    if (!nextTier) {
+      fill.style.width = '100%';
+    } else {
+      var range = nextTier.min - currentTier.min;
+      var progress = xp - currentTier.min;
+      fill.style.width = Math.min(100, Math.round((progress / range) * 100)) + '%';
+    }
+  }
+
+  // Update tier nodes
+  var nodes = document.querySelectorAll('.tier-node');
+  nodes.forEach(function(node, idx) {
+    var dot = node.querySelector('.tier-node-dot');
+    var label = node.querySelector('.tier-node-label');
+    if (!dot || !label) return;
+    dot.classList.remove('done');
+    label.classList.remove('active');
+    if (idx <= tiers.indexOf(currentTier)) {
+      dot.classList.add('done');
+    }
+    if (idx === tiers.indexOf(currentTier)) {
+      label.classList.add('active');
+    }
+  });
+
+  // Update "need X more XP" text
+  var xpNeeded = document.querySelector('.tier-xp-needed');
+  if (xpNeeded) {
+    if (!nextTier) {
+      xpNeeded.innerHTML = '🏆 <b>Max tier reached!</b> You\'re Elite.';
+    } else {
+      var remaining = nextTier.min - xp;
+      xpNeeded.innerHTML = 'Need <b>' + remaining.toLocaleString() + ' more XP</b> to reach '
+        + nextTier.name + ' — unlocks audit weight boost & insurer data visibility';
+    }
+  }
+}
+
+// ── Update milestones with live ride count ──
+async function updateMilestonesLive() {
+  var data = await fetchProfileData();
+  if (!data || !data.user) return;
+
+  var count = data.user.rideCount || 0;
+
+  // Sync localStorage so other parts of the page stay consistent
+  setRideCount(count);
+  renderMilestones(count);
+}
+
+// ── Update credit pill + ride count display ──
+async function updateRideCountLive() {
+  var data = await fetchProfileData();
+  if (!data || !data.user) return;
+
+  var count = data.user.rideCount || 0;
+  setRideCount(count);
+  updateCreditPill(count);
+}
+
+// ── Wire leaderboard tabs to live data ──
+function wireLiveLbTabs() {
+  document.querySelectorAll('.lb-tab').forEach(function(tab) {
+    tab.addEventListener('click', async function() {
+      document.querySelectorAll('.lb-tab').forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      var which = tab.dataset.lb;
+      var ps = document.getElementById('lbParkSelect');
+      var lbCard = document.getElementById('lbCard');
+      var crewCard = document.getElementById('crewLbCard');
+
+      if (which === 'crew') {
+        ps.classList.remove('visible');
+        lbCard.style.display = 'none';
+        crewCard.style.display = 'block';
+        // renderCrewLb already handles live data via _liveCrewLB
+        if (typeof renderCrewLb === 'function') renderCrewLb(CREW_LB);
+      } else if (which === 'park') {
+        crewCard.style.display = 'none';
+        lbCard.style.display = '';
+        ps.classList.add('visible');
+        var parkName = ps.value;
+        var opt = ps.options[ps.selectedIndex];
+        if (opt && opt.dataset && opt.dataset.name) parkName = opt.dataset.name;
+        if (parkName) {
+          lbCard.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-family:\'Space Mono\',monospace;font-size:10px">Loading...</div>';
+          await loadParkLb(parkName);
+        }
+      } else if (which === 'challenge') {
+        ps.classList.remove('visible');
+        crewCard.style.display = 'none';
+        lbCard.style.display = '';
+        // Challenge tab — keep existing static data for now
+        renderLb(LB.challenge || []);
+      } else if (which === 'verified') {
+        // Keep existing verified tab behavior
+        ps.classList.remove('visible');
+        crewCard.style.display = 'none';
+        lbCard.style.display = '';
+      } else {
+        // Global
+        ps.classList.remove('visible');
+        crewCard.style.display = 'none';
+        lbCard.style.display = '';
+        lbCard.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-family:\'Space Mono\',monospace;font-size:10px">Loading...</div>';
+        await loadGlobalLb();
+      }
+    });
+  });
+
+  // Wire park select change to live fetch
+  document.getElementById('lbParkSelect').addEventListener('change', async function() {
+    var opt = this.options[this.selectedIndex];
+    var parkName = (opt && opt.dataset && opt.dataset.name) ? opt.dataset.name : this.value;
+    if (parkName) {
+      document.getElementById('lbCard').innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-family:\'Space Mono\',monospace;font-size:10px">Loading...</div>';
+      await loadParkLb(parkName);
+    }
+  });
+}
+
+// ── Initialize everything on page load ──
+(async function initLiveData() {
+  var s = getSession();
+  if (!s || !s.username) return; // not logged in — keep fake data as-is
+
+  // Load global leaderboard (replaces static LB.global)
+  loadGlobalLb();
+
+  // Load profile-dependent data
+  updateTierBar();
+  updateMilestonesLive();
+  updateRideCountLive();
+
+  // Wire live tab switching (overrides the static tab handlers)
+  // We do this after a small delay so the static handlers register first
+  setTimeout(wireLiveLbTabs, 100);
+})();
 
 </script>
 </body>
