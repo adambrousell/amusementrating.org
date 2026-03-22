@@ -3771,6 +3771,9 @@ function wireLiveLbTabs() {
   var s = getSession();
   if (!s || !s.username) return;
 
+  // Wait a moment for other fetches to populate cache
+  await new Promise(function(r){ setTimeout(r, 1500); });
+
   // Fetch profile for rides data + challenge computation
   var profileData = await fetchProfileData();
   if (!profileData) return;
