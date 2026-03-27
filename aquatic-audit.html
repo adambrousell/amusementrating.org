@@ -1,1 +1,404 @@
- 
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Aquatic Audit — AmusementRating</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0d0f;--surface:#12181d;--surface2:#171d23;
+  --border:rgba(255,255,255,0.08);--border-h:rgba(255,255,255,0.14);
+  --green:#22D87C;--green-d:rgba(34,216,124,0.12);--green-b:rgba(34,216,124,0.22);
+  --gold:#F5C518;--red:#EF4444;--orange:#EA580C;--amber:#CA8A04;
+  --emerald:#059669;--blue:#2563EB;--teal:#0D9488;--brown:#B45309;
+  --text:#F0F2F7;--muted:rgba(255,255,255,0.42);--dim:rgba(255,255,255,0.25);
+  --sans:'Sora',sans-serif;--mono:'Space Mono',monospace;--r:12px;--r-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+button,input,textarea{font-family:var(--sans)}
+input:focus,textarea:focus{outline:none;border-color:var(--green)!important}
+a{color:var(--green);text-decoration:none}
+.mono{font-family:var(--mono)}
+.bdg{display:inline-block;font-family:var(--mono);font-weight:700;letter-spacing:.06em;line-height:1.6;border-radius:4px;font-size:9px;padding:1px 6px}
+.bdg-O{color:#5EEAD4;background:rgba(13,148,136,.18);border:1px solid rgba(13,148,136,.35)}
+.bdg-S{color:#FCA5A5;background:rgba(220,38,38,.18);border:1px solid rgba(220,38,38,.35)}
+.bdg-G{color:#93C5FD;background:rgba(37,99,235,.18);border:1px solid rgba(37,99,235,.35)}
+.bdg-F{color:#FCD34D;background:rgba(180,83,9,.18);border:1px solid rgba(180,83,9,.35)}
+.scores{display:flex;gap:5px;margin-top:8px}
+.sb{font-family:var(--mono);width:38px;height:34px;border-radius:7px;cursor:pointer;font-weight:700;font-size:13px;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);transition:all .15s}
+.sb:active{transform:scale(.93)}
+.sb.on{color:#fff;border-width:2px}
+.s1.on{background:#DC2626;border-color:#DC2626}.s2.on{background:#EA580C;border-color:#EA580C}
+.s3.on{background:#CA8A04;border-color:#CA8A04}.s4.on{background:#16A34A;border-color:#16A34A}
+.s5.on{background:#059669;border-color:#059669}
+.wrap{max-width:430px;margin:0 auto;min-height:100vh}
+.body{padding:12px 14px 60px}
+.shdr{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:10px 14px 10px}
+.shdr-r1{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.back-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:border-color .15s,color .15s}
+.back-btn:hover{border-color:var(--border-h);color:var(--text)}
+.shdr-title{flex:1;min-width:0}
+.shdr-title-main{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shdr-title-sub{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbar{height:3px;border-radius:2px;background:rgba(255,255,255,.08);margin-bottom:8px}
+.pfill{height:100%;border-radius:2px;transition:width .4s cubic-bezier(.34,1.56,.64,1)}
+.hdr-pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px}
+.hdr-pcell{padding:6px 6px 4px;border-radius:var(--r-sm);background:var(--surface2);border:1px solid var(--border);text-align:center;position:relative;overflow:hidden}
+.hdr-pcell-label{font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.08em}
+.hdr-pcell-score{font-family:var(--mono);font-size:17px;font-weight:700;line-height:1.2;margin:1px 0}
+.hdr-pcell-count{font-family:var(--mono);font-size:7px;color:var(--muted)}
+.hdr-pcell-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(255,255,255,.06)}
+.hdr-pcell-fill{height:100%;border-radius:0 0 2px 2px;transition:width .4s}
+.shdr-r3{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.hdr-gps-btn{display:flex;align-items:center;gap:5px;padding:5px 9px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;transition:all .15s;font-size:10px;font-weight:600;color:var(--muted);white-space:nowrap}
+.hdr-gps-btn.on{border-color:var(--green-b);background:var(--green-d);color:var(--green)}
+.hdr-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;font-size:10px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);white-space:nowrap;font-weight:500}
+.leg-toggle{margin-left:auto;padding:0;border:none;background:none;cursor:pointer;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.06em;color:var(--muted);display:flex;align-items:center;gap:4px;transition:color .15s}
+.leg-toggle:hover{color:var(--text)}
+.hdr-leg{margin-top:8px;padding:8px 10px;border-radius:var(--r-sm);background:var(--surface2);border:1px solid var(--border)}
+.leg-row{display:flex;gap:7px;align-items:center;margin-bottom:3px}.leg-row:last-child{margin-bottom:0}
+.leg-dot{width:18px;height:18px;border-radius:4px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;font-family:var(--mono);flex-shrink:0}
+.phase{margin-bottom:8px;border-radius:var(--r);overflow:hidden;border:1px solid var(--border);background:var(--surface)}
+.phase.complete{border-color:var(--green-b)}
+.phase-hdr{width:100%;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;border:none;cursor:pointer;font-family:var(--sans);background:var(--surface);transition:background .15s}
+.phase-hdr:hover{background:var(--surface2)}
+.phase.complete .phase-hdr{background:rgba(34,216,124,.05)}
+.phase-body{padding:4px 14px 12px}
+.item{padding:10px 0;border-bottom:1px solid var(--border)}.item:last-child{border-bottom:none}
+.gps{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--r);width:100%;text-align:left;cursor:pointer;border:1.5px dashed var(--border);background:var(--surface);transition:all .2s}
+.gps.on{border:1.5px solid var(--green);background:var(--green-d)}
+.photo-btn{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;font-size:11px;border-radius:6px;cursor:pointer;font-weight:600;border:1.5px dashed var(--border);background:var(--surface2);color:var(--muted);transition:all .15s}
+.photo-btn.on{border:1.5px solid var(--green);background:var(--green-d);color:var(--green)}
+.note-btn{margin-top:4px;padding:2px 8px;font-size:10.5px;color:var(--muted);background:none;border:1px dashed var(--border);border-radius:4px;cursor:pointer;transition:border-color .15s,color .15s}
+.note-btn:hover{border-color:var(--border-h);color:var(--text)}
+.note-area{margin-top:6px;width:100%;padding:8px 10px;font-size:12.5px;border:1.5px solid var(--border);border-radius:7px;resize:vertical;line-height:1.5;color:var(--text);background:var(--surface2)}
+.dc-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.dc-pill{font-family:var(--mono);font-size:11px;font-weight:700;padding:6px 10px;border-radius:7px;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;transition:all .12s;white-space:nowrap;text-align:center;min-width:36px}
+.dc-pill:active{transform:scale(.95)}
+.dc-pill.on{color:var(--green);background:var(--green-d);border-color:var(--green-b)}
+.submit-btn{width:100%;padding:15px;border-radius:var(--r);border:none;font-size:15px;font-weight:800;cursor:pointer;transition:all .2s;font-family:var(--sans)}
+.submit-on{background:var(--green);color:#0A0C10;box-shadow:0 6px 20px rgba(34,216,124,.25)}
+.submit-off{background:var(--surface2);color:var(--muted);cursor:default}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;max-width:430px;width:100%;max-height:88vh;overflow:auto;padding:20px 18px 32px;border-top:1px solid var(--border)}
+.modal-handle{width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 16px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+var CHECKLIST_TITLE="Aquatic";
+var CHECKLIST_ICON="🏊";
+var CHECKLIST_ID="aq";
+var PHASES=[
+{n:"Lifeguard Staffing & Positioning",ph:1,items:[
+  {t:"All designated lifeguard stands/positions are staffed",p:"O"},
+  {t:"Guards in elevated or designated positions with clear sightlines",p:"O"},
+  {t:"Guards actively scanning (10/20 method visible)",p:"O"},
+  {t:"No distractions observed (phones, conversations, food)",p:"O"},
+  {t:"Guard rotation occurring at regular intervals",p:"O"},
+  {t:"Guards have rescue equipment within arm's reach",p:"S"},
+  {t:"Guard uniforms identifiable and consistent",p:"G"}
+],data:[
+  {k:"guards_on_duty",l:"Guards on Duty",icon:"🛟",type:"choice",opts:["1","2","3","4","5","6","7","8+"]},
+  {k:"guards_scanning",l:"Guards Actively Scanning",icon:"👀",type:"choice",opts:["All","Most","Some","Few","None"]},
+  {k:"rotation_interval",l:"Rotation Interval Observed",icon:"🔄",type:"choice",opts:["< 15 min","15–20 min","20–30 min","30–45 min","45+ min","Not observed"]}
+]},
+{n:"Water Conditions & Safety",ph:1,items:[
+  {t:"Water clarity — bottom visible at deepest point",p:"S"},
+  {t:"No visible algae, discoloration, or debris in water",p:"S"},
+  {t:"Water chemistry posted and within range (if visible)",p:"S"},
+  {t:"Drain covers intact and properly secured (VGB Act)",p:"S"},
+  {t:"Wave pool: wave intensity signage or warnings posted",p:"S"},
+  {t:"Lazy river: current speed manageable for all ages",p:"S"},
+  {t:"Water temperature appears comfortable",p:"G"}
+],data:[
+  {k:"water_clarity",l:"Water Clarity",icon:"💧",type:"choice",opts:["Crystal clear","Slightly hazy","Cloudy","Cannot see bottom"]},
+  {k:"chemistry_posted",l:"Chemistry Posted?",icon:"🧪",type:"choice",opts:["Yes — in range","Yes — out of range","Not posted","Not visible"]},
+  {k:"attraction_type",l:"Attraction Type",icon:"🌊",type:"choice",opts:["Wave pool","Lazy river","Activity pool","Splash pad","Slide landing","Other"]}
+]},
+{n:"Deck & Facility Condition",items:[
+  {t:"Pool deck surface non-slip and free of trip hazards",p:"F"},
+  {t:"Deck clear of belongings blocking pathways",p:"F"},
+  {t:"Depth markings clearly visible and accurate",p:"S"},
+  {t:"Fencing and barriers intact — no unauthorized entry points",p:"F"},
+  {t:"Shade structures and seating in good condition",p:"F"},
+  {t:"Lighting adequate for time of visit",p:"F"}
+],data:[
+  {k:"deck_condition",l:"Deck Surface",icon:"🏗️",type:"choice",opts:["Excellent","Good","Fair — minor issues","Poor — hazards present"]},
+  {k:"crowd_density",l:"Deck Crowd Density",icon:"👥",type:"choice",opts:["Empty","Light","Moderate","Crowded","Dangerously packed"]}
+]},
+{n:"Signage & Rules Enforcement",items:[
+  {t:"Pool rules posted and clearly visible at entry",p:"S"},
+  {t:"Depth transition warnings posted (shallow → deep)",p:"S"},
+  {t:"No diving signs posted where applicable",p:"S"},
+  {t:"Height/age/swim ability requirements posted",p:"S"},
+  {t:"Guards actively enforcing rules (running, horseplay, capacity)",p:"O"},
+  {t:"Life jacket loaner station visible and stocked",p:"G"}
+],data:[
+  {k:"rule_enforcement",l:"Rule Enforcement Level",icon:"📢",type:"choice",opts:["Proactive — guards intervening","Reactive — only when flagrant","Minimal — rules ignored","None observed"]}
+]},
+{n:"Emergency Readiness",ph:1,items:[
+  {t:"First aid station location clearly signed",p:"S"},
+  {t:"AED device visible or location clearly posted",p:"S"},
+  {t:"Backboard/spinal injury equipment visible on deck",p:"S"},
+  {t:"Emergency action plan posted in staff areas (if visible)",p:"S"},
+  {t:"Phone or radio communication visible at guard positions",p:"O"},
+  {t:"Reach poles and ring buoys accessible around perimeter",p:"S"}
+],data:[
+  {k:"aed_visible",l:"AED Visible?",icon:"💓",type:"choice",opts:["Yes — location marked","Yes — saw device","No — not visible","Not sure"]},
+  {k:"rescue_equip",l:"Rescue Equipment",icon:"🛟",type:"choice",opts:["All positions equipped","Most positions","Some gaps","Poorly equipped"]}
+]},
+{n:"Guest Experience & Capacity",items:[
+  {t:"Attraction does not appear overcrowded",p:"G"},
+  {t:"Entry/exit flow orderly and clearly marked",p:"G"},
+  {t:"Restrooms and changing facilities accessible and clean",p:"F"},
+  {t:"Staff interactions professional and helpful",p:"G"},
+  {t:"Hydration/water fountains available nearby",p:"G"}
+],data:[
+  {k:"crowding_level",l:"Crowding Level",icon:"👥",type:"choice",opts:["Comfortable","Moderately busy","Crowded","Dangerously overcrowded"]},
+  {k:"overall_impression",l:"Overall Impression",icon:"⭐",type:"choice",opts:["Excellent","Good","Average","Below average","Poor"]}
+]}
+];
+</script>
+<script>
+var P={
+  O:{l:"OPS",c:"#0D9488",bg:"rgba(13,148,136,.15)",bc:"rgba(13,148,136,.35)"},
+  S:{l:"SAFETY",c:"#DC2626",bg:"rgba(220,38,38,.15)",bc:"rgba(220,38,38,.35)"},
+  G:{l:"GUEST",c:"#2563EB",bg:"rgba(37,99,235,.15)",bc:"rgba(37,99,235,.35)"},
+  F:{l:"FACILITY",c:"#B45309",bg:"rgba(180,83,9,.15)",bc:"rgba(180,83,9,.35)"}
+};
+var AN=[
+  {n:1,l:"Critical",d:"Safety hazard or total failure",c:"#DC2626"},
+  {n:2,l:"Poor",d:"Below minimum standard",c:"#EA580C"},
+  {n:3,l:"Acceptable",d:"Meets baseline expectations",c:"#CA8A04"},
+  {n:4,l:"Good",d:"Above average",c:"#16A34A"},
+  {n:5,l:"Excellent",d:"Best-in-class",c:"#059669"}
+];
+
+var params=new URLSearchParams(window.location.search);
+var rideName=params.get('ride')||'';
+var meta={park:params.get('park')||'',auditor:localStorage.getItem('ar_username')||''};
+var scores={},notes={},photos={},expanded={},showLeg=false,dataCapture={};
+
+function setScore(k,v){scores[k]=(scores[k]===v)?null:v;render();}
+function setData(k,v){dataCapture[k]=(dataCapture[k]===v)?null:v;render();}
+function pickOpt(k,idx){var opt=null;PHASES.forEach(function(p){if(p.data)p.data.forEach(function(d){if(d.k===k&&d.opts)opt=d.opts[idx];});});setData(k,opt);}
+function setPhoto(k,v){photos[k]=v;render();}
+function captGPS(field){
+  var now=new Date();
+  var ts=now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  meta[field+'Time']=ts+' · GPS pending';render();
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(function(pos){
+      meta[field+'Time']=ts+' · '+pos.coords.latitude.toFixed(4)+'°, '+pos.coords.longitude.toFixed(4)+'°';
+      meta[field+'Lat']=pos.coords.latitude;meta[field+'Lng']=pos.coords.longitude;render();
+    },function(){meta[field+'Time']=ts+' · GPS unavailable';render();},{timeout:5000});
+  }
+}
+
+function bdg(p){return'<span class="bdg bdg-'+p+'">'+P[p].l+'</span>';}
+function counted(){
+  var total=0,scored=0;
+  PHASES.forEach(function(p,pi){p.items.forEach(function(_,ii){total++;if(scores[pi+'-'+ii]!=null)scored++;});});
+  return{total:total,scored:scored,pct:total?Math.round(scored/total*100):0};
+}
+function scoreBtns(key){
+  return'<div class="scores">'+AN.map(function(a){
+    return'<button class="sb s'+a.n+(scores[key]===a.n?' on':'')+'" title="'+a.l+'" onclick="setScore(\''+key+'\','+a.n+')">'+a.n+'</button>';
+  }).join('')+'</div>';
+}
+function gpsBlock(label,field,icon){
+  var v=meta[field+'Time'];
+  return'<button class="gps'+(v?' on':'')+'" onclick="captGPS(\''+field+'\')">'+
+    '<span style="font-size:20px">'+(v?'📍':icon)+'</span>'+
+    '<div style="flex:1">'+
+      '<div style="font-size:11.5px;font-weight:700;color:'+(v?'var(--green)':'var(--muted)')+'">'+label+'</div>'+
+      '<div class="mono" style="font-size:10px;color:'+(v?'rgba(34,216,124,.7)':'var(--dim)')+';margin-top:1px">'+(v||'Tap to capture GPS + timestamp')+'</div>'+
+    '</div></button>';
+}
+function noteField(key){
+  var v=notes[key];
+  if(v)return'<textarea class="note-area" onchange="notes[\''+key+'\']=this.value" rows="2">'+v+'</textarea>';
+  return'<button class="note-btn" onclick="this.outerHTML=\'<textarea class=\\\'note-area\\\' onchange=\\\'notes[\\\"'+key+'\\\"]=this.value\\\' rows=\\\'2\\\' placeholder=\\\'Observation note…\\\'></textarea>\'">+ note</button>';
+}
+function photoBtn(idx){
+  var on=photos[idx];
+  return'<button class="photo-btn'+(on?' on':'')+'" onclick="setPhoto('+idx+','+(on?'false':'true')+')">'+(on?'✓ 📷 Photo captured':'📷 Add photo')+'</button>';
+}
+
+var XP={base:50,perDataField:5,allDataBonus:25,photoBonus:3,gpsBonus:10,perfectBonus:50,noteBonus:2};
+function xpCalc(){
+  var c=counted();var xp=0;var breakdown=[];
+  if(c.scored>0){xp+=XP.base;breakdown.push({label:'Audit submitted',val:XP.base});}
+  var totalData=0;var filledData=0;
+  PHASES.forEach(function(p){if(p.data)p.data.forEach(function(d){totalData++;if(dataCapture[d.k]!=null&&dataCapture[d.k]!=='')filledData++;});});
+  if(filledData>0){var dxp=filledData*XP.perDataField;xp+=dxp;breakdown.push({label:filledData+'/'+totalData+' data fields',val:dxp});}
+  if(totalData>0&&filledData===totalData){xp+=XP.allDataBonus;breakdown.push({label:'All data captured bonus',val:XP.allDataBonus,bonus:true});}
+  var photoCount=Object.keys(photos).filter(function(k){return photos[k];}).length;
+  if(photoCount>0){var pxp=photoCount*XP.photoBonus;xp+=pxp;breakdown.push({label:photoCount+' photo'+(photoCount>1?'s':''),val:pxp});}
+  var gpsCount=(meta.startTime?1:0)+(meta.endTime?1:0);
+  if(gpsCount===2){xp+=XP.gpsBonus;breakdown.push({label:'GPS start + end',val:XP.gpsBonus});}
+  var noteCount=Object.keys(notes).filter(function(k){return notes[k]&&notes[k].trim();}).length;
+  if(noteCount>0){var nxp=noteCount*XP.noteBonus;xp+=nxp;breakdown.push({label:noteCount+' note'+(noteCount>1?'s':''),val:nxp});}
+  if(c.pct===100&&totalData>0&&filledData===totalData&&gpsCount===2){xp+=XP.perfectBonus;breakdown.push({label:'Perfect audit bonus',val:XP.perfectBonus,bonus:true});}
+  return{total:xp,breakdown:breakdown,filledData:filledData,totalData:totalData};
+}
+
+function dataFields(phase){
+  if(!phase.data||!phase.data.length)return'';
+  var filled=phase.data.filter(function(d){return dataCapture[d.k]!=null&&dataCapture[d.k]!=='';}).length;
+  var total=phase.data.length;var allDone=filled===total;
+  var h='<div style="margin-top:10px;padding:12px;border-radius:10px;background:'+(allDone?'var(--green-d)':'rgba(245,197,24,.06)')+';border:1px solid '+(allDone?'var(--green-b)':'rgba(245,197,24,.2)')+';transition:all .2s">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
+      '<div style="font-size:10px;font-weight:700;color:'+(allDone?'var(--green)':'var(--gold)')+';letter-spacing:.06em">📊 DATA CAPTURE</div>'+
+      '<div style="display:flex;align-items:center;gap:6px">'+
+        '<span class="mono" style="font-size:9px;color:'+(allDone?'var(--green)':'var(--gold)')+';font-weight:700">'+filled+'/'+total+'</span>'+
+        '<span style="font-size:9px;color:var(--gold);font-weight:700">⚡ '+(allDone?'+'+(total*XP.perDataField+XP.allDataBonus)+' XP':'+'+(XP.perDataField)+' XP each')+'</span>'+
+      '</div>'+
+    '</div>';
+  phase.data.forEach(function(d){
+    var v=dataCapture[d.k];var isFilled=v!=null&&v!=='';
+    h+='<div style="margin-bottom:10px">'+
+      '<label style="font-size:10px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;margin-bottom:4px">'+
+        '<span style="font-size:13px">'+d.icon+'</span>'+d.l+(isFilled?'<span style="font-size:8px;color:var(--green);font-weight:700;margin-left:2px">✓</span>':'')+
+      '</label>';
+    if(d.type==='choice'){
+      h+='<div class="dc-pills">';
+      d.opts.forEach(function(opt,oi){var on=v===opt;h+='<button class="dc-pill'+(on?' on':'')+'" onclick="pickOpt(\''+d.k+'\','+oi+')">'+opt+'</button>';});
+      h+='</div>';
+    }
+    h+='</div>';
+  });
+  h+='</div>';return h;
+}
+
+function render(){
+  var c=counted();
+  var pd={O:[],S:[],G:[],F:[]};
+  PHASES.forEach(function(p,pi){p.items.forEach(function(it,ii){var v=scores[pi+'-'+ii];if(v!=null)pd[it.p].push(v);});});
+
+  var h='<div class="shdr">';
+  h+='<div class="shdr-r1">';
+  h+='<button class="back-btn" onclick="history.back()">←</button>';
+  h+='<div class="shdr-title">';
+  h+='<div class="shdr-title-main"><span>'+CHECKLIST_ICON+'</span><span>'+(rideName||CHECKLIST_TITLE)+'</span></div>';
+  h+='<div class="shdr-title-sub">'+(meta.park||CHECKLIST_TITLE)+' · '+PHASES.length+' phases · '+c.total+' items</div>';
+  h+='</div>';
+  var circ=2*Math.PI*15,dash=circ-(c.pct/100)*circ;
+  h+='<div style="position:relative;width:40px;height:40px;flex-shrink:0">';
+  h+='<svg width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="3"/><circle cx="20" cy="20" r="15" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-dasharray="'+circ+'" stroke-dashoffset="'+dash+'" transform="rotate(-90 20 20)" style="transition:stroke-dashoffset .5s cubic-bezier(.34,1.56,.64,1)"/></svg>';
+  h+='<span class="mono" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+(c.pct===100?'var(--green)':'var(--text)')+'">'+c.pct+'</span>';
+  h+='</div></div>';
+
+  h+='<div class="pbar"><div class="pfill" style="width:'+c.pct+'%;background:'+(c.pct===100?'#16A34A':'var(--green)')+'"></div></div>';
+
+  h+='<div class="hdr-pillars">';
+  ['O','S','G','F'].forEach(function(code){
+    var arr=pd[code];var avg=arr.length?arr.reduce(function(a,b){return a+b;},0)/arr.length:0;
+    var pt=PHASES.reduce(function(s,p){return s+p.items.filter(function(i){return i.p===code;}).length;},0);
+    var bc=avg>=4?'#059669':avg>=3?'#CA8A04':avg>0?'#DC2626':'rgba(255,255,255,.12)';
+    h+='<div class="hdr-pcell" style="border-color:'+P[code].bc+';background:'+P[code].bg+'">';
+    h+='<div class="hdr-pcell-label" style="color:'+P[code].c+'">'+P[code].l+'</div>';
+    h+='<div class="hdr-pcell-score" style="color:'+(arr.length?'var(--text)':'var(--dim)')+'">'+(arr.length?avg.toFixed(1):'—')+'</div>';
+    h+='<div class="hdr-pcell-count">'+arr.length+'/'+pt+'</div>';
+    h+='<div class="hdr-pcell-bar"><div class="hdr-pcell-fill" style="width:'+(avg*20)+'%;background:'+bc+'"></div></div>';
+    h+='</div>';
+  });
+  h+='</div>';
+
+  h+='<div class="shdr-r3">';
+  var gv=meta['startTime'];
+  h+='<button class="hdr-gps-btn'+(gv?' on':'')+'" onclick="captGPS(\'start\')">'+(gv?'📍 GPS ✓':'🟢 Start GPS')+'</button>';
+  if(meta.auditor)h+='<span class="hdr-tag">👤 '+meta.auditor+'</span>';
+  h+='<div style="display:flex;align-items:center;gap:5px;margin-left:auto">';
+  h+='<span class="mono" style="font-size:9px;color:var(--muted)">'+c.scored+'/'+c.total+'</span>';
+  h+='<button class="leg-toggle" onclick="showLeg=!showLeg;render()">'+(showLeg?'▾':'▸')+' Guide</button>';
+  h+='</div></div>';
+
+  if(showLeg){
+    h+='<div class="hdr-leg" style="margin-top:8px">';
+    AN.forEach(function(a){h+='<div class="leg-row"><span class="leg-dot" style="background:'+a.c+'">'+a.n+'</span><span style="font-size:10px;color:var(--muted)"><strong style="color:var(--text)">'+a.l+'</strong> — '+a.d+'</span></div>';});
+    h+='</div>';
+  }
+  h+='</div>';
+
+  h+='<div class="body">';
+  PHASES.forEach(function(phase,pi){
+    var done=phase.items.filter(function(_,i){return scores[pi+'-'+i]!=null;}).length;
+    var comp=done===phase.items.length;var isExp=expanded[pi]!==false;
+    h+='<div class="phase'+(comp?' complete':'')+'">';
+    h+='<button class="phase-hdr" onclick="expanded['+pi+']='+(isExp?'false':'true')+';render()">';
+    h+='<div style="display:flex;align-items:center;gap:8px;text-align:left">';
+    h+='<span style="font-size:11px;color:var(--muted);transform:rotate('+(isExp?'0':'-90')+'deg);display:inline-block;transition:transform .15s">▾</span>';
+    if(comp)h+='<span style="font-size:13px">✓</span>';
+    h+='<span style="font-weight:700;font-size:13.5px;color:var(--text)">'+phase.n+'</span>';
+    if(phase.ph)h+='<span style="font-size:10px">📷</span>';
+    h+='</div>';
+    h+='<span class="mono" style="font-size:11px;font-weight:600;color:'+(comp?'var(--green)':'var(--muted)')+'">'+done+'/'+phase.items.length+'</span>';
+    h+='</button>';
+    if(isExp){
+      h+='<div class="phase-body">';
+      phase.items.forEach(function(item,i){
+        var k=pi+'-'+i;
+        h+='<div class="item"><div style="display:flex;gap:8px;align-items:flex-start">'+bdg(item.p)+'<span style="font-size:12.5px;line-height:1.55;flex:1">'+item.t+'</span></div>'+scoreBtns(k)+noteField(k)+'</div>';
+      });
+      h+=dataFields(phase);
+      if(phase.ph)h+='<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">'+photoBtn(pi)+'</div>';
+      h+='</div>';
+    }
+    h+='</div>';
+  });
+
+  var xp=xpCalc();
+  h+='<div style="margin-top:10px">'+gpsBlock('END — GPS + Timestamp','end','🔴')+'</div>';
+  h+='<button class="submit-btn '+(c.scored>0?'submit-on':'submit-off')+'" style="margin-top:12px" '+
+    (c.scored>0?'onclick="showSubmit()"':'')+'>'+
+    (c.scored>0?'Review & Submit · ⚡ '+xp.total+' XP':'Review & Submit')+
+    ' ('+c.scored+'/'+c.total+')</button>';
+  h+='</div>';
+  document.getElementById('app').innerHTML=h;
+}
+
+function showSubmit(){
+  var c=counted();var pv={O:[],S:[],G:[],F:[]};var items=[];
+  PHASES.forEach(function(ph,pi){ph.items.forEach(function(it,ii){var k=pi+'-'+ii;var v=scores[k];if(v!=null){items.push({phase:ph.n,observation:it.t,pillar:it.p,score:v,note:notes[k]||null});pv[it.p].push(v);}});});
+  var pillarAvg={};Object.keys(pv).forEach(function(p){var arr=pv[p];pillarAvg[p]=arr.length?+(arr.reduce(function(a,b){return a+b;},0)/arr.length).toFixed(2):null;});
+  var xp=xpCalc();var isMobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  var payload={
+    audit_id:'AR-'+CHECKLIST_ID.toUpperCase()+'-'+Date.now().toString(36).toUpperCase(),
+    checklist:CHECKLIST_TITLE,ride:rideName||CHECKLIST_TITLE,park:meta.park,
+    auditor:meta.auditor,gps_start:meta.startTime||null,gps_end:meta.endTime||null,
+    gps_lat:meta.startLat||null,gps_lng:meta.startLng||null,
+    source:isMobile?'mobile':'desktop',pillars:pillarAvg,
+    scored:c.scored,total:c.total,pct:c.pct,
+    data_capture:dataCapture,xp_earned:xp.total,items:items
+  };
+  var j=JSON.stringify(payload,null,2);
+
+  var xpHtml='<div style="padding:12px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase">XP Breakdown</span><span class="mono" style="font-size:18px;font-weight:700;color:var(--gold)">⚡ '+xp.total+'</span></div>';
+  xp.breakdown.forEach(function(b){xpHtml+='<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-top:1px solid var(--border)"><span style="font-size:11px;color:'+(b.bonus?'var(--gold)':'var(--muted)')+'">'+b.label+(b.bonus?' ★':'')+'</span><span class="mono" style="font-size:11px;font-weight:700;color:'+(b.bonus?'var(--gold)':'var(--green)')+'">+'+b.val+'</span></div>';});
+  xpHtml+='</div>';
+
+  var ov=document.createElement('div');ov.className='overlay';ov.onclick=function(e){if(e.target===ov)ov.remove();};
+  ov.innerHTML='<div class="modal"><div class="modal-handle"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div><h3 style="font-size:16px;font-weight:800">'+CHECKLIST_ICON+' Audit Summary</h3><p style="font-size:11px;color:var(--muted);margin-top:2px">'+c.scored+'/'+c.total+' scored · '+(rideName||CHECKLIST_TITLE)+(meta.park?' · '+meta.park:'')+'</p></div><button onclick="this.closest(\'.overlay\').remove()" style="border:1px solid var(--border);background:var(--surface2);border-radius:8px;width:32px;height:32px;font-size:16px;cursor:pointer;color:var(--muted)">✕</button></div>'+xpHtml+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">'+['O','S','G','F'].map(function(p){var v=pillarAvg[p];return'<div style="padding:10px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);text-align:center"><div class="mono" style="font-size:9px;font-weight:700;color:var(--muted)">'+P[p].l+'</div><div class="mono" style="font-size:22px;font-weight:800;color:'+(v>=4?'#059669':v>=3?'#CA8A04':v>0?'#DC2626':'var(--dim)')+'">'+(v?v.toFixed(1):'—')+'</div></div>';}).join('')+'</div><pre class="mono" style="background:#060810;color:#E2E8F0;padding:14px;border-radius:10px;font-size:9.5px;overflow:auto;white-space:pre-wrap;line-height:1.6;max-height:30vh;border:1px solid var(--border)">'+j.replace(/</g,'&lt;')+'</pre><div style="margin-top:14px;display:flex;gap:8px"><button onclick="navigator.clipboard.writeText(JSON.stringify(window._ap,null,2));this.textContent=\'✓ Copied\';setTimeout(function(){}.bind(this),2000)" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-weight:700;font-size:13px;cursor:pointer">Copy JSON</button><button id="submit-final" onclick="submitAudit(this)" style="flex:1;padding:12px;border-radius:10px;border:none;background:var(--green);color:#0A0C10;font-weight:800;font-size:13px;cursor:pointer">Submit → ⚡ '+xp.total+' XP</button></div></div>';
+  window._ap=payload;document.body.appendChild(ov);
+}
+
+async function submitAudit(btn){
+  btn.textContent='Submitting...';btn.disabled=true;
+  try{
+    var r=await fetch('https://ar-audit.amusementstandards.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(window._ap)});
+    var d=await r.json();
+    if(d.error){btn.textContent='Error: '+d.error;btn.disabled=false;return;}
+    btn.textContent='✓ Submitted! +'+d.xpEarned+' XP';btn.style.background='var(--gold)';btn.style.color='#000';
+    setTimeout(function(){document.querySelector('.overlay').remove();history.back();},1500);
+  }catch(e){btn.textContent='Network error — try again';btn.disabled=false;}
+}
+
+render();
+</script>
+</body>
+</html>
